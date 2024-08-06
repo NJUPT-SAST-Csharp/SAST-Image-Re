@@ -6,12 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="IdGen" Version="3.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Domain.Internal\Domain.Internal.csproj" />
-  </ItemGroup>
-
 </Project>
