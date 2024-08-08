@@ -1,4 +1,4 @@
-﻿using Domain.Internal;
+﻿using Domain.Internal.Entity;
 
 namespace Domain.TagEntity
 {

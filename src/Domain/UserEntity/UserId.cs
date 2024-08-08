@@ -1,8 +1,8 @@
-﻿using Domain.Internal;
+﻿using Domain.Internal.Entity;
 
 namespace Domain.UserEntity
 {
-    internal readonly record struct UserId : ITypedId<UserId>
+    public readonly record struct UserId : ITypedId<UserId>
     {
         public readonly long Value { get; }
 

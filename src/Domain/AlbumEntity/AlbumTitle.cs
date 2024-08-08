@@ -1,16 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Internal.Entity;
 
-namespace Domain.TagEntity
+namespace Domain.AlbumEntity
 {
-    public readonly record struct TagName : IValueObject<TagName, string>
+    public readonly record struct AlbumTitle : IValueObject<AlbumTitle, string>
     {
-        public const int MaxLength = 10;
-        public readonly string Value { get; private init; }
+        public const int MaxLength = 20;
+        public string Value { get; private init; }
 
         public static bool TryCreateNew(
             string value,
-            [MaybeNullWhen(false), NotNullWhen(true)] out TagName newObject
+            [MaybeNullWhen(false), NotNullWhen(true)] out AlbumTitle newObject
         )
         {
             if (string.IsNullOrWhiteSpace(value))

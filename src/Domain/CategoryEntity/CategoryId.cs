@@ -1,8 +1,8 @@
-﻿using Domain.Internal;
+﻿using Domain.Internal.Entity;
 
 namespace Domain.CategoryEntity
 {
-    internal readonly record struct CategoryId : ITypedId<CategoryId>
+    public readonly record struct CategoryId : ITypedId<CategoryId>
     {
         public readonly long Value { get; }
 

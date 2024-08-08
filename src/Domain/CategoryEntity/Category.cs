@@ -2,6 +2,6 @@
 {
     public sealed class Category
     {
-        public CategoryId Id { get; init; }
+        public CategoryId Id { get; }
     }
 }

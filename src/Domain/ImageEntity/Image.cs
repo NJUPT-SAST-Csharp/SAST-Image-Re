@@ -2,6 +2,11 @@
 {
     public sealed class Image
     {
-        public ImageId Id { get; }
+        private Image(ImageId id)
+        {
+            Id = id;
+        }
+
+        internal ImageId Id { get; }
     }
 }

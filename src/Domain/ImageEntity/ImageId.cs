@@ -1,8 +1,8 @@
-﻿using Domain.Internal;
+﻿using Domain.Internal.Entity;
 
 namespace Domain.ImageEntity
 {
-    internal readonly record struct ImageId : ITypedId<ImageId>
+    public readonly record struct ImageId : ITypedId<ImageId>
     {
         public readonly long Value { get; }
 
