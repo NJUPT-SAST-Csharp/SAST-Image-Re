@@ -1,11 +1,9 @@
-﻿using Domain.Internal.Entity;
+﻿using Domain.Entity;
 
 namespace Domain.CategoryEntity
 {
-    public readonly record struct CategoryId : ITypedId<CategoryId>
+    public readonly record struct CategoryId(long Value) : ITypedId<CategoryId, long>
     {
-        public readonly long Value { get; }
-
-        public static CategoryId CreateNewId() => new();
+        public static CategoryId GenerateNew() => new(Snowflake.NewId);
     }
 }

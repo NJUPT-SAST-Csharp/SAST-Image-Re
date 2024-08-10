@@ -6,22 +6,14 @@ namespace Domain.Tests.AlbumEntity
     [TestClass]
     public class AlbumTitleTests
     {
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
+        [DataRow("                                                                            ")]
         [TestMethod]
-        public void Return_False_When_Create_From_Empty()
+        public void Return_False_When_Create_From_NullOrWhitespace(string value)
         {
-            const string value = "";
-
-            var result = AlbumTitle.TryCreateNew(value, out var _);
-
-            result.ShouldBeFalse();
-        }
-
-        [TestMethod]
-        public void Return_False_When_Create_From_Whitespace()
-        {
-            const string value = "    ";
-
-            var result = AlbumTitle.TryCreateNew(value, out var _);
+            var result = AlbumDescription.TryCreateNew(value, out var _);
 
             result.ShouldBeFalse();
         }
@@ -56,10 +48,12 @@ namespace Domain.Tests.AlbumEntity
             result.ShouldBeTrue();
         }
 
+        [DataRow("album  ")]
+        [DataRow("   album")]
+        [DataRow("   album  ")]
         [TestMethod]
-        public void Should_Trim_Whitespace_When_Create()
+        public void Should_Trim_Whitespace_When_Create(string input_value)
         {
-            const string input_value = "  album  ";
             const string actual_value = "album";
 
             AlbumTitle.TryCreateNew(input_value, out var album);
@@ -88,14 +82,16 @@ namespace Domain.Tests.AlbumEntity
             album1.ShouldBe(album2);
         }
 
+        [DataRow("album  ")]
+        [DataRow("   album")]
+        [DataRow("   album  ")]
         [TestMethod]
-        public void Should_Be_Equal_When_Same_Value_With_Whitespace()
+        public void Should_Be_Equal_When_Same_Value_With_Whitespace(string value_with_whitespace)
         {
-            const string value1 = "album";
-            const string value2 = "album ";
+            const string value = "album";
 
-            AlbumTitle.TryCreateNew(value1, out var album1);
-            AlbumTitle.TryCreateNew(value2, out var album2);
+            AlbumTitle.TryCreateNew(value, out var album1);
+            AlbumTitle.TryCreateNew(value_with_whitespace, out var album2);
 
             album1.ShouldBe(album2);
         }

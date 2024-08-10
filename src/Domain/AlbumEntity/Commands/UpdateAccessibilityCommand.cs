@@ -1,4 +1,4 @@
-﻿using Domain.Internal.Command;
+﻿using Domain.Command;
 using Domain.UserEntity;
 
 namespace Domain.AlbumEntity.Commands

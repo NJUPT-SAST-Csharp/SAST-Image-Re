@@ -1,11 +1,9 @@
-﻿using Domain.Internal.Entity;
+﻿using Domain.Entity;
 
 namespace Domain.UserEntity
 {
-    public readonly record struct UserId : ITypedId<UserId>
+    public readonly record struct UserId(long Value) : ITypedId<UserId, long>
     {
-        public readonly long Value { get; }
-
-        public static UserId CreateNewId() => new();
+        public static UserId GenerateNew() => new(Snowflake.NewId);
     }
 }

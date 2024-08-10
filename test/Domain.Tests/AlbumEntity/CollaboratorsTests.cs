@@ -113,5 +113,17 @@ namespace Domain.Tests.AlbumEntity
 
             result.ShouldBeTrue();
         }
+
+        [TestMethod]
+        public void Return_True_When_Create_From_MaxCount()
+        {
+            var maxcount_collaborators = Enumerable
+                .Range(default, Collaborators.MaxCount)
+                .Select(index => NewCollaborator(index));
+
+            var result = Collaborators.TryCreateNew(maxcount_collaborators, out var _);
+
+            result.ShouldBeTrue();
+        }
     }
 }

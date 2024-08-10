@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Domain.Internal.Entity;
+using Domain.Entity;
 
 namespace Domain.TagEntity
 {
-    public readonly record struct TagName : IValueObject<TagName, string>
+    public readonly record struct TagName
+        : IValueObject<TagName, string>,
+            IFactoryConstructor<TagName, string>
     {
         public const int MaxLength = 10;
+
         public readonly string Value { get; private init; }
 
         public static bool TryCreateNew(

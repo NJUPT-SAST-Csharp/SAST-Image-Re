@@ -28,4 +28,9 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CategoryEntity\" />
+    <Folder Include="UserEntity\" />
+  </ItemGroup>
+
 </Project>

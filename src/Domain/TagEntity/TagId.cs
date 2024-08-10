@@ -1,11 +1,9 @@
-﻿using Domain.Internal.Entity;
+﻿using Domain.Entity;
 
 namespace Domain.TagEntity
 {
-    internal readonly record struct TagId : ITypedId<TagId>
+    internal readonly record struct TagId(long Value) : ITypedId<TagId, long>
     {
-        public readonly long Value { get; }
-
-        public static TagId CreateNewId() => new();
+        public static TagId GenerateNew() => new(Snowflake.NewId);
     }
 }

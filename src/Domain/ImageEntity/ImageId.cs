@@ -1,11 +1,9 @@
-﻿using Domain.Internal.Entity;
+﻿using Domain.Entity;
 
 namespace Domain.ImageEntity
 {
-    public readonly record struct ImageId : ITypedId<ImageId>
+    public readonly record struct ImageId(long Value) : ITypedId<ImageId, long>
     {
-        public readonly long Value { get; }
-
-        public static ImageId CreateNewId() => new();
+        public static ImageId GenerateNew() => new(Snowflake.NewId);
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Domain.Internal.Entity;
+using Domain.Entity;
 
 namespace Domain.AlbumEntity
 {
-    public readonly record struct AlbumTitle : IValueObject<AlbumTitle, string>
+    public readonly record struct AlbumTitle
+        : IValueObject<AlbumTitle, string>,
+            IFactoryConstructor<AlbumTitle, string>
     {
         public const int MaxLength = 20;
         public string Value { get; private init; }

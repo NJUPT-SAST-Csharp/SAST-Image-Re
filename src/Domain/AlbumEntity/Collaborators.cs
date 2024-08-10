@@ -1,13 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using Domain.Internal.Entity;
+using Domain.Entity;
 using Domain.UserEntity;
 
 namespace Domain.AlbumEntity
 {
     public sealed class Collaborators
         : ReadOnlyCollection<UserId>,
-            IValueObject<Collaborators, IReadOnlyCollection<UserId>, IEnumerable<UserId>>
+            IValueObject<Collaborators, IReadOnlyCollection<UserId>>,
+            IFactoryConstructor<Collaborators, IEnumerable<UserId>>
     {
         public const int MaxCount = 32;
 
@@ -33,6 +34,8 @@ namespace Domain.AlbumEntity
             newObject = new(value.ToList());
             return true;
         }
+
+        public bool NotContains(UserId userId) => !Contains(userId);
 
         public IReadOnlyCollection<UserId> Value => Items.AsReadOnly();
 
