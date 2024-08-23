@@ -1,4 +1,4 @@
-﻿using Domain.ImageEntity;
+﻿using Domain.AlbumDomain.ImageEntity;
 using Shouldly;
 
 namespace Domain.Tests.ImageEntity

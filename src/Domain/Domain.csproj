@@ -14,4 +14,8 @@
     <ProjectReference Include="..\..\DomainLib\Domain.Core\Domain.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserDomain\Commands\" />
+  </ItemGroup>
+
 </Project>

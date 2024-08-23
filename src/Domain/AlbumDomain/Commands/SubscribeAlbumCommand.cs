@@ -1,0 +1,23 @@
+﻿using Domain.AlbumDomain.AlbumEntity;
+using Domain.Command;
+using Domain.Extensions;
+using Domain.Shared;
+
+namespace Domain.AlbumDomain.Commands
+{
+    public readonly record struct SubscribeAlbumCommand(AlbumId Album, Actor Actor)
+        : IDomainCommand { }
+
+    internal sealed class SubscribeCommandHandler(IRepository<Album, AlbumId> repository)
+        : ICommandHandler<SubscribeAlbumCommand>
+    {
+        private readonly IRepository<Album, AlbumId> _repository = repository;
+
+        public async Task Handle(SubscribeAlbumCommand request, CancellationToken cancellationToken)
+        {
+            var album = await _repository.GetAsync(request.Album, cancellationToken);
+
+            album.Subscribe(in request);
+        }
+    }
+}

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using Domain.AlbumEntity;
-using Domain.UserEntity;
+using Domain.AlbumDomain.AlbumEntity;
+using Domain.UserDomain.UserEntity;
 using Shouldly;
 
 namespace Domain.Tests.AlbumEntity

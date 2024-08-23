@@ -1,6 +1,16 @@
 @WebAPI_HostAddress = http://localhost:5265
 
-GET {{WebAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{WebAPI_HostAddress}}/api/album/
+Content-Type: application/json
+
+{
+  "title": "title",
+  "description": "The album description",
+  "accessibility": 2,
+  "categoryId": 1
+}
 
 ###
+GET {{WebAPI_HostAddress}}/api/album/1276461256283164672
+###
+GET {{WebAPI_HostAddress}}/api/albums/0

@@ -1,4 +1,4 @@
-using Domain.TagEntity;
+using Domain.TagDomain.TagEntity;
 using Shouldly;
 
 namespace Domain.Tests.TagEntity
