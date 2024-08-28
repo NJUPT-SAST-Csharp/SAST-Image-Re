@@ -4,6 +4,6 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct AlbumCategoryUpdatedEvent(AlbumId Album, CategoryId Category)
+    public sealed record class AlbumCategoryUpdatedEvent(AlbumId Album, CategoryId Category)
         : IDomainEvent { }
 }

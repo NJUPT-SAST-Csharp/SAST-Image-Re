@@ -5,19 +5,18 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct SubscribeAlbumCommand(AlbumId Album, Actor Actor)
-        : IDomainCommand { }
+    public sealed record class SubscribeCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
 
     internal sealed class SubscribeCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<SubscribeAlbumCommand>
+        : ICommandHandler<SubscribeCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 
-        public async Task Handle(SubscribeAlbumCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SubscribeCommand request, CancellationToken cancellationToken)
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.Subscribe(in request);
+            album.Subscribe(request);
         }
     }
 }

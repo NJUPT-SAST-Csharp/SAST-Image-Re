@@ -7,7 +7,7 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct UpdateImageTagsCommand(
+    public sealed record class UpdateImageTagsCommand(
         AlbumId Album,
         ImageId Image,
         ImageTags Tags,
@@ -31,7 +31,7 @@ namespace Domain.AlbumDomain.Commands
 
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.UpdateImageTags(in request);
+            album.UpdateImageTags(request);
         }
     }
 }

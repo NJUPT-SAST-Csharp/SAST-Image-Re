@@ -3,5 +3,5 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct ImageRemovedEvent(ImageId Image) : IDomainEvent { }
+    public sealed record class ImageRemovedEvent(ImageId Image) : IDomainEvent { }
 }

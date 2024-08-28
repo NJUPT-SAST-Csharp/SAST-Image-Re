@@ -7,7 +7,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct AddImageCommand(
+    public sealed record class AddImageCommand(
         AlbumId Album,
         ImageTitle Title,
         ImageTags Tags,
@@ -29,7 +29,7 @@ namespace Domain.AlbumDomain.Commands
 
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.AddImage(in request);
+            album.AddImage(request);
         }
     }
 }

@@ -3,7 +3,7 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct AlbumAccessibilityUpdatedEvent(
+    public sealed record class AlbumAccessibilityUpdatedEvent(
         AlbumId Album,
         Accessibility Accessibility
     ) : IDomainEvent { }

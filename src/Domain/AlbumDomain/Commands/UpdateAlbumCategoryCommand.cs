@@ -7,7 +7,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct UpdateAlbumCategoryCommand(
+    public sealed record class UpdateAlbumCategoryCommand(
         AlbumId Album,
         CategoryId Category,
         Actor Actor
@@ -30,7 +30,7 @@ namespace Domain.AlbumDomain.Commands
 
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.UpdateCategory(in request);
+            album.UpdateCategory(request);
         }
     }
 }

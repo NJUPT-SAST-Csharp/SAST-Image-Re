@@ -8,7 +8,7 @@ namespace Domain.AlbumDomain.AlbumEntity
     public sealed class Collaborators
         : ReadOnlyCollection<UserId>,
             IValueObject<Collaborators, IReadOnlyCollection<UserId>>,
-            IFactoryConstructor<Collaborators, IEnumerable<UserId>>
+            IFactoryConstructor<Collaborators, long[]>
     {
         public const int MaxCount = 32;
 
@@ -19,19 +19,21 @@ namespace Domain.AlbumDomain.AlbumEntity
             : this([]) { }
 
         public static bool TryCreateNew(
-            IEnumerable<UserId> value,
+            long[] value,
             [MaybeNullWhen(false), NotNullWhen(true)] out Collaborators? newObject
         )
         {
-            value = value.Distinct();
+            var mid = value.Distinct();
 
-            if (value.Count() > MaxCount)
+            if (mid.Count() > MaxCount)
             {
                 newObject = null;
                 return false;
             }
 
-            newObject = new(value.ToList());
+            var userIds = mid.Select(id => new UserId(id)).ToList();
+
+            newObject = new(userIds);
             return true;
         }
 

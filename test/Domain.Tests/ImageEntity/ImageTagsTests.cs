@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Domain.AlbumDomain.ImageEntity;
-using Domain.TagDomain.TagEntity;
+﻿using Domain.AlbumDomain.ImageEntity;
 using Shouldly;
 
 namespace Domain.Tests.ImageEntity
@@ -8,26 +6,13 @@ namespace Domain.Tests.ImageEntity
     [TestClass]
     public class ImageTagsTests
     {
-        private static TagId NewImageTag(long id)
-        {
-            var TagId = new TagId();
-            var valueField = typeof(TagId)
-                .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-                .First(f => f.Name.Contains(nameof(TagId.Value)));
-
-            object boxedTagId = TagId;
-            valueField.SetValue(boxedTagId, id);
-            TagId = (TagId)boxedTagId;
-
-            return TagId;
-        }
-
         [TestMethod]
         public void Return_False_When_Too_Many_ImageTags()
         {
             var imageTags_more_than_MaxCount = Enumerable
                 .Range(default, ImageTags.MaxCount + 1)
-                .Select(index => NewImageTag(index));
+                .Select(index => (long)index)
+                .ToArray();
 
             var result = ImageTags.TryCreateNew(imageTags_more_than_MaxCount, out var imageTags);
 
@@ -41,7 +26,8 @@ namespace Domain.Tests.ImageEntity
 
             var valid_ImageTags = Enumerable
                 .Range(default, ImageTags.MaxCount - 1)
-                .Select(index => NewImageTag(index));
+                .Select(index => (long)index)
+                .ToArray();
 
             ImageTags.TryCreateNew(valid_ImageTags, out var imageTags);
 
@@ -55,9 +41,11 @@ namespace Domain.Tests.ImageEntity
             const int duplicate_count = 10;
             var imageTags_less_than_MaxCount = Enumerable
                 .Range(default, ImageTags.MaxCount - 1)
-                .Select(index => NewImageTag(index));
-            var duplicate_imageTags = Enumerable.Repeat(NewImageTag(duplicate_id), duplicate_count);
-            var total_imageTags = imageTags_less_than_MaxCount.Concat(duplicate_imageTags);
+                .Select(index => (long)index);
+            var duplicate_imageTags = Enumerable.Repeat((long)duplicate_id, duplicate_count);
+            var total_imageTags = imageTags_less_than_MaxCount
+                .Concat(duplicate_imageTags)
+                .ToArray();
 
             var result = ImageTags.TryCreateNew(total_imageTags, out var _);
 
@@ -69,10 +57,9 @@ namespace Domain.Tests.ImageEntity
         {
             const int duplicate_id = 0;
             const int duplicate_count = ImageTags.MaxCount / 2;
-            var imageTags_with_duplicate_ones = Enumerable.Repeat(
-                NewImageTag(duplicate_id),
-                duplicate_count
-            );
+            var imageTags_with_duplicate_ones = Enumerable
+                .Repeat((long)duplicate_id, duplicate_count)
+                .ToArray();
 
             _ = ImageTags.TryCreateNew(imageTags_with_duplicate_ones, out var imageTags);
 
@@ -86,7 +73,8 @@ namespace Domain.Tests.ImageEntity
 
             var valid_ImageTags = Enumerable
                 .Range(default, ImageTags.MaxCount - 1)
-                .Select(index => NewImageTag(index));
+                .Select(index => (long)index)
+                .ToArray();
 
             ImageTags.TryCreateNew(valid_ImageTags, out var imageTags);
 
@@ -96,7 +84,7 @@ namespace Domain.Tests.ImageEntity
         [TestMethod]
         public void Return_True_When_Create_From_Empty()
         {
-            var empty_imageTags = ImageTags.Empty;
+            var empty_imageTags = ImageTags.Empty.Select(i => i.Value).ToArray();
 
             var result = ImageTags.TryCreateNew(empty_imageTags, out var _);
 
@@ -108,7 +96,8 @@ namespace Domain.Tests.ImageEntity
         {
             var maxcount_imageTags = Enumerable
                 .Range(default, ImageTags.MaxCount)
-                .Select(index => NewImageTag(index));
+                .Select(index => (long)index)
+                .ToArray();
 
             var result = ImageTags.TryCreateNew(maxcount_imageTags, out var _);
 

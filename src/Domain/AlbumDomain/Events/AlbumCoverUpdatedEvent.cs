@@ -4,7 +4,7 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct AlbumCoverUpdatedEvent(
+    public sealed record class AlbumCoverUpdatedEvent(
         AlbumId Album,
         ImageId? ContainedImage,
         Stream? CoverImage

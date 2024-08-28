@@ -6,7 +6,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct UnlikeImageCommand(AlbumId Album, ImageId Image, Actor Actor)
+    public sealed record class UnlikeImageCommand(AlbumId Album, ImageId Image, Actor Actor)
         : IDomainCommand { }
 
     internal sealed class UnlikeCommandHandler(IRepository<Album, AlbumId> repository)
@@ -18,7 +18,7 @@ namespace Domain.AlbumDomain.Commands
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.UnlikeImage(in request);
+            album.UnlikeImage(request);
         }
     }
 }

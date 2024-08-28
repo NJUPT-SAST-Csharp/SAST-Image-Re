@@ -6,7 +6,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct LikeImageCommand(AlbumId Album, ImageId Image, Actor Actor)
+    public sealed record class LikeImageCommand(AlbumId Album, ImageId Image, Actor Actor)
         : IDomainCommand { }
 
     internal sealed class LikeCommandHandler(IRepository<Album, AlbumId> repository)
@@ -17,6 +17,8 @@ namespace Domain.AlbumDomain.Commands
         public async Task Handle(LikeImageCommand request, CancellationToken cancellationToken)
         {
             var album = await _repository.GetAsync(request.Album);
+
+            album.LikeImage(request);
         }
     }
 }

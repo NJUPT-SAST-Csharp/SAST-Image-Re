@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Domain.AlbumDomain.AlbumEntity;
-using Domain.AlbumDomain.Commands;
 using Domain.AlbumDomain.Events;
 using Domain.AlbumDomain.ImageEntity;
 using Domain.Entity;
@@ -17,9 +16,8 @@ public class ImageTests
     public void Raise_Event_When_Image_Removed()
     {
         Image image = ValidNewImage;
-        RemoveImageCommand command = new(OuterAlbumId, Id, OuterAuthor);
 
-        image.Remove(in command);
+        image.Remove();
 
         image.DomainEvents.Count.ShouldBe(1);
         image.DomainEvents.First().ShouldBeOfType<ImageRemovedEvent>();
@@ -30,8 +28,7 @@ public class ImageTests
     {
         Image image = ValidNewImage;
         image.SetValue(true); // _isRemoved = true;
-        RestoreImageCommand command = new(OuterAlbumId, Id, OuterAuthor);
-        image.Restore(in command);
+        image.Restore();
 
         image.DomainEvents.Count.ShouldBe(1);
         image.DomainEvents.First().ShouldBeOfType<ImageRestoredEvent>();

@@ -1,6 +1,7 @@
 ﻿using Application.AlbumServices;
 using Application.CategoryServices;
 using Application.ImageServices;
+using Application.TagServices;
 using Application.UserServices;
 using Infrastructure.Database.ModelBuild;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace Infrastructure.Database
     {
         public DbSet<AlbumModel> Albums { get; init; }
         public DbSet<ImageModel> Images { get; init; }
-        public DbSet<SubscribeModel> Subscribes { get; init; }
         public DbSet<UserModel> Users { get; init; }
-        public DbSet<LikeModel> Likes { get; init; }
         public DbSet<CategoryModel> Categories { get; init; }
+        public DbSet<TagModel> Tags { get; init; }
+
+        //public DbSet<LikeModel> Likes { get; init; }
+        //public DbSet<SubscribeModel> Subscribes { get; init; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +29,9 @@ namespace Infrastructure.Database
             var configuration = new QueryDbContextEntityTypeConfigurations();
 
             modelBuilder.ApplyConfiguration<AlbumModel>(configuration);
+            modelBuilder.ApplyConfiguration<UserModel>(configuration);
+            modelBuilder.ApplyConfiguration<CategoryModel>(configuration);
+            modelBuilder.ApplyConfiguration<TagModel>(configuration);
             modelBuilder.ApplyConfiguration<ImageModel>(configuration);
         }
     }

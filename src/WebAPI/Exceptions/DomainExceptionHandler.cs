@@ -40,6 +40,13 @@ namespace WebAPI.Exceptions
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
                 },
 
+                CollaboratorsNotFoundException => new()
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = $"Couldn't find specific users.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
+                },
+
                 ImageNotFoundException ex => new()
                 {
                     Status = StatusCodes.Status404NotFound,
@@ -50,7 +57,7 @@ namespace WebAPI.Exceptions
                 ImageTagsNotFoundException => new()
                 {
                     Status = StatusCodes.Status404NotFound,
-                    Title = $"Couldn't find tags.",
+                    Title = $"Couldn't find specific tags.",
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
                 },
 

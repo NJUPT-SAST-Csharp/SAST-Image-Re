@@ -52,7 +52,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             );
         }
 
-        public void UpdateDescription(ref readonly UpdateAlbumDescriptionCommand command)
+        public void UpdateDescription(UpdateAlbumDescriptionCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
@@ -84,7 +84,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             AddDomainEvent(new AlbumTitleUpdatedEvent(Id, _title));
         }
 
-        public void UpdateCollaborators(ref readonly UpdateCollaboratorsCommand command)
+        public void UpdateCollaborators(UpdateCollaboratorsCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
@@ -99,7 +99,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             AddDomainEvent(new AlbumCollaboratorsUpdatedEvent(Id, Collaborators));
         }
 
-        public void UpdateCategory(ref readonly UpdateAlbumCategoryCommand command)
+        public void UpdateCategory(UpdateAlbumCategoryCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
@@ -128,14 +128,14 @@ namespace Domain.AlbumDomain.AlbumEntity
             AddDomainEvent(AlbumCoverUpdatedEvent.UserCustomImage(Id, command.CoverImage));
         }
 
-        public void AddImage(ref readonly AddImageCommand command)
+        public void AddImage(AddImageCommand command)
         {
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
             if (IsImmutable)
                 AlbumImmutableException.Throw(this);
 
-            var image = new Image(in command);
+            var image = new Image(command);
 
             _images.Add(image);
 
@@ -157,7 +157,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             }
         }
 
-        public void RemoveImage(ref readonly RemoveImageCommand command)
+        public void RemoveImage(RemoveImageCommand command)
         {
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
@@ -165,7 +165,7 @@ namespace Domain.AlbumDomain.AlbumEntity
                 AlbumImmutableException.Throw(this);
 
             var image = _images.FindById(command.Image);
-            image.Remove(in command);
+            image.Remove();
 
             if (_cover.Id == command.Image)
             {
@@ -175,7 +175,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             }
         }
 
-        public void RestoreImage(ref readonly RestoreImageCommand command)
+        public void RestoreImage(RestoreImageCommand command)
         {
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
@@ -183,7 +183,7 @@ namespace Domain.AlbumDomain.AlbumEntity
                 AlbumImmutableException.Throw(this);
 
             var image = _images.FindById(command.Image);
-            image.Restore(in command);
+            image.Restore();
 
             if (_cover.IsLatestImage && image.Equals(_images.LatestImage()))
             {
@@ -205,7 +205,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             foreach (var image in _images)
             {
                 RemoveImageCommand c = new(Id, image.Id, command.Actor);
-                image.Remove(in c);
+                image.Remove();
             }
         }
 
@@ -222,7 +222,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             foreach (var image in _images)
             {
                 RestoreImageCommand c = new(Id, image.Id, command.Actor);
-                image.Restore(in c);
+                image.Restore();
             }
         }
 
@@ -242,7 +242,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             AddDomainEvent(new AlbumCollaboratorsUpdatedEvent(Id, Collaborators));
         }
 
-        public void Subscribe(ref readonly SubscribeAlbumCommand command)
+        public void Subscribe(SubscribeCommand command)
         {
             if (_subscribes.ContainsUser(command.Actor.Id))
                 return;
@@ -252,7 +252,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             AddDomainEvent(new AlbumSubscribedEvent(Id, command.Actor.Id));
         }
 
-        public void Unsubscribe(ref readonly UnsubscribeCommand command)
+        public void Unsubscribe(UnsubscribeCommand command)
         {
             if (_subscribes.NotContainsUser(command.Actor.Id))
                 return;
@@ -262,25 +262,25 @@ namespace Domain.AlbumDomain.AlbumEntity
             AddDomainEvent(new AlbumUnsubscribedEvent(Id, command.Actor.Id));
         }
 
-        public void LikeImage(ref readonly LikeImageCommand command)
+        public void LikeImage(LikeImageCommand command)
         {
             var image = _images.FindById(command.Image);
 
-            image.Like(in command);
+            image.Like(command);
         }
 
-        public void UnlikeImage(ref readonly UnlikeImageCommand command)
+        public void UnlikeImage(UnlikeImageCommand command)
         {
             var image = _images.FindById(command.Image);
 
-            image.Unlike(in command);
+            image.Unlike(command);
         }
 
-        public void UpdateImageTags(ref readonly UpdateImageTagsCommand command)
+        public void UpdateImageTags(UpdateImageTagsCommand command)
         {
             var image = _images.FindById(command.Image);
 
-            image.UpdateTags(in command);
+            image.UpdateTags(command);
         }
 
         private bool IsOwnedBy(Actor actor) => _author == actor.Id;

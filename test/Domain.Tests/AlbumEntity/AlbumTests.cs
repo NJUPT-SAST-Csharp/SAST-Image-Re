@@ -78,7 +78,7 @@ public class AlbumTests
         album.SetValue("_isArchived", true);
         UpdateAlbumDescriptionCommand command = new(Id, NewDescription, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateDescription(in command));
+        Should.Throw<AlbumImmutableException>(() => album.UpdateDescription(command));
     }
 
     [DataRow(VisitorId)]
@@ -89,7 +89,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAlbumDescriptionCommand command = new(Id, NewDescription, NewActor(actorId));
 
-        Should.Throw<NoPermissionException>(() => album.UpdateDescription(in command));
+        Should.Throw<NoPermissionException>(() => album.UpdateDescription(command));
     }
 
     [DataRow(AdminId, true)]
@@ -100,7 +100,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAlbumDescriptionCommand command = new(Id, NewDescription, NewActor(actorId, isAdmin));
 
-        album.UpdateDescription(in command);
+        album.UpdateDescription(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumDescriptionUpdatedEvent>();
@@ -156,7 +156,7 @@ public class AlbumTests
         album.SetValue("_isRemoved", true);
         UpdateAlbumCategoryCommand command = new(Id, NewCategory, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateCategory(in command));
+        Should.Throw<AlbumImmutableException>(() => album.UpdateCategory(command));
     }
 
     [DataRow(VisitorId)]
@@ -167,7 +167,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAlbumCategoryCommand command = new(Id, NewCategory, NewActor(actorId));
 
-        Should.Throw<NoPermissionException>(() => album.UpdateCategory(in command));
+        Should.Throw<NoPermissionException>(() => album.UpdateCategory(command));
     }
 
     [DataRow(AdminId, true)]
@@ -178,7 +178,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAlbumCategoryCommand command = new(Id, NewCategory, NewActor(actorId, isAdmin));
 
-        album.UpdateCategory(in command);
+        album.UpdateCategory(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumCategoryUpdatedEvent>();
@@ -244,7 +244,7 @@ public class AlbumTests
         album.SetValue("_isRemoved", true);
         UpdateCollaboratorsCommand command = new(Id, NewCollaborators, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateCollaborators(in command));
+        Should.Throw<AlbumImmutableException>(() => album.UpdateCollaborators(command));
     }
 
     [DataRow(VisitorId)]
@@ -256,7 +256,7 @@ public class AlbumTests
         Collaborators collaborators = NewCollaborators;
         UpdateCollaboratorsCommand command = new(Id, collaborators, NewActor(actorId));
 
-        Should.Throw<NoPermissionException>(() => album.UpdateCollaborators(in command));
+        Should.Throw<NoPermissionException>(() => album.UpdateCollaborators(command));
     }
 
     [DataRow(AdminId, true)]
@@ -268,7 +268,7 @@ public class AlbumTests
         Collaborators collaborators = NewCollaborators;
         UpdateCollaboratorsCommand command = new(Id, collaborators, NewActor(actorId, isAdmin));
 
-        album.UpdateCollaborators(in command);
+        album.UpdateCollaborators(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumCollaboratorsUpdatedEvent>();
@@ -324,7 +324,7 @@ public class AlbumTests
         album.SetValue("_isRemoved", true);
         AddImageCommand command = new(Id, NewImageTitle, NewImageTags, ImageFileStream, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.AddImage(in command));
+        Should.Throw<AlbumImmutableException>(() => album.AddImage(command));
     }
 
     [TestMethod]
@@ -334,7 +334,7 @@ public class AlbumTests
         AddImageCommand command =
             new(Id, NewImageTitle, NewImageTags, ImageFileStream, NewActor(VisitorId));
 
-        Should.Throw<NoPermissionException>(() => album.AddImage(in command));
+        Should.Throw<NoPermissionException>(() => album.AddImage(command));
     }
 
     [DataRow(AuthorId, false)]
@@ -348,7 +348,7 @@ public class AlbumTests
         AddImageCommand command =
             new(Id, NewImageTitle, NewImageTags, ImageFileStream, NewActor(actorId, isAdmin));
 
-        album.AddImage(in command);
+        album.AddImage(command);
 
         album.DomainEvents.Count.ShouldBeGreaterThan(0);
         album.GetValue<List<Image>>().Count.ShouldBe(3);
@@ -360,7 +360,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         AddImageCommand command = new(Id, NewImageTitle, NewImageTags, ImageFileStream, Author);
 
-        album.AddImage(in command);
+        album.AddImage(command);
 
         album.DomainEvents.Count.ShouldBe(2);
         album.DomainEvents.ShouldBeOfTypes(typeof(ImageAddedEvent), typeof(AlbumCoverUpdatedEvent));
@@ -373,7 +373,7 @@ public class AlbumTests
         album.SetValue(ImmutableCover);
         AddImageCommand command = new(Id, NewImageTitle, NewImageTags, ImageFileStream, Author);
 
-        album.AddImage(in command);
+        album.AddImage(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<ImageAddedEvent>();
@@ -391,7 +391,7 @@ public class AlbumTests
         album.SetValue("_isRemoved", true);
         RemoveImageCommand command = new(Id, Image1.Id, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.RemoveImage(in command));
+        Should.Throw<AlbumImmutableException>(() => album.RemoveImage(command));
     }
 
     [TestMethod]
@@ -400,7 +400,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         RemoveImageCommand command = new(Id, Image1.Id, NewActor(VisitorId));
 
-        Should.Throw<NoPermissionException>(() => album.RemoveImage(in command));
+        Should.Throw<NoPermissionException>(() => album.RemoveImage(command));
     }
 
     [TestMethod]
@@ -410,7 +410,7 @@ public class AlbumTests
         album.SetValue(new Cover(Image2.Id, true));
         RemoveImageCommand command = new(Id, Image2.Id, Author);
 
-        album.RemoveImage(in command);
+        album.RemoveImage(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumCoverUpdatedEvent>();
@@ -423,7 +423,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         RemoveImageCommand command = new(Id, Image2.Id, Author);
 
-        album.RemoveImage(in command);
+        album.RemoveImage(command);
 
         album.DomainEvents.Count.ShouldBe(0);
     }
@@ -439,7 +439,7 @@ public class AlbumTests
         album.SetValue("_isRemoved", true);
         RestoreImageCommand command = new(Id, Image1.Id, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.RestoreImage(in command));
+        Should.Throw<AlbumImmutableException>(() => album.RestoreImage(command));
     }
 
     [TestMethod]
@@ -448,7 +448,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         RestoreImageCommand command = new(Id, Image1.Id, NewActor(VisitorId));
 
-        Should.Throw<NoPermissionException>(() => album.RestoreImage(in command));
+        Should.Throw<NoPermissionException>(() => album.RestoreImage(command));
     }
 
     [TestMethod]
@@ -458,7 +458,7 @@ public class AlbumTests
         Image2.SetValue(true); // _isRemoved = true;
         RestoreImageCommand command = new(Id, Image2.Id, Author);
 
-        album.RestoreImage(in command);
+        album.RestoreImage(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumCoverUpdatedEvent>();
@@ -472,7 +472,7 @@ public class AlbumTests
         album.SetValue(new Cover(null, false));
         RestoreImageCommand command = new(Id, Image2.Id, Author);
 
-        album.RestoreImage(in command);
+        album.RestoreImage(command);
 
         album.DomainEvents.Count.ShouldBe(0);
     }
@@ -526,7 +526,7 @@ internal static class AlbumTestsHelper
     public const long AdminId = 99999;
     public const long VisitorId = 55555;
     public static readonly Actor Author = NewActor(AuthorId);
-    public static readonly Actor Admin = NewActor(AdminId, true);
+    public static readonly Actor Adm = NewActor(AdminId, true);
     public static readonly Actor Visitor = NewActor(VisitorId);
 
     public static readonly AlbumTitle OriginalTitle = new("original_title");

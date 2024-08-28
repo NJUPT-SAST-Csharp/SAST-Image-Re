@@ -4,5 +4,5 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct ImageUnlikedEvent(ImageId Image, UserId User) : IDomainEvent { }
+    public sealed record class ImageUnlikedEvent(ImageId Image, UserId User) : IDomainEvent { }
 }

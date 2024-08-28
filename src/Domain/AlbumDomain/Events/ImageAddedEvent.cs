@@ -5,7 +5,7 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct ImageAddedEvent(
+    public sealed record class ImageAddedEvent(
         AlbumId Album,
         ImageId ImageId,
         UserId AuthorId,

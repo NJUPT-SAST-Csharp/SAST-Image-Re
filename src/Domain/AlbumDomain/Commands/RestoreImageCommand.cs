@@ -6,7 +6,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct RestoreImageCommand(AlbumId Album, ImageId Image, Actor Actor)
+    public sealed record class RestoreImageCommand(AlbumId Album, ImageId Image, Actor Actor)
         : IDomainCommand { }
 
     public sealed class RestoreImageCommandHandler(IRepository<Album, AlbumId> repository)
@@ -18,7 +18,7 @@ namespace Domain.AlbumDomain.Commands
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.RestoreImage(in request);
+            album.RestoreImage(request);
         }
     }
 }

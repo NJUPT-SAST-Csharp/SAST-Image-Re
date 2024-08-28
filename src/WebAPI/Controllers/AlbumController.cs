@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("album")]
         public async Task<IActionResult> Create(
-            [FromBody] CreateAlbumRequest request,
+            [Required] [FromBody] CreateAlbumRequest request,
             CancellationToken cancellationToken
         )
         {
@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
         [HttpPost("album/{id:long}/accessibility")]
         public async Task<IActionResult> UpdateAccessibility(
             [FromRoute] long id,
-            [FromBody] UpdateAccessibilityRequest request,
+            [Required] [FromBody] UpdateAccessibilityRequest request,
             CancellationToken cancellationToken
         )
         {
@@ -110,7 +110,7 @@ namespace WebAPI.Controllers
         [HttpPost("album/{id:long}/description")]
         public async Task<IActionResult> UpdateDescription(
             [FromRoute] long id,
-            [FromBody] UpdateDescriptionRequest request,
+            [Required] [FromBody] UpdateDescriptionRequest request,
             CancellationToken cancellationToken
         )
         {
@@ -143,6 +143,23 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
+        public sealed record class UpdateCollaboratorsRequest(long[] Collaborators);
+
+        [HttpPost("album/{id:long}/collaborators")]
+        public async Task<IActionResult> UpdateCollaborators(
+            [FromRoute] long id,
+            [Required] [FromBody] UpdateCollaboratorsRequest request
+        )
+        {
+            if (Collaborators.TryCreateNew(request.Collaborators, out var collaborators) == false)
+                return ValidationFail(request.Collaborators, nameof(request.Collaborators));
+
+            UpdateCollaboratorsCommand command = new(new(id), collaborators, new());
+            await _commanderSender.SendAsync(command);
+
+            return NoContent();
+        }
+
         [HttpPost("album/{id:long}/cover")]
         [RequestFormLimits(MultipartBodyLengthLimit = 1024 * 1024 * 20)]
         public async Task<IActionResult> UpdateCover(
@@ -153,6 +170,32 @@ namespace WebAPI.Controllers
         {
             Stream? image = file?.OpenReadStream();
             UpdateCoverCommand command = new(new(id), image, new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{id:long}/subscribe")]
+        public async Task<IActionResult> Subscribe(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            SubscribeCommand command = new(new(id), new());
+
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{id:long}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            UnsubscribeCommand command = new(new(id), new());
+
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();

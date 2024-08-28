@@ -4,6 +4,5 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct AlbumUnsubscribedEvent(AlbumId Album, UserId User)
-        : IDomainEvent { }
+    public sealed record class AlbumUnsubscribedEvent(AlbumId Album, UserId User) : IDomainEvent { }
 }

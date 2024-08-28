@@ -5,8 +5,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct UnsubscribeCommand(AlbumId Album, Actor Actor)
-        : IDomainCommand { }
+    public sealed record class UnsubscribeCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
 
     internal sealed class UnsubscribeCommandHandler(IRepository<Album, AlbumId> repository)
         : ICommandHandler<UnsubscribeCommand>
@@ -17,7 +16,7 @@ namespace Domain.AlbumDomain.Commands
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.Unsubscribe(in request);
+            album.Unsubscribe(request);
         }
     }
 }

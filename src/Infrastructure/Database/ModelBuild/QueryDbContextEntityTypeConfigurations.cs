@@ -27,7 +27,10 @@ namespace Infrastructure.Database.ModelBuild
                 .HasMany<UserModel>()
                 .WithMany()
                 .UsingEntity<SubscribeModel>(
-                    l => l.HasOne<UserModel>().WithMany().HasForeignKey(s => s.User),
+                    l =>
+                        l.HasOne<UserModel>()
+                            .WithMany(u => u.Subscribes)
+                            .HasForeignKey(s => s.User),
                     r =>
                         r.HasOne<AlbumModel>()
                             .WithMany(a => a.Subscribes)
@@ -49,7 +52,7 @@ namespace Infrastructure.Database.ModelBuild
                 .HasMany<UserModel>()
                 .WithMany()
                 .UsingEntity<LikeModel>(
-                    l => l.HasOne<UserModel>().WithMany().HasForeignKey(l => l.User),
+                    l => l.HasOne<UserModel>().WithMany(u => u.Likes).HasForeignKey(l => l.User),
                     r => r.HasOne<ImageModel>().WithMany(i => i.Likes).HasForeignKey(l => l.Image),
                     like => like.ToTable("likes")
                 );

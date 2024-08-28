@@ -14,10 +14,10 @@ namespace Domain.AlbumDomain.ImageEntity
         private bool _isRemoved = false;
         internal bool IsAvailable => !_isRemoved;
 
-        public Image(ref readonly AddImageCommand command)
+        public Image(AddImageCommand command)
             : base(ImageId.GenerateNew()) { }
 
-        public void Like(ref readonly LikeImageCommand command)
+        public void Like(LikeImageCommand command)
         {
             if (_likes.ContainsUser(command.Actor.Id))
                 return;
@@ -27,7 +27,7 @@ namespace Domain.AlbumDomain.ImageEntity
             AddDomainEvent(new ImageLikedEvent(Id, command.Actor.Id));
         }
 
-        public void Unlike(ref readonly UnlikeImageCommand command)
+        public void Unlike(UnlikeImageCommand command)
         {
             if (_likes.NotContainsUser(command.Actor.Id))
                 return;
@@ -37,12 +37,12 @@ namespace Domain.AlbumDomain.ImageEntity
             AddDomainEvent(new ImageUnlikedEvent(Id, command.Actor.Id));
         }
 
-        public void UpdateTags(ref readonly UpdateImageTagsCommand command)
+        public void UpdateTags(UpdateImageTagsCommand command)
         {
             AddDomainEvent(new ImageTagsUpdatedEvent(Id, command.Tags));
         }
 
-        public void Remove(ref readonly RemoveImageCommand command)
+        public void Remove()
         {
             if (_isRemoved == false)
             {
@@ -51,7 +51,7 @@ namespace Domain.AlbumDomain.ImageEntity
             }
         }
 
-        public void Restore(ref readonly RestoreImageCommand command)
+        public void Restore()
         {
             if (_isRemoved == true)
             {

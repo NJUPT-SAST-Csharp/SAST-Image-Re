@@ -3,5 +3,5 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct AlbumRestoredEvent(AlbumId Album) : IDomainEvent { }
+    public sealed record class AlbumRestoredEvent(AlbumId Album) : IDomainEvent { }
 }
