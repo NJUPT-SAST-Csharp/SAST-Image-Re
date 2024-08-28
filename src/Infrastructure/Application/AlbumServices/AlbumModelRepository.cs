@@ -18,7 +18,8 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             var album = await _context
-                .Albums.IgnoreQueryFilters()
+                .Albums.Include(a => a.Subscribes)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
 
             if (album is null)
@@ -33,7 +34,8 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             return _context
-                .Albums.IgnoreQueryFilters()
+                .Albums.Include(a => a.Subscribes)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
         }
 

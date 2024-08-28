@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
                 return ValidationFail(request.Tags, nameof(request.Tags));
 
             AddImageCommand command =
-                new(new(albumId), title, tags, request.Image.OpenReadStream(), new());
+                new(new(albumId), title, tags, request.Image.OpenReadStream(), new(User));
 
             await _commandSender.SendAsync(command, cancellationToken);
 

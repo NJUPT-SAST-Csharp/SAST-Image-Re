@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
                 return ValidationFail(request.Accessibility, nameof(request.Accessibility));
 
             CreateAlbumCommand command =
-                new(title, description, accessibility, new(request.CategoryId), new());
+                new(title, description, accessibility, new(request.CategoryId), new(User));
 
             var albumId = await _commanderSender.SendAsync(command, cancellationToken);
 
@@ -53,7 +53,7 @@ namespace WebAPI.Controllers
             CancellationToken cancellationToken
         )
         {
-            RemoveAlbumCommand command = new(new(id), new());
+            RemoveAlbumCommand command = new(new(id), new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
             CancellationToken cancellationToken
         )
         {
-            RestoreAlbumCommand command = new(new(id), new());
+            RestoreAlbumCommand command = new(new(id), new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -77,7 +77,7 @@ namespace WebAPI.Controllers
             CancellationToken cancellationToken
         )
         {
-            ArchiveCommand command = new(new(id), new());
+            ArchiveCommand command = new(new(id), new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -97,7 +97,7 @@ namespace WebAPI.Controllers
             if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
                 return ValidationFail(request.Accessibility, nameof(request.Accessibility));
 
-            UpdateAccessibilityCommand command = new(new(id), accessibility, new());
+            UpdateAccessibilityCommand command = new(new(id), accessibility, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -117,7 +117,7 @@ namespace WebAPI.Controllers
             if (AlbumDescription.TryCreateNew(request.Description, out var description) == false)
                 return ValidationFail(request.Description, nameof(request.Description));
 
-            UpdateAlbumDescriptionCommand command = new(new(id), description, new());
+            UpdateAlbumDescriptionCommand command = new(new(id), description, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -137,7 +137,7 @@ namespace WebAPI.Controllers
             if (AlbumTitle.TryCreateNew(request.Title, out var title) == false)
                 return ValidationFail(request.Title, nameof(request.Title));
 
-            UpdateAlbumTitleCommand command = new(new(id), title, new());
+            UpdateAlbumTitleCommand command = new(new(id), title, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
             if (Collaborators.TryCreateNew(request.Collaborators, out var collaborators) == false)
                 return ValidationFail(request.Collaborators, nameof(request.Collaborators));
 
-            UpdateCollaboratorsCommand command = new(new(id), collaborators, new());
+            UpdateCollaboratorsCommand command = new(new(id), collaborators, new(User));
             await _commanderSender.SendAsync(command);
 
             return NoContent();
@@ -169,7 +169,7 @@ namespace WebAPI.Controllers
         )
         {
             Stream? image = file?.OpenReadStream();
-            UpdateCoverCommand command = new(new(id), image, new());
+            UpdateCoverCommand command = new(new(id), image, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();
@@ -181,7 +181,7 @@ namespace WebAPI.Controllers
             CancellationToken cancellationToken
         )
         {
-            SubscribeCommand command = new(new(id), new());
+            SubscribeCommand command = new(new(id), new(User));
 
             await _commanderSender.SendAsync(command, cancellationToken);
 
@@ -194,7 +194,7 @@ namespace WebAPI.Controllers
             CancellationToken cancellationToken
         )
         {
-            UnsubscribeCommand command = new(new(id), new());
+            UnsubscribeCommand command = new(new(id), new(User));
 
             await _commanderSender.SendAsync(command, cancellationToken);
 
@@ -208,7 +208,7 @@ namespace WebAPI.Controllers
         )
         {
             var result = await _querySender.SendAsync(
-                new DetailedAlbumQuery(id, new()),
+                new DetailedAlbumQuery(id, new(User)),
                 cancellationToken
             );
 
@@ -226,7 +226,7 @@ namespace WebAPI.Controllers
         )
         {
             var result = await _querySender.SendAsync(
-                new AlbumsQuery(category, author, title, new()),
+                new AlbumsQuery(category, author, title, new(User)),
                 cancellationToken
             );
 
@@ -236,7 +236,7 @@ namespace WebAPI.Controllers
         [HttpGet("albums/removed")]
         public async Task<IActionResult> GetRemovedAlbums()
         {
-            var result = await _querySender.SendAsync(new RemovedAlbumsQuery(new()));
+            var result = await _querySender.SendAsync(new RemovedAlbumsQuery(new(User)));
             return DataOrNotFound(result);
         }
 
@@ -244,7 +244,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetCover(long id, CancellationToken cancellationToken)
         {
             var result = await _querySender.SendAsync(
-                new AlbumCoverQuery(id, new()),
+                new AlbumCoverQuery(id, new(User)),
                 cancellationToken
             );
 
