@@ -3,6 +3,7 @@ using Application;
 using Application.AlbumServices;
 using Application.AlbumServices.Queries;
 using Application.ImageServices;
+using Application.ImageServices.Queries;
 using Application.Query;
 using Application.SharedServices;
 using Domain;
@@ -14,6 +15,7 @@ using Domain.Core.Event;
 using Domain.Extensions;
 using Infrastructure.Application.AlbumServices;
 using Infrastructure.Application.ImageSerivces;
+using Infrastructure.Application.ImageServices;
 using Infrastructure.Database;
 using Infrastructure.Domain.AlbumServices;
 using Infrastructure.EventBus;
@@ -103,6 +105,10 @@ namespace Infrastructure
             services.AddScoped<
                 IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
                 AlbumQueryRepository
+            >();
+            services.AddScoped<
+                IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
+                ImageQueryRepository
             >();
 
             services.AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();

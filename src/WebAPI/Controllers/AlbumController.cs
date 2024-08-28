@@ -5,6 +5,7 @@ using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.Commands;
 using Domain.Command;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Utilities;
 using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers
@@ -33,11 +34,11 @@ namespace WebAPI.Controllers
         )
         {
             if (AlbumTitle.TryCreateNew(request.Title, out var title) == false)
-                return ValidationFail(request.Title, nameof(request.Title));
+                return this.ValidationFail(request.Title, nameof(request.Title));
             if (AlbumDescription.TryCreateNew(request.Description, out var description) == false)
-                return ValidationFail(request.Description, nameof(request.Description));
+                return this.ValidationFail(request.Description, nameof(request.Description));
             if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
-                return ValidationFail(request.Accessibility, nameof(request.Accessibility));
+                return this.ValidationFail(request.Accessibility, nameof(request.Accessibility));
 
             CreateAlbumCommand command =
                 new(title, description, accessibility, new(request.CategoryId), new(User));
@@ -95,7 +96,7 @@ namespace WebAPI.Controllers
         )
         {
             if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
-                return ValidationFail(request.Accessibility, nameof(request.Accessibility));
+                return this.ValidationFail(request.Accessibility, nameof(request.Accessibility));
 
             UpdateAccessibilityCommand command = new(new(id), accessibility, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
@@ -115,7 +116,7 @@ namespace WebAPI.Controllers
         )
         {
             if (AlbumDescription.TryCreateNew(request.Description, out var description) == false)
-                return ValidationFail(request.Description, nameof(request.Description));
+                return this.ValidationFail(request.Description, nameof(request.Description));
 
             UpdateAlbumDescriptionCommand command = new(new(id), description, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
@@ -135,7 +136,7 @@ namespace WebAPI.Controllers
         )
         {
             if (AlbumTitle.TryCreateNew(request.Title, out var title) == false)
-                return ValidationFail(request.Title, nameof(request.Title));
+                return this.ValidationFail(request.Title, nameof(request.Title));
 
             UpdateAlbumTitleCommand command = new(new(id), title, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
@@ -152,7 +153,7 @@ namespace WebAPI.Controllers
         )
         {
             if (Collaborators.TryCreateNew(request.Collaborators, out var collaborators) == false)
-                return ValidationFail(request.Collaborators, nameof(request.Collaborators));
+                return this.ValidationFail(request.Collaborators, nameof(request.Collaborators));
 
             UpdateCollaboratorsCommand command = new(new(id), collaborators, new(User));
             await _commanderSender.SendAsync(command);
@@ -212,7 +213,7 @@ namespace WebAPI.Controllers
                 cancellationToken
             );
 
-            return DataOrNotFound(result);
+            return this.DataOrNotFound(result);
         }
 
         [HttpGet("albums")]
@@ -230,14 +231,14 @@ namespace WebAPI.Controllers
                 cancellationToken
             );
 
-            return DataOrNotFound(result);
+            return this.DataOrNotFound(result);
         }
 
         [HttpGet("albums/removed")]
         public async Task<IActionResult> GetRemovedAlbums()
         {
             var result = await _querySender.SendAsync(new RemovedAlbumsQuery(new(User)));
-            return DataOrNotFound(result);
+            return this.DataOrNotFound(result);
         }
 
         [HttpGet("album/cover/{id:long}")]
@@ -248,32 +249,7 @@ namespace WebAPI.Controllers
                 cancellationToken
             );
 
-            return ImageOrNotFound(result);
-        }
-
-        private IActionResult DataOrNotFound(object? data)
-        {
-            return data is null ? NotFound() : Ok(data);
-        }
-
-        private IActionResult ImageOrNotFound(Stream? image)
-        {
-            return image is null ? NotFound() : File(image, "image/*");
-        }
-
-        private BadRequestObjectResult ValidationFail(object value, string? name = null)
-        {
-            var result = new ProblemDetails()
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Detail = name is null
-                    ? $"The value [{value}] is invalid."
-                    : $"The value of [{name}]: [{value}] is invalid.",
-                Title = "Validation failed.",
-                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
-            };
-
-            return BadRequest(result);
+            return this.ImageOrNotFound(result);
         }
     }
 }

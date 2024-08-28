@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Application.ImageServices.Queries;
 using Application.Query;
 using Domain.AlbumDomain.Commands;
 using Domain.AlbumDomain.ImageEntity;
 using Domain.Command;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Utilities;
 using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers
@@ -33,9 +35,9 @@ namespace WebAPI.Controllers
         )
         {
             if (ImageTitle.TryCreateNew(request.Title, out var title) == false)
-                return ValidationFail(request.Title, nameof(request.Title));
+                return this.ValidationFail(request.Title, nameof(request.Title));
             if (ImageTags.TryCreateNew(request.Tags, out var tags) == false)
-                return ValidationFail(request.Tags, nameof(request.Tags));
+                return this.ValidationFail(request.Tags, nameof(request.Tags));
 
             AddImageCommand command =
                 new(new(albumId), title, tags, request.Image.OpenReadStream(), new(User));
@@ -45,19 +47,14 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        private BadRequestObjectResult ValidationFail(object value, string? name = null)
+        [HttpGet("album/{albumId:long}/images")]
+        public async Task<IActionResult> GetAlbumImages([FromRoute] long albumId)
         {
-            var result = new ProblemDetails()
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Detail = name is null
-                    ? $"The value [{value}] is invalid."
-                    : $"The value of [{name}]: [{value}] is invalid.",
-                Title = "Validation failed.",
-                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
-            };
+            AlbumImagesQuery query = new(new(albumId), new(User));
 
-            return BadRequest(result);
+            var images = await _querySender.SendAsync(query);
+
+            return this.DataOrNotFound(images);
         }
     }
 }
