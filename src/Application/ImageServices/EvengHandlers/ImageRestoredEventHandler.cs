@@ -14,7 +14,7 @@ namespace Application.ImageServices.EvengHandlers
         {
             var image = await _repository.GetAsync(e.Image, cancellationToken);
 
-            image.IsRemoved = false;
+            image.RemovedAt = DateTime.UtcNow;
         }
     }
 }

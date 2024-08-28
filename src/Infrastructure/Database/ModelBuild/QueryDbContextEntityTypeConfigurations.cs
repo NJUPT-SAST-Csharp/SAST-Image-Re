@@ -17,6 +17,8 @@ namespace Infrastructure.Database.ModelBuild
     {
         public void Configure(EntityTypeBuilder<AlbumModel> builder)
         {
+            builder.HasQueryFilter(a => a.RemovedAt == null);
+
             builder.PrimitiveCollection(album => album.Collaborators);
             builder.HasOne<CategoryModel>().WithMany().HasForeignKey(album => album.CategoryId);
             builder.HasOne<UserModel>().WithMany().HasForeignKey(album => album.AuthorId);
@@ -38,6 +40,8 @@ namespace Infrastructure.Database.ModelBuild
 
         public void Configure(EntityTypeBuilder<ImageModel> builder)
         {
+            builder.HasQueryFilter(image => image.RemovedAt == null);
+
             builder.PrimitiveCollection(image => image.Tags);
             builder.HasOne<UserModel>().WithMany().HasForeignKey(image => image.AuthorId);
             builder.HasOne<AlbumModel>().WithMany().HasForeignKey(image => image.AlbumId);

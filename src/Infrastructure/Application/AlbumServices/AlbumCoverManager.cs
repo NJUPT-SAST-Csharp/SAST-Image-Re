@@ -2,21 +2,23 @@
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
 using Infrastructure.Storage;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Application.AlbumServices
 {
-    sealed class AlbumCoverManager(IOptions<StorageOptions> options, IStorageManager manager)
-        : IAlbumCoverManager
+    sealed class AlbumCoverManager(IStorageManager manager) : IAlbumCoverManager
     {
         private readonly IStorageManager _manager = manager;
-        private readonly StorageOptions _options = options.Value;
 
-        public Task RemoveCover(AlbumId album, CancellationToken cancellationToken = default)
+        public Stream? OpenReadStream(AlbumId album)
         {
-            string path = Path.Combine(_options.CoverPath, album.Value.ToString());
+            string id = album.Value.ToString();
+            return _manager.FindFile(id, StorageKind.Cover);
+        }
 
-            return _manager.DeleteAsync(path, cancellationToken);
+        public Task RemoveCoverAsync(AlbumId album, CancellationToken cancellationToken = default)
+        {
+            var id = album.Value.ToString();
+            return _manager.DeleteAsync(id, cancellationToken);
         }
 
         public async Task UpdateWithContainedImageAsync(
@@ -25,12 +27,13 @@ namespace Infrastructure.Application.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            string imagePath = Path.Combine(_options.ImagePath, image.Value.ToString());
-            string coverPath = Path.Combine(_options.CoverPath, album.Value.ToString());
+            string imageId = image.Value.ToString();
+            using var stream =
+                _manager.FindFile(imageId, StorageKind.Image)
+                ?? throw new FileNotFoundException(null, imageId);
 
-            await using var imageStream = File.OpenRead(imagePath);
-
-            await _manager.StoreAsync(coverPath, imageStream, cancellationToken);
+            string albumId = album.Value.ToString();
+            await _manager.StoreAsync(albumId, stream, StorageKind.Cover, cancellationToken);
         }
 
         public Task UpdateWithCustomImageAsync(
@@ -39,9 +42,8 @@ namespace Infrastructure.Application.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            string path = Path.Combine(_options.CoverPath, album.Value.ToString());
-
-            return _manager.StoreAsync(path, stream, cancellationToken);
+            string id = album.Value.ToString();
+            return _manager.StoreAsync(id, stream, StorageKind.Cover, cancellationToken);
         }
     }
 }

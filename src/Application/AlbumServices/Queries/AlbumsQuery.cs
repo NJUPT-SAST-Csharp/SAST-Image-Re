@@ -23,8 +23,12 @@ namespace Application.AlbumServices.Queries
             ) { }
     }
 
-    public readonly record struct AlbumsQuery(long? CategoryId, Actor Actor)
-        : IQueryRequest<List<AlbumDto>> { }
+    public sealed record class AlbumsQuery(
+        long? CategoryId,
+        long? AuthorId,
+        string? Title,
+        Actor Actor
+    ) : IQueryRequest<List<AlbumDto>> { }
 
     internal sealed class AlbumsQueryHandler(
         IQueryRepository<AlbumsQuery, List<AlbumDto>> repository

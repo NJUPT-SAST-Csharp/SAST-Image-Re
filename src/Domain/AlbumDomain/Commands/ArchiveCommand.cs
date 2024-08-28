@@ -5,7 +5,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct ArchiveCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
+    public sealed record class ArchiveCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
 
     internal sealed class ArchiveCommandHandler(IRepository<Album, AlbumId> repository)
         : ICommandHandler<ArchiveCommand>
@@ -16,7 +16,7 @@ namespace Domain.AlbumDomain.Commands
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.Archive(in request);
+            album.Archive(request);
         }
     }
 }

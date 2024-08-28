@@ -13,9 +13,9 @@ namespace Application.AlbumServices
         public required AccessibilityValue Accessibility { get; set; }
         public long[] Collaborators { get; set; } = [];
         public bool IsArchived { get; set; }
-        public bool IsRemoved { get; set; }
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? RemovedAt { get; set; } = null;
         public List<SubscribeModel> Subscribes { get; } = [];
         public List<ImageModel> Images { get; } = [];
     }

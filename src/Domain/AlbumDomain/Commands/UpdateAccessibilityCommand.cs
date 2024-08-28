@@ -5,7 +5,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct UpdateAccessibilityCommand(
+    public sealed record class UpdateAccessibilityCommand(
         AlbumId Album,
         Accessibility Accessibility,
         Actor Actor
@@ -23,7 +23,7 @@ namespace Domain.AlbumDomain.Commands
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.UpdateAccessibility(in request);
+            album.UpdateAccessibility(request);
         }
     }
 }

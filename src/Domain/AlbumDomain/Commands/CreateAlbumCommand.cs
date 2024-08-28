@@ -7,7 +7,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct CreateAlbumCommand(
+    public sealed record class CreateAlbumCommand(
         AlbumTitle Title,
         AlbumDescription Description,
         Accessibility Accessibility,
@@ -33,7 +33,7 @@ namespace Domain.AlbumDomain.Commands
             await _titleChecker.CheckAsync(command.Title, cancellationToken);
             await _categoryChecker.CheckAsync(command.CategoryId, cancellationToken);
 
-            var album = new Album(in command);
+            var album = new Album(command);
 
             await _repository.AddAsync(album, cancellationToken);
 

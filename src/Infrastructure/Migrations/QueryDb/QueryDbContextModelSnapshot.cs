@@ -62,9 +62,9 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("boolean")
                         .HasColumnName("is_archived");
 
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_removed");
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("removed_at");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -160,9 +160,9 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("bigint")
                         .HasColumnName("author_id");
 
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_removed");
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("removed_at");
 
                     b.Property<long[]>("Tags")
                         .IsRequired()

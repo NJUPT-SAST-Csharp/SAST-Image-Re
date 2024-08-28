@@ -4,7 +4,7 @@ using Domain.Shared;
 
 namespace Application.AlbumServices.Queries
 {
-    public record class DetailedAlbum(
+    public sealed record class DetailedAlbum(
         long Id,
         string Title,
         string Description,
@@ -17,7 +17,7 @@ namespace Application.AlbumServices.Queries
         int SubscribeCount
     ) { }
 
-    public readonly record struct DetailedAlbumQuery(long Id, Actor Actor)
+    public sealed record class DetailedAlbumQuery(long Id, Actor Actor)
         : IQueryRequest<DetailedAlbum?>;
 
     internal sealed class DetailedAlbumQueryHandler(

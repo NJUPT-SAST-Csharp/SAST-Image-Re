@@ -5,8 +5,7 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct RemoveAlbumCommand(AlbumId Album, Actor Actor)
-        : IDomainCommand { }
+    public sealed record class RemoveAlbumCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
 
     internal sealed class RemoveAlbumCommandHandler(IRepository<Album, AlbumId> repository)
         : ICommandHandler<RemoveAlbumCommand>
@@ -17,7 +16,7 @@ namespace Domain.AlbumDomain.Commands
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.Remove(in request);
+            album.Remove(request);
         }
     }
 }

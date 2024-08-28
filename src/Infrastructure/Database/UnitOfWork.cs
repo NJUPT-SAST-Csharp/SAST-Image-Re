@@ -29,7 +29,7 @@ namespace Infrastructure.Database
             await using var transaction = await _domainContext.Database.BeginTransactionAsync(
                 cancellationToken
             );
-            await _queryContext.Database.UseTransactionAsync(
+            await using var _ = await _queryContext.Database.UseTransactionAsync(
                 transaction.GetDbTransaction(),
                 cancellationToken
             );

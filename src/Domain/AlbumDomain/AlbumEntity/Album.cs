@@ -34,7 +34,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             set => _collaborators = [.. value];
         }
 
-        public Album(ref readonly CreateAlbumCommand command)
+        public Album(CreateAlbumCommand command)
             : base(AlbumId.GenerateNew())
         {
             _author = command.Actor.Id;
@@ -54,30 +54,30 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public void UpdateDescription(ref readonly UpdateAlbumDescriptionCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
             AddDomainEvent(new AlbumDescriptionUpdatedEvent(Id, command.Description));
         }
 
-        public void UpdateAccessibility(ref readonly UpdateAccessibilityCommand command)
+        public void UpdateAccessibility(UpdateAccessibilityCommand command)
         {
-            if (_isRemoved)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (_isRemoved)
+                AlbumImmutableException.Throw(this);
 
             AddDomainEvent(new AlbumAccessibilityUpdatedEvent(Id, command.Accessibility));
         }
 
-        public void UpdateTitle(ref readonly UpdateAlbumTitleCommand command)
+        public void UpdateTitle(UpdateAlbumTitleCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
             _title = command.Title;
 
@@ -86,10 +86,11 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public void UpdateCollaborators(ref readonly UpdateCollaboratorsCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
+
             if (_collaborators.SequenceEqual(command.Collaborators))
                 return;
 
@@ -100,34 +101,28 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public void UpdateCategory(ref readonly UpdateAlbumCategoryCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
             AddDomainEvent(new AlbumCategoryUpdatedEvent(Id, command.Category));
         }
 
-        public void UpdateCover(ref readonly UpdateCoverCommand command)
+        public void UpdateCover(UpdateCoverCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
-            if (command.IsLatestImage)
+            if (command.CoverImage is null)
             {
-                if (_cover.IsLatestImage)
-                    return;
-
                 var imageId = _images.LatestImage()?.Id;
                 _cover = new(imageId, true);
                 AddDomainEvent(AlbumCoverUpdatedEvent.ContainedImageOrEmpty(Id, imageId));
                 return;
             }
-
-            if (command.CoverImage is null)
-                NullCoverImageWhenNotLatestImageException.Throw();
 
             _cover = Cover.UserCustomCover;
             AddDomainEvent(AlbumCoverUpdatedEvent.UserCustomImage(Id, command.CoverImage));
@@ -135,10 +130,10 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public void AddImage(ref readonly AddImageCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
             var image = new Image(in command);
 
@@ -164,10 +159,10 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public void RemoveImage(ref readonly RemoveImageCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
             var image = _images.FindById(command.Image);
             image.Remove(in command);
@@ -182,10 +177,10 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public void RestoreImage(ref readonly RestoreImageCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
 
             var image = _images.FindById(command.Image);
             image.Restore(in command);
@@ -197,7 +192,7 @@ namespace Domain.AlbumDomain.AlbumEntity
             }
         }
 
-        public void Remove(ref readonly RemoveAlbumCommand command)
+        public void Remove(RemoveAlbumCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
@@ -207,9 +202,14 @@ namespace Domain.AlbumDomain.AlbumEntity
             _isRemoved = true;
 
             AddDomainEvent(new AlbumRemovedEvent(Id));
+            foreach (var image in _images)
+            {
+                RemoveImageCommand c = new(Id, image.Id, command.Actor);
+                image.Remove(in c);
+            }
         }
 
-        public void Restore(ref readonly RestoreAlbumCommand command)
+        public void Restore(RestoreAlbumCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
@@ -219,14 +219,19 @@ namespace Domain.AlbumDomain.AlbumEntity
             _isRemoved = false;
 
             AddDomainEvent(new AlbumRestoredEvent(Id));
+            foreach (var image in _images)
+            {
+                RestoreImageCommand c = new(Id, image.Id, command.Actor);
+                image.Restore(in c);
+            }
         }
 
-        public void Archive(ref readonly ArchiveCommand command)
+        public void Archive(ArchiveCommand command)
         {
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
+            if (IsImmutable)
+                AlbumImmutableException.Throw(this);
             if (_isArchived == true)
                 return;
 

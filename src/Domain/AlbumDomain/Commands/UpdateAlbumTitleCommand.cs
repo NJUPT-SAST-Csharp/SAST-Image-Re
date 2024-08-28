@@ -6,11 +6,8 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public readonly record struct UpdateAlbumTitleCommand(
-        AlbumId Album,
-        AlbumTitle Title,
-        Actor Actor
-    ) : IDomainCommand { }
+    public sealed record class UpdateAlbumTitleCommand(AlbumId Album, AlbumTitle Title, Actor Actor)
+        : IDomainCommand { }
 
     internal sealed class UpdateAlbumTitleCommandHandler(
         IRepository<Album, AlbumId> repository,
@@ -29,7 +26,7 @@ namespace Domain.AlbumDomain.Commands
 
             var album = await _repository.GetAsync(command.Album, cancellationToken);
 
-            album.UpdateTitle(in command);
+            album.UpdateTitle(command);
         }
     }
 }

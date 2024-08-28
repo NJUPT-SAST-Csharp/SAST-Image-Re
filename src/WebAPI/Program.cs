@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.ConfigureStorage(builder.Configuration);
+builder.Services.ConfigureStorage(builder.Configuration.GetRequiredSection("Storage"));
 builder.Services.AddDb(builder.Configuration.GetConnectionString("Database")!);
 builder.Services.AddHandlers();
 builder.Services.AddDomainServices();

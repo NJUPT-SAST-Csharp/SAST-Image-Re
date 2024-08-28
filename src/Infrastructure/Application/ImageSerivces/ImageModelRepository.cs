@@ -27,10 +27,9 @@ namespace Infrastructure.Application.ImageSerivces
             CancellationToken cancellationToken = default
         )
         {
-            var image = await _context.Images.FirstOrDefaultAsync(
-                image => image.Id == id.Value,
-                cancellationToken
-            );
+            var image = await _context
+                .Images.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(image => image.Id == id.Value, cancellationToken);
 
             if (image is null)
                 EntityNotFoundException.Throw(id);
@@ -43,10 +42,9 @@ namespace Infrastructure.Application.ImageSerivces
             CancellationToken cancellationToken = default
         )
         {
-            return _context.Images.FirstOrDefaultAsync(
-                image => image.Id == id.Value,
-                cancellationToken
-            );
+            return _context
+                .Images.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(image => image.Id == id.Value, cancellationToken);
         }
     }
 }

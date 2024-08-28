@@ -5,12 +5,13 @@ using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.Commands;
 using Domain.Command;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class AlbumController(
+    public sealed class AlbumController(
         IDomainCommandSender commandSender,
         IQueryRequestSender querySender
     ) : ControllerBase
@@ -18,7 +19,7 @@ namespace WebAPI.Controllers
         private readonly IDomainCommandSender _commanderSender = commandSender;
         private readonly IQueryRequestSender _querySender = querySender;
 
-        public readonly record struct CreateAlbumRequest(
+        public sealed record class CreateAlbumRequest(
             [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title,
             [Length(AlbumDescription.MinLength, AlbumDescription.MaxLength)] string Description,
             [Range(0, long.MaxValue)] long CategoryId,
@@ -26,29 +27,138 @@ namespace WebAPI.Controllers
         );
 
         [HttpPost("album")]
-        public async Task<IActionResult> CreateAlbum(
+        public async Task<IActionResult> Create(
             [FromBody] CreateAlbumRequest request,
             CancellationToken cancellationToken
         )
         {
-            if (
-                AlbumTitle.TryCreateNew(request.Title, out var title)
-                && AlbumDescription.TryCreateNew(request.Description, out var description)
-                && Accessibility.TryCreateNew(request.Accessibility, out var accessibility)
-            )
-            {
-                CreateAlbumCommand command =
-                    new(title, description, accessibility, new(request.CategoryId), new());
+            if (AlbumTitle.TryCreateNew(request.Title, out var title) == false)
+                return ValidationFail(request.Title, nameof(request.Title));
+            if (AlbumDescription.TryCreateNew(request.Description, out var description) == false)
+                return ValidationFail(request.Description, nameof(request.Description));
+            if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
+                return ValidationFail(request.Accessibility, nameof(request.Accessibility));
 
-                var albumId = await _commanderSender.SendAsync(command, cancellationToken);
+            CreateAlbumCommand command =
+                new(title, description, accessibility, new(request.CategoryId), new());
 
-                return Ok(albumId);
-            }
+            var albumId = await _commanderSender.SendAsync(command, cancellationToken);
 
-            return BadRequest(request);
+            return Ok(albumId);
         }
 
-        [HttpGet("album/{id}")]
+        [HttpPost("album/{id:long}/remove")]
+        public async Task<IActionResult> Remove(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            RemoveAlbumCommand command = new(new(id), new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{id:long}/restore")]
+        public async Task<IActionResult> Restore(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            RestoreAlbumCommand command = new(new(id), new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{id:long}/archive")]
+        public async Task<IActionResult> Archive(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            ArchiveCommand command = new(new(id), new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        public sealed record class UpdateAccessibilityRequest(
+            [Range(Accessibility.MinValue, Accessibility.MaxValue)] int Accessibility
+        );
+
+        [HttpPost("album/{id:long}/accessibility")]
+        public async Task<IActionResult> UpdateAccessibility(
+            [FromRoute] long id,
+            [FromBody] UpdateAccessibilityRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
+                return ValidationFail(request.Accessibility, nameof(request.Accessibility));
+
+            UpdateAccessibilityCommand command = new(new(id), accessibility, new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        public sealed record class UpdateDescriptionRequest(
+            [Length(AlbumDescription.MinLength, AlbumDescription.MaxLength)] string Description
+        );
+
+        [HttpPost("album/{id:long}/description")]
+        public async Task<IActionResult> UpdateDescription(
+            [FromRoute] long id,
+            [FromBody] UpdateDescriptionRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (AlbumDescription.TryCreateNew(request.Description, out var description) == false)
+                return ValidationFail(request.Description, nameof(request.Description));
+
+            UpdateAlbumDescriptionCommand command = new(new(id), description, new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        public sealed record class UpdateTitleRequest(
+            [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title
+        );
+
+        [HttpPost("album/{id:long}/title")]
+        public async Task<IActionResult> UpdateTitle(
+            [FromRoute] long id,
+            [FromBody] UpdateTitleRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (AlbumTitle.TryCreateNew(request.Title, out var title) == false)
+                return ValidationFail(request.Title, nameof(request.Title));
+
+            UpdateAlbumTitleCommand command = new(new(id), title, new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{id:long}/cover")]
+        [RequestFormLimits(MultipartBodyLengthLimit = 1024 * 1024 * 20)]
+        public async Task<IActionResult> UpdateCover(
+            [FromRoute] long id,
+            [FromForm] [FileValidator(0, 5)] IFormFile? file = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            Stream? image = file?.OpenReadStream();
+            UpdateCoverCommand command = new(new(id), image, new());
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpGet("album/{id:long}")]
         public async Task<IActionResult> GetDetailedAlbum(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -63,22 +173,64 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("albums")]
-        [HttpGet("albums/{categoryId}")]
         public async Task<IActionResult> GetAlbums(
-            long? categoryId = null,
+            [FromQuery(Name = "c")] long? category = null,
+            [FromQuery(Name = "a")] long? author = null,
+            [FromQuery(Name = "t")]
+            [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)]
+                string? title = null,
             CancellationToken cancellationToken = default
         )
         {
             var result = await _querySender.SendAsync(
-                new AlbumsQuery(categoryId, new()),
+                new AlbumsQuery(category, author, title, new()),
                 cancellationToken
             );
+
             return DataOrNotFound(result);
+        }
+
+        [HttpGet("albums/removed")]
+        public async Task<IActionResult> GetRemovedAlbums()
+        {
+            var result = await _querySender.SendAsync(new RemovedAlbumsQuery(new()));
+            return DataOrNotFound(result);
+        }
+
+        [HttpGet("album/cover/{id:long}")]
+        public async Task<IActionResult> GetCover(long id, CancellationToken cancellationToken)
+        {
+            var result = await _querySender.SendAsync(
+                new AlbumCoverQuery(id, new()),
+                cancellationToken
+            );
+
+            return ImageOrNotFound(result);
         }
 
         private IActionResult DataOrNotFound(object? data)
         {
             return data is null ? NotFound() : Ok(data);
+        }
+
+        private IActionResult ImageOrNotFound(Stream? image)
+        {
+            return image is null ? NotFound() : File(image, "image/*");
+        }
+
+        private BadRequestObjectResult ValidationFail(object value, string? name = null)
+        {
+            var result = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = name is null
+                    ? $"The value [{value}] is invalid."
+                    : $"The value of [{name}]: [{value}] is invalid.",
+                Title = "Validation failed.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
+            };
+
+            return BadRequest(result);
         }
     }
 }

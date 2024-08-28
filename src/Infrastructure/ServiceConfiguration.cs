@@ -33,23 +33,22 @@ namespace Infrastructure
             string connectionString
         )
         {
-            services.AddScoped<DbConnection>(_ => new NpgsqlConnection(connectionString));
-
-            services.AddDbContext<DomainDbContext>(
-                (services, options) =>
-                {
-                    options.UseNpgsql(services.GetRequiredService<DbConnection>());
-                    options.UseSnakeCaseNamingConvention();
-                }
-            );
-
-            services.AddDbContext<QueryDbContext>(
-                (services, options) =>
-                {
-                    options.UseNpgsql(services.GetRequiredService<DbConnection>());
-                    options.UseSnakeCaseNamingConvention();
-                }
-            );
+            services
+                .AddScoped<DbConnection>(_ => new NpgsqlConnection(connectionString))
+                .AddDbContext<DomainDbContext>(
+                    (services, options) =>
+                    {
+                        options.UseNpgsql(services.GetRequiredService<DbConnection>());
+                        options.UseSnakeCaseNamingConvention();
+                    }
+                )
+                .AddDbContext<QueryDbContext>(
+                    (services, options) =>
+                    {
+                        options.UseNpgsql(services.GetRequiredService<DbConnection>());
+                        options.UseSnakeCaseNamingConvention();
+                    }
+                );
 
             return services;
         }
@@ -83,6 +82,7 @@ namespace Infrastructure
             services.AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>();
             services.AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>();
             services.AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>();
+            services.AddScoped<IImageFileChecker, ImageFileChecker>();
 
             return services;
         }
@@ -100,6 +100,12 @@ namespace Infrastructure
                 IQueryRepository<AlbumsQuery, List<AlbumDto>>,
                 AlbumQueryRepository
             >();
+            services.AddScoped<
+                IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
+                AlbumQueryRepository
+            >();
+
+            services.AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();
 
             services.AddSingleton<IImageStorageManager, ImageStorageManager>();
             services.AddSingleton<IAlbumCoverManager, AlbumCoverManager>();
@@ -112,7 +118,7 @@ namespace Infrastructure
             IConfiguration configuration
         )
         {
-            services.Configure<StorageOptions>("Storage", configuration);
+            services.Configure<StorageOptions>(configuration);
             services.AddSingleton<IStorageManager, StorageManager>();
 
             return services;

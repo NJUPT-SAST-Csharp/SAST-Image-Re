@@ -61,7 +61,7 @@ public class AlbumTests
         CreateAlbumCommand command =
             new(NewTitle, NewDescription, default, NewCategory, NewActor(AuthorId));
 
-        var album = new Album(in command);
+        var album = new Album(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumCreatedEvent>();
@@ -117,7 +117,7 @@ public class AlbumTests
         album.SetValue("_isArchived", true);
         UpdateAlbumTitleCommand command = new(Id, NewTitle, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateTitle(in command));
+        Should.Throw<AlbumImmutableException>(() => album.UpdateTitle(command));
     }
 
     [DataRow(VisitorId)]
@@ -128,7 +128,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAlbumTitleCommand command = new(Id, NewTitle, NewActor(actorId));
 
-        Should.Throw<NoPermissionException>(() => album.UpdateTitle(in command));
+        Should.Throw<NoPermissionException>(() => album.UpdateTitle(command));
     }
 
     [DataRow(AdminId, true)]
@@ -139,7 +139,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAlbumTitleCommand command = new(Id, NewTitle, NewActor(actorId, isAdmin));
 
-        album.UpdateTitle(in command);
+        album.UpdateTitle(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumTitleUpdatedEvent>();
@@ -195,7 +195,7 @@ public class AlbumTests
         album.SetValue("_isRemoved", true);
         UpdateAccessibilityCommand command = new(Id, NewAccessibility, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateAccessibility(in command));
+        Should.Throw<AlbumImmutableException>(() => album.UpdateAccessibility(command));
     }
 
     [TestMethod]
@@ -205,7 +205,7 @@ public class AlbumTests
         album.SetValue("_isArchived", true);
         UpdateAccessibilityCommand command = new(Id, NewAccessibility, Author);
 
-        Should.NotThrow(() => album.UpdateAccessibility(in command));
+        Should.NotThrow(() => album.UpdateAccessibility(command));
     }
 
     [DataRow(VisitorId)]
@@ -216,7 +216,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAccessibilityCommand command = new(Id, NewAccessibility, NewActor(actorId));
 
-        Should.Throw<NoPermissionException>(() => album.UpdateAccessibility(in command));
+        Should.Throw<NoPermissionException>(() => album.UpdateAccessibility(command));
     }
 
     [DataRow(AdminId, true)]
@@ -227,7 +227,7 @@ public class AlbumTests
         Album album = ValidNewAlbum;
         UpdateAccessibilityCommand command = new(Id, NewAccessibility, NewActor(actorId, isAdmin));
 
-        album.UpdateAccessibility(in command);
+        album.UpdateAccessibility(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumAccessibilityUpdatedEvent>();
@@ -283,9 +283,9 @@ public class AlbumTests
     {
         Album album = ValidNewAlbum;
         album.SetValue("_isRemoved", true);
-        UpdateCoverCommand command = new(Id, true, null, Author);
+        UpdateCoverCommand command = new(Id, null, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateCover(in command));
+        Should.Throw<AlbumImmutableException>(() => album.UpdateCover(command));
     }
 
     [DataRow(VisitorId)]
@@ -294,20 +294,9 @@ public class AlbumTests
     public void Throw_When_UpdateCover_As_Not_Author_Or_Admin(long actorId)
     {
         Album album = ValidNewAlbum;
-        UpdateCoverCommand command = new(Id, true, null, NewActor(actorId));
+        UpdateCoverCommand command = new(Id, null, NewActor(actorId));
 
-        Should.Throw<NoPermissionException>(() => album.UpdateCover(in command));
-    }
-
-    [TestMethod]
-    public void Throw_When_Not_IsLatestImage_But_CoverImage_Null()
-    {
-        Album album = ValidNewAlbum;
-        UpdateCoverCommand command = new(Id, false, null, Author);
-
-        Should.Throw<NullCoverImageWhenNotLatestImageException>(
-            () => album.UpdateCover(in command)
-        );
+        Should.Throw<NoPermissionException>(() => album.UpdateCover(command));
     }
 
     [DataRow(AdminId, true)]
@@ -316,9 +305,9 @@ public class AlbumTests
     public void Raise_Event_When_Cover_Updated(long actorId, bool isAdmin)
     {
         Album album = ValidNewAlbum;
-        UpdateCoverCommand command = new(Id, false, ImageFileStream, NewActor(actorId, isAdmin));
+        UpdateCoverCommand command = new(Id, ImageFileStream, NewActor(actorId, isAdmin));
 
-        album.UpdateCover(in command);
+        album.UpdateCover(command);
 
         album.DomainEvents.Count.ShouldBe(1);
         album.DomainEvents.First().ShouldBeOfType<AlbumCoverUpdatedEvent>();

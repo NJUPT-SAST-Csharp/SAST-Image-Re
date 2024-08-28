@@ -26,13 +26,6 @@ namespace WebAPI.Exceptions
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
                 },
 
-                NullCoverImageWhenNotLatestImageException ex => new()
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Title = $"[CoverImage] couldn't be null when [IsLatestImage] set false.",
-                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
-                },
-
                 AlbumTitleDuplicateException ex => new()
                 {
                     Status = StatusCodes.Status409Conflict,
@@ -73,6 +66,13 @@ namespace WebAPI.Exceptions
                     Status = StatusCodes.Status404NotFound,
                     Title = $"Couldn't find entity.",
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
+                },
+
+                FileNotImageException => new()
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Uploaded file type is not image.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
                 },
 
                 _ => new()

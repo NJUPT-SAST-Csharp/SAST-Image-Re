@@ -7,8 +7,8 @@ namespace Domain.AlbumDomain.AlbumEntity
         : IValueObject<Accessibility, AccessibilityValue>,
             IFactoryConstructor<Accessibility, int>
     {
-        public const int MaxValue = 3;
-        public const int MinValue = 1;
+        public const int MaxValue = 2;
+        public const int MinValue = 0;
 
         public AccessibilityValue Value { get; }
 
@@ -20,7 +20,7 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         public static bool TryCreateNew(int input, [NotNullWhen(true)] out Accessibility newObject)
         {
-            if (input > 3 || input < 1)
+            if (input > 2 || input < 0)
             {
                 newObject = default;
                 return false;
@@ -28,9 +28,9 @@ namespace Domain.AlbumDomain.AlbumEntity
 
             newObject = input switch
             {
-                1 => Public,
-                2 => AuthOnly,
-                3 => Private,
+                0 => Public,
+                1 => AuthOnly,
+                2 => Private,
                 _ => throw new InvalidOperationException(),
             };
             return true;

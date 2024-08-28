@@ -17,10 +17,9 @@ namespace Infrastructure.Application.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            var album = await _context.Albums.FirstOrDefaultAsync(
-                a => a.Id == id.Value,
-                cancellationToken
-            );
+            var album = await _context
+                .Albums.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
 
             if (album is null)
                 EntityNotFoundException.Throw(id);
@@ -33,7 +32,9 @@ namespace Infrastructure.Application.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            return _context.Albums.FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
+            return _context
+                .Albums.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
         }
 
         public async Task<AlbumId> AddAsync(
