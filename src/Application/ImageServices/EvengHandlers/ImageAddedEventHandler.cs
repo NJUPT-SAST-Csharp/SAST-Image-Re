@@ -27,7 +27,7 @@ namespace Application.ImageServices.EvengHandlers
 
             await _repository.AddAsync(image, cancellationToken);
 
-            await _manager.AddImageAsync(e.ImageId, e.ImageFile, cancellationToken);
+            await _manager.StoreImageAsync(e.ImageId, e.ImageFile, cancellationToken);
         }
     }
 }

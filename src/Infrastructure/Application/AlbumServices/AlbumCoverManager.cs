@@ -28,7 +28,7 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             string imageId = image.Value.ToString();
-            using var stream =
+            await using var stream =
                 _manager.FindFile(imageId, StorageKind.Image)
                 ?? throw new FileNotFoundException(null, imageId);
 
@@ -36,14 +36,15 @@ namespace Infrastructure.Application.AlbumServices
             await _manager.StoreAsync(albumId, stream, StorageKind.Cover, cancellationToken);
         }
 
-        public Task UpdateWithCustomImageAsync(
+        public async Task UpdateWithCustomImageAsync(
             AlbumId album,
             Stream stream,
             CancellationToken cancellationToken = default
         )
         {
             string id = album.Value.ToString();
-            return _manager.StoreAsync(id, stream, StorageKind.Cover, cancellationToken);
+            await _manager.StoreAsync(id, stream, StorageKind.Cover, cancellationToken);
+            await stream.DisposeAsync();
         }
     }
 }

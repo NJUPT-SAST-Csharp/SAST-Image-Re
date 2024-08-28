@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Application.ImageServices
 {
     internal sealed class ImageQueryRepository(QueryDbContext context)
-        : IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>
+        : IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
+            IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>
     {
         private readonly QueryDbContext _context = context;
 
@@ -33,6 +34,23 @@ namespace Infrastructure.Application.ImageServices
                     )
                 )
                 .Select(i => new AlbumImageDto(i.Id, i.Title))
+                .ToListAsync(cancellationToken);
+        }
+
+        public Task<List<RemovedImageDto>> GetOrDefaultAsync(
+            RemovedImagesQuery query,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return _context
+                .Images.IgnoreQueryFilters()
+                .AsNoTracking()
+                .Where(i =>
+                    i.RemovedAt != null
+                    && i.AlbumId == query.Album.Value
+                    && (i.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
+                )
+                .Select(i => new RemovedImageDto(i.Id, i.Title))
                 .ToListAsync(cancellationToken);
         }
     }

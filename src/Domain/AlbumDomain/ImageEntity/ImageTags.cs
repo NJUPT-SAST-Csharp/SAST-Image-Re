@@ -8,7 +8,7 @@ namespace Domain.AlbumDomain.ImageEntity
     public sealed class ImageTags
         : ReadOnlyCollection<TagId>,
             IValueObject<ImageTags, IReadOnlyCollection<TagId>>,
-            IFactoryConstructor<ImageTags, long[]>
+            IFactoryConstructor<ImageTags, long[]?>
     {
         public const int MaxCount = 10;
 
@@ -20,8 +20,14 @@ namespace Domain.AlbumDomain.ImageEntity
 
         public IReadOnlyCollection<TagId> Value => Items.AsReadOnly();
 
-        public static bool TryCreateNew(long[] input, [NotNullWhen(true)] out ImageTags? entity)
+        public static bool TryCreateNew(long[]? input, [NotNullWhen(true)] out ImageTags? entity)
         {
+            if (input is null || input.Length == 0)
+            {
+                entity = [];
+                return true;
+            }
+
             var mid = input.Distinct();
 
             if (mid.Count() > MaxCount)

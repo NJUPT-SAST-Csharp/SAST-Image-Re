@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using SkiaSharp;
 
 namespace WebAPI.Utilities.Attributes
 {
@@ -19,6 +20,10 @@ namespace WebAPI.Utilities.Attributes
             if (file.Length > maxMB * 1024 * 1024)
                 return new ValidationResult("Too large file. Max " + maxMB + " MBs.");
             if (file.ContentType.Contains("image") == false)
+                return new ValidationResult("Not supported file type.");
+            var stream = file.OpenReadStream();
+            using var code = SKCodec.Create(stream);
+            if (code is null)
                 return new ValidationResult("Not supported file type.");
 
             return ValidationResult.Success;

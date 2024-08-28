@@ -13,9 +13,13 @@ namespace Infrastructure.Domain.AlbumServices
 
         public async Task CheckAsync(ImageTags tags, CancellationToken cancellationToken = default)
         {
-            bool isExisting = await _context
+            var tagIdsInDb = await _context
                 .Tags.AsNoTracking()
-                .AllAsync(tag => tags.Contains(tag.Id), cancellationToken);
+                .Select(t => t.Id)
+                .Where(t => tags.Contains(t))
+                .ToListAsync(cancellationToken);
+
+            bool isExisting = tags.All(tagIdsInDb.Contains);
 
             if (isExisting == false)
             {

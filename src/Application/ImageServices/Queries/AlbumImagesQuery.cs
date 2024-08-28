@@ -9,7 +9,7 @@ namespace Application.ImageServices.Queries
     public sealed record AlbumImagesQuery(AlbumId Album, Actor Actor)
         : IQueryRequest<List<AlbumImageDto>> { }
 
-    public sealed class AlbumImagesQueryHandler(
+    internal sealed class AlbumImagesQueryHandler(
         IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>> repository
     ) : IQueryRequestHandler<AlbumImagesQuery, List<AlbumImageDto>>
     {

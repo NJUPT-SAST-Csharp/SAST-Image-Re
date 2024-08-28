@@ -22,8 +22,8 @@ namespace WebAPI.Controllers
 
         public sealed record AddImageRequest(
             [MaxLength(ImageTitle.MaxLength)] string Title,
-            [Length(0, 10)] long[] Tags,
-            [FileValidator(0, 50)] IFormFile Image
+            [FileValidator(0, 50)] IFormFile Image,
+            [Length(0, 10)] long[]? Tags = null
         );
 
         [RequestSizeLimit(1024 * 1024 * 50)]
@@ -47,12 +47,56 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
+        [HttpPost("album/{albumId:long}/image/{imageId:long}/remove")]
+        public async Task<IActionResult> Remove(
+            [FromRoute] long albumId,
+            [FromRoute] long imageId,
+            CancellationToken cancellationToken
+        )
+        {
+            RemoveImageCommand command = new(new(albumId), new(imageId), new(User));
+
+            await _commandSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{albumId:long}/image/{imageId:long}/restore")]
+        public async Task<IActionResult> Restore(
+            [FromRoute] long albumId,
+            [FromRoute] long imageId,
+            CancellationToken cancellationToken
+        )
+        {
+            RestoreImageCommand command = new(new(albumId), new(imageId), new(User));
+
+            await _commandSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
         [HttpGet("album/{albumId:long}/images")]
-        public async Task<IActionResult> GetAlbumImages([FromRoute] long albumId)
+        public async Task<IActionResult> GetAlbumImages(
+            [FromRoute] long albumId,
+            CancellationToken cancellationToken
+        )
         {
             AlbumImagesQuery query = new(new(albumId), new(User));
 
-            var images = await _querySender.SendAsync(query);
+            var images = await _querySender.SendAsync(query, cancellationToken);
+
+            return this.DataOrNotFound(images);
+        }
+
+        [HttpGet("album/{albumId:long}/images/removed")]
+        public async Task<IActionResult> GetRemovedImages(
+            [FromRoute] long albumId,
+            CancellationToken cancellationToken
+        )
+        {
+            RemovedImagesQuery query = new(new(albumId), new(User));
+
+            var images = await _querySender.SendAsync(query, cancellationToken);
 
             return this.DataOrNotFound(images);
         }

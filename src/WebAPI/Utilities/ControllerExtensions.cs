@@ -6,7 +6,7 @@ namespace WebAPI.Utilities
     {
         public static BadRequestObjectResult ValidationFail(
             this ControllerBase controller,
-            object value,
+            object? value,
             string? name = null
         )
         {

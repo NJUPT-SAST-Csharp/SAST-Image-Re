@@ -16,9 +16,13 @@ namespace Infrastructure.Domain.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            bool isAllExisting = await _context
+            var userIdsInDb = await _context
                 .Users.AsNoTracking()
-                .AllAsync(user => collaborators.Contains(user.Id), cancellationToken);
+                .Select(u => u.Id)
+                .Where(u => collaborators.Contains(u))
+                .ToListAsync(cancellationToken);
+
+            bool isAllExisting = collaborators.All(userIdsInDb.Contains);
 
             if (isAllExisting == false)
                 CollaboratorsNotFoundException.Throw(collaborators);

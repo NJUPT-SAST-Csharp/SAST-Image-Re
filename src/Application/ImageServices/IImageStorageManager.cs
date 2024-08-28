@@ -4,7 +4,7 @@ namespace Application.ImageServices
 {
     public interface IImageStorageManager
     {
-        public Task AddImageAsync(
+        public Task StoreImageAsync(
             ImageId imageId,
             Stream imageFile,
             CancellationToken cancellationToken = default

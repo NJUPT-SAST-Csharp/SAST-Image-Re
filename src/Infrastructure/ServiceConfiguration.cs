@@ -84,7 +84,6 @@ namespace Infrastructure
             services.AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>();
             services.AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>();
             services.AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>();
-            services.AddScoped<IImageFileChecker, ImageFileChecker>();
 
             return services;
         }
@@ -108,6 +107,10 @@ namespace Infrastructure
             >();
             services.AddScoped<
                 IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
+                ImageQueryRepository
+            >();
+            services.AddScoped<
+                IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>,
                 ImageQueryRepository
             >();
 

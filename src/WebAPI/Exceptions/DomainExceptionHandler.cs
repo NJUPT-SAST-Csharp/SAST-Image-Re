@@ -75,13 +75,6 @@ namespace WebAPI.Exceptions
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
                 },
 
-                FileNotImageException => new()
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Title = "Uploaded file type is not image.",
-                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
-                },
-
                 _ => new()
                 {
                     Status = StatusCodes.Status400BadRequest,
