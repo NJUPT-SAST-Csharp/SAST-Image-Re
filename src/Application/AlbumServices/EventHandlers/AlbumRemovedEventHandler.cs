@@ -14,7 +14,7 @@ namespace Application.AlbumServices.EventHandlers
         {
             var album = await _repository.GetAsync(e.Album, cancellationToken);
 
-            album.RemovedAt = DateTime.UtcNow;
+            album.Remove(e);
         }
     }
 }

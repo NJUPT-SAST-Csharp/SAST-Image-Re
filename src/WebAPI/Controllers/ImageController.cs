@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Application.ImageServices;
 using Application.ImageServices.Queries;
 using Application.Query;
 using Domain.AlbumDomain.Commands;
@@ -73,6 +74,20 @@ namespace WebAPI.Controllers
             await _commandSender.SendAsync(command, cancellationToken);
 
             return NoContent();
+        }
+
+        [HttpGet("image/{id:long}")]
+        public async Task<IActionResult> GetImage(
+            [FromRoute] long id,
+            [FromQuery] ImageKind kind = ImageKind.Thumbnail,
+            CancellationToken cancellationToken = default
+        )
+        {
+            ImageFileQuery query = new(new(id), kind, new(User));
+
+            var image = await _querySender.SendAsync(query, cancellationToken);
+
+            return this.ImageOrNotFound(image);
         }
 
         [HttpGet("album/{albumId:long}/images")]

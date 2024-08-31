@@ -18,14 +18,13 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             var album = await _context
-                .Albums.IgnoreQueryFilters()
-                .AsNoTracking()
+                .Albums.AsNoTracking()
                 .Where(a => a.Id == albumId.Value)
                 .Select(a => new
                 {
-                    a.Accessibility,
+                    a.AccessLevel,
                     a.AuthorId,
-                    a.RemovedAt,
+                    a.Status,
                     a.Collaborators,
                 })
                 .FirstOrDefaultAsync(cancellationToken);
@@ -36,18 +35,18 @@ namespace Infrastructure.Application.AlbumServices
                 return false;
             if (actor.IsAdmin)
                 return true;
-            if (album.RemovedAt is not null)
+            if (album.Status == AlbumStatusValue.Removed)
             {
                 if (album.AuthorId == actorId)
                     return true;
                 return false;
             }
 
-            return album.Accessibility switch
+            return album.AccessLevel switch
             {
-                AccessibilityValue.Public => true,
-                AccessibilityValue.AuthOnly => actor.IsAuthenticated,
-                AccessibilityValue.Private => album.AuthorId == actorId
+                AccessLevelValue.Public => true,
+                AccessLevelValue.AuthOnly => actor.IsAuthenticated,
+                AccessLevelValue.Private => album.AuthorId == actorId
                     || album.Collaborators.Contains(actorId),
                 _ => false,
             };

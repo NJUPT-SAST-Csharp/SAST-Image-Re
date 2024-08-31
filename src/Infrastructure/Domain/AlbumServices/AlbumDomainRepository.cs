@@ -21,6 +21,13 @@ namespace Infrastructure.Domain.AlbumServices
             return entry.Entity.Id;
         }
 
+        public async Task DeleteAsync(AlbumId id, CancellationToken cancellationToken = default)
+        {
+            var album = await GetOrDefaultAsync(id, cancellationToken);
+            if (album is not null)
+                _context.Albums.Remove(album);
+        }
+
         public async Task<Album> GetAsync(AlbumId id, CancellationToken cancellationToken = default)
         {
             var album = await _context.Albums.FirstOrDefaultAsync(

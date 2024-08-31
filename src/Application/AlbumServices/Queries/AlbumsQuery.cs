@@ -3,24 +3,13 @@ using Domain.Shared;
 
 namespace Application.AlbumServices.Queries
 {
-    public sealed record class AlbumDto(
-        long Id,
-        string Title,
-        long Author,
-        long Category,
-        bool IsArchived,
-        DateTime UpdatedAt
-    )
+    public sealed class AlbumDto(AlbumModel a)
     {
-        public AlbumDto(AlbumModel album)
-            : this(
-                album.Id,
-                album.Title,
-                album.AuthorId,
-                album.CategoryId,
-                album.IsArchived,
-                album.UpdatedAt
-            ) { }
+        public long Id { get; } = a.Id;
+        public string Title { get; } = a.Title;
+        public long Author { get; } = a.AuthorId;
+        public long Category { get; } = a.CategoryId;
+        public DateTime UpdatedAt { get; } = a.UpdatedAt;
     }
 
     public sealed record class AlbumsQuery(

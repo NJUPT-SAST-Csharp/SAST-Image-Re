@@ -11,14 +11,11 @@ namespace Application.AlbumServices.EventHandlers
     {
         private readonly IRepository<AlbumModel, AlbumId> _repository = repository;
 
-        public async Task Handle(
-            AlbumCategoryUpdatedEvent notification,
-            CancellationToken cancellationToken
-        )
+        public async Task Handle(AlbumCategoryUpdatedEvent e, CancellationToken cancellationToken)
         {
-            var album = await _repository.GetAsync(notification.Album, cancellationToken);
+            var album = await _repository.GetAsync(e.Album, cancellationToken);
 
-            album.CategoryId = notification.Category.Value;
+            album.UpdateCategory(e);
         }
     }
 }

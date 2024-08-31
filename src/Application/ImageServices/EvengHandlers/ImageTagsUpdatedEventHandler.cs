@@ -14,7 +14,7 @@ namespace Application.ImageServices.EvengHandlers
         {
             var image = await _repository.GetAsync(e.Image, cancellationToken);
 
-            image.Tags = e.Tags.Select(tag => tag.Value).ToArray();
+            image.UpdateTags(e);
         }
     }
 }

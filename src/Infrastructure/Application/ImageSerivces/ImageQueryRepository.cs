@@ -1,6 +1,7 @@
 using Application;
 using Application.ImageServices.Queries;
 using Domain.AlbumDomain.AlbumEntity;
+using Domain.AlbumDomain.ImageEntity;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,15 +21,16 @@ namespace Infrastructure.Application.ImageServices
             return _context
                 .Images.AsNoTracking()
                 .Where(i =>
-                    i.AlbumId == query.Album.Value
+                    i.Status == ImageStatusValue.Available
+                    && i.AlbumId == query.Album.Value
                     && (
-                        i.Accessibility == AccessibilityValue.Public
+                        i.AccessLevel == AccessLevelValue.Public
                         || (
-                            i.Accessibility == AccessibilityValue.AuthOnly
+                            i.AccessLevel == AccessLevelValue.AuthOnly
                             && query.Actor.IsAuthenticated
                         )
                         || (
-                            i.Accessibility == AccessibilityValue.Private
+                            i.AccessLevel == AccessLevelValue.Private
                             && (i.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
                         )
                     )
@@ -43,10 +45,9 @@ namespace Infrastructure.Application.ImageServices
         )
         {
             return _context
-                .Images.IgnoreQueryFilters()
-                .AsNoTracking()
+                .Images.AsNoTracking()
                 .Where(i =>
-                    i.RemovedAt != null
+                    i.Status == ImageStatusValue.Removed
                     && i.AlbumId == query.Album.Value
                     && (i.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
                 )

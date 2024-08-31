@@ -13,12 +13,15 @@ namespace Infrastructure.Database.ModelBuild
             IEntityTypeConfiguration<ImageModel>,
             IEntityTypeConfiguration<UserModel>,
             IEntityTypeConfiguration<CategoryModel>,
-            IEntityTypeConfiguration<TagModel>
+            IEntityTypeConfiguration<TagModel>,
+            IEntityTypeConfiguration<SubscribeModel>,
+            IEntityTypeConfiguration<LikeModel>
     {
         public void Configure(EntityTypeBuilder<AlbumModel> builder)
         {
-            builder.HasQueryFilter(a => a.RemovedAt == null);
+            builder.HasKey(a => a.Id);
 
+            builder.Property(album => album.CreatedAt);
             builder.PrimitiveCollection(album => album.Collaborators);
             builder.HasOne<CategoryModel>().WithMany().HasForeignKey(album => album.CategoryId);
             builder.HasOne<UserModel>().WithMany().HasForeignKey(album => album.AuthorId);
@@ -27,10 +30,7 @@ namespace Infrastructure.Database.ModelBuild
                 .HasMany<UserModel>()
                 .WithMany()
                 .UsingEntity<SubscribeModel>(
-                    l =>
-                        l.HasOne<UserModel>()
-                            .WithMany(u => u.Subscribes)
-                            .HasForeignKey(s => s.User),
+                    l => l.HasOne<UserModel>().WithMany().HasForeignKey(s => s.User),
                     r =>
                         r.HasOne<AlbumModel>()
                             .WithMany(a => a.Subscribes)
@@ -43,16 +43,17 @@ namespace Infrastructure.Database.ModelBuild
 
         public void Configure(EntityTypeBuilder<ImageModel> builder)
         {
-            builder.HasQueryFilter(image => image.RemovedAt == null);
+            builder.HasKey(a => a.Id);
 
+            builder.Property(image => image.Title);
+            builder.Property(image => image.UploadedAt);
             builder.PrimitiveCollection(image => image.Tags);
             builder.HasOne<UserModel>().WithMany().HasForeignKey(image => image.AuthorId);
-            builder.HasOne<AlbumModel>().WithMany().HasForeignKey(image => image.AlbumId);
             builder
                 .HasMany<UserModel>()
                 .WithMany()
                 .UsingEntity<LikeModel>(
-                    l => l.HasOne<UserModel>().WithMany(u => u.Likes).HasForeignKey(l => l.User),
+                    l => l.HasOne<UserModel>().WithMany().HasForeignKey(l => l.User),
                     r => r.HasOne<ImageModel>().WithMany(i => i.Likes).HasForeignKey(l => l.Image),
                     like => like.ToTable("likes")
                 );
@@ -60,17 +61,33 @@ namespace Infrastructure.Database.ModelBuild
 
         public void Configure(EntityTypeBuilder<UserModel> builder)
         {
+            builder.HasKey(a => a.Id);
+
             builder.HasIndex(user => user.Username).IsUnique(true);
         }
 
         public void Configure(EntityTypeBuilder<CategoryModel> builder)
         {
+            builder.HasKey(a => a.Id);
+
             builder.HasIndex(c => c.Name).IsUnique(true);
         }
 
         public void Configure(EntityTypeBuilder<TagModel> builder)
         {
+            builder.HasKey(a => a.Id);
+
             builder.HasIndex(tag => tag.Name).IsUnique(true);
+        }
+
+        public void Configure(EntityTypeBuilder<SubscribeModel> builder)
+        {
+            builder.HasKey(s => new { s.Album, s.User });
+        }
+
+        public void Configure(EntityTypeBuilder<LikeModel> builder)
+        {
+            builder.HasKey(l => new { l.Image, l.User });
         }
     }
 }

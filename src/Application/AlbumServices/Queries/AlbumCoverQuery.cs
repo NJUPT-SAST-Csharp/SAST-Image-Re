@@ -7,11 +7,11 @@ namespace Application.AlbumServices.Queries
     public sealed record class AlbumCoverQuery(long Id, Actor Actor) : IQueryRequest<Stream?>;
 
     internal sealed class AlbumCoverQueryHandler(
-        IAlbumCoverManager manager,
+        ICoverStorageManager manager,
         IAlbumAvailabilityChecker checker
     ) : IQueryRequestHandler<AlbumCoverQuery, Stream?>
     {
-        private readonly IAlbumCoverManager _manager = manager;
+        private readonly ICoverStorageManager _manager = manager;
         private readonly IAlbumAvailabilityChecker _checker = checker;
 
         public async Task<Stream?> Handle(

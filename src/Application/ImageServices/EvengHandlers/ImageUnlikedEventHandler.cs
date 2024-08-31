@@ -2,19 +2,19 @@
 using Domain.AlbumDomain.ImageEntity;
 using Domain.Core.Event;
 using Domain.Extensions;
+using Domain.UserDomain.UserEntity;
 
 namespace Application.ImageServices.EvengHandlers
 {
-    internal sealed class ImageUnlikedEventHandler(IRepository<ImageModel, ImageId> repository)
-        : IDomainEventHandler<ImageUnlikedEvent>
+    internal sealed class ImageUnlikedEventHandler(
+        IRepository<LikeModel, (ImageId, UserId)> repository
+    ) : IDomainEventHandler<ImageUnlikedEvent>
     {
-        private readonly IRepository<ImageModel, ImageId> _repository = repository;
+        private readonly IRepository<LikeModel, (ImageId, UserId)> _repository = repository;
 
-        public async Task Handle(ImageUnlikedEvent e, CancellationToken cancellationToken)
+        public Task Handle(ImageUnlikedEvent e, CancellationToken cancellationToken)
         {
-            var image = await _repository.GetAsync(e.Image, cancellationToken);
-
-            image.Likes.RemoveAll(like => like.User == e.User.Value);
+            return _repository.DeleteAsync((e.Image, e.User), cancellationToken);
         }
     }
 }

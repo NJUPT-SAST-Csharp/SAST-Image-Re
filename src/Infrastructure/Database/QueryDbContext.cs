@@ -16,7 +16,6 @@ namespace Infrastructure.Database
         public DbSet<UserModel> Users { get; init; }
         public DbSet<CategoryModel> Categories { get; init; }
         public DbSet<TagModel> Tags { get; init; }
-
         public DbSet<LikeModel> Likes { get; init; }
         public DbSet<SubscribeModel> Subscribes { get; init; }
 
@@ -33,6 +32,8 @@ namespace Infrastructure.Database
             modelBuilder.ApplyConfiguration<CategoryModel>(configuration);
             modelBuilder.ApplyConfiguration<TagModel>(configuration);
             modelBuilder.ApplyConfiguration<ImageModel>(configuration);
+            modelBuilder.ApplyConfiguration<LikeModel>(configuration);
+            modelBuilder.ApplyConfiguration<SubscribeModel>(configuration);
         }
     }
 }

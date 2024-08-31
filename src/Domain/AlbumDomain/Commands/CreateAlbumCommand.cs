@@ -10,7 +10,7 @@ namespace Domain.AlbumDomain.Commands
     public sealed record class CreateAlbumCommand(
         AlbumTitle Title,
         AlbumDescription Description,
-        Accessibility Accessibility,
+        AccessLevel AccessLevel,
         CategoryId CategoryId,
         Actor Actor
     ) : IDomainCommand<AlbumId> { }

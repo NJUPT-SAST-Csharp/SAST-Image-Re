@@ -3,5 +3,6 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public sealed record class ImageRemovedEvent(ImageId Image) : IDomainEvent { }
+    public sealed record class ImageRemovedEvent(ImageId Image, ImageStatus Status)
+        : IDomainEvent { }
 }

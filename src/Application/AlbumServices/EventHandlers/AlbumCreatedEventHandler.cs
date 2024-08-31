@@ -12,16 +12,7 @@ namespace Application.AlbumServices.EventHandlers
 
         public Task Handle(AlbumCreatedEvent e, CancellationToken cancellationToken)
         {
-            AlbumModel album =
-                new()
-                {
-                    Id = e.AlbumId.Value,
-                    Title = e.Title.Value,
-                    Description = e.Description.Value,
-                    AuthorId = e.AuthorId.Value,
-                    CategoryId = e.CategoryId.Value,
-                    Accessibility = e.Accessibility.Value,
-                };
+            AlbumModel album = new(e);
 
             return _repository.AddAsync(album, cancellationToken);
         }

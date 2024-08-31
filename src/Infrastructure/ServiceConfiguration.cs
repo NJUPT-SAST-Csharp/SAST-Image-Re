@@ -13,6 +13,7 @@ using Domain.AlbumDomain.Services;
 using Domain.Command;
 using Domain.Core.Event;
 using Domain.Extensions;
+using Domain.UserDomain.UserEntity;
 using Infrastructure.Application.AlbumServices;
 using Infrastructure.Application.ImageSerivces;
 using Infrastructure.Application.ImageServices;
@@ -92,6 +93,11 @@ namespace Infrastructure
         {
             services.AddScoped<IRepository<AlbumModel, AlbumId>, AlbumModelRepository>();
             services.AddScoped<IRepository<ImageModel, ImageId>, ImageModelRepository>();
+            services.AddScoped<IRepository<LikeModel, (ImageId, UserId)>, LikeModelRepository>();
+            services.AddScoped<
+                IRepository<SubscribeModel, (AlbumId, UserId)>,
+                SubscribeModelRepository
+            >();
 
             services.AddScoped<
                 IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
@@ -115,9 +121,10 @@ namespace Infrastructure
             >();
 
             services.AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();
+            services.AddScoped<IImageAvailabilityChecker, ImageAvailabilityChecker>();
 
             services.AddSingleton<IImageStorageManager, ImageStorageManager>();
-            services.AddSingleton<IAlbumCoverManager, AlbumCoverManager>();
+            services.AddSingleton<ICoverStorageManager, CoverStorageManager>();
 
             return services;
         }

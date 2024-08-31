@@ -22,14 +22,19 @@ namespace Infrastructure.Application.ImageSerivces
             return new(imageEntry.Entity.Id);
         }
 
+        public async Task DeleteAsync(ImageId id, CancellationToken cancellationToken = default)
+        {
+            var image = await GetOrDefaultAsync(id, cancellationToken);
+            if (image is not null)
+                _context.Images.Remove(image);
+        }
+
         public async Task<ImageModel> GetAsync(
             ImageId id,
             CancellationToken cancellationToken = default
         )
         {
-            var image = await _context
-                .Images.IgnoreQueryFilters()
-                .FirstOrDefaultAsync(image => image.Id == id.Value, cancellationToken);
+            var image = await GetOrDefaultAsync(id, cancellationToken);
 
             if (image is null)
                 EntityNotFoundException.Throw(id);
@@ -43,8 +48,8 @@ namespace Infrastructure.Application.ImageSerivces
         )
         {
             return _context
-                .Images.IgnoreQueryFilters()
-                .FirstOrDefaultAsync(image => image.Id == id.Value, cancellationToken);
+                .Images.Include(image => image.Likes)
+                .FirstOrDefaultAsync(i => i.Id == id.Value, cancellationToken);
         }
     }
 }

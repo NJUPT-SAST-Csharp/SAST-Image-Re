@@ -11,6 +11,7 @@ namespace Domain.AlbumDomain.Events
         UserId AuthorId,
         ImageTitle Title,
         ImageTags Tags,
+        AccessLevel AccessLevel,
         Stream ImageFile
     ) : IDomainEvent { }
 }

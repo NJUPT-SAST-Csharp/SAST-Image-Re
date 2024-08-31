@@ -27,11 +27,21 @@ namespace Infrastructure.Database.ModelBuild
                 .Property<AlbumTitle>("_title")
                 .HasColumnName("title")
                 .HasConversion(t => t.Value, v => new(v));
+            builder
+                .Property<AccessLevel>("_accessLevel")
+                .HasColumnName("access_level")
+                .HasConversion(a => a.Value, v => new(v));
 
             builder.HasIndex("_title").IsUnique(true);
 
-            builder.Property<bool>("_isRemoved").HasColumnName("is_removed");
-            builder.Property<bool>("_isArchived").HasColumnName("is_archived");
+            builder.ComplexProperty<AlbumStatus>(
+                "_status",
+                status =>
+                {
+                    status.Property(s => s.Value).HasColumnName("status");
+                    status.Property(s => s.RemovedAt).HasColumnName("removed_at");
+                }
+            );
 
             builder
                 .Property<UserId>("_author")
@@ -87,6 +97,15 @@ namespace Infrastructure.Database.ModelBuild
                         .Property(x => x.Id)
                         .HasColumnName("id")
                         .HasConversion(x => x.Value, x => new(x));
+
+                    image.OwnsOne<ImageStatus>(
+                        "_status",
+                        image =>
+                        {
+                            image.Property(s => s.Value).HasColumnName("status");
+                            image.Property(s => s.RemovedAt).HasColumnName("removed_at");
+                        }
+                    );
 
                     image.ToTable("images");
                     image.WithOwner().HasForeignKey("album_id");

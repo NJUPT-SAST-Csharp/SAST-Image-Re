@@ -3,7 +3,7 @@ using Domain.AlbumDomain.ImageEntity;
 
 namespace Application.AlbumServices
 {
-    public interface IAlbumCoverManager
+    public interface ICoverStorageManager
     {
         public Task UpdateWithCustomImageAsync(
             AlbumId album,

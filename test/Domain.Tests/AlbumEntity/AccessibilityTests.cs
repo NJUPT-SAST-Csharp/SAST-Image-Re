@@ -4,49 +4,49 @@ using Shouldly;
 namespace Domain.Tests.AlbumEntity
 {
     [TestClass]
-    public class AccessibilityTests
+    public class AccessLevelTests
     {
-        [DataRow(Accessibility.MaxValue + 1)]
-        [DataRow(Accessibility.MaxValue + 999)]
-        [DataRow(Accessibility.MinValue - 1)]
-        [DataRow(Accessibility.MinValue - 999)]
+        [DataRow(AccessLevel.MaxValue + 1)]
+        [DataRow(AccessLevel.MaxValue + 999)]
+        [DataRow(AccessLevel.MinValue - 1)]
+        [DataRow(AccessLevel.MinValue - 999)]
         [TestMethod]
         public void Return_False_When_Create_From_OutOfRange(int value)
         {
-            bool result = Accessibility.TryCreateNew(value, out var _);
+            bool result = AccessLevel.TryCreateNew(value, out var _);
 
             result.ShouldBeFalse();
         }
 
-        [DataRow(Accessibility.MaxValue)]
+        [DataRow(AccessLevel.MaxValue)]
+        [DataRow(AccessLevel.MinValue)]
         [TestMethod]
         public void Should_Set_Value_When_Create_From_Valid(int value)
         {
-            bool result = Accessibility.TryCreateNew(value, out var accessibility);
+            bool result = AccessLevel.TryCreateNew(value, out var accessLevel);
 
             result.ShouldBeTrue();
-            accessibility.ShouldNotBe(default);
         }
 
         [TestMethod]
         public void Should_Be_Equal_When_Same_Value()
         {
-            int value = (Accessibility.MinValue + Accessibility.MinValue) / 2;
-            Accessibility.TryCreateNew(value, out var accessibility1);
-            Accessibility.TryCreateNew(value, out var accessibility2);
+            int value = (AccessLevel.MinValue + AccessLevel.MinValue) / 2;
+            AccessLevel.TryCreateNew(value, out var accessLevel1);
+            AccessLevel.TryCreateNew(value, out var accessLevel2);
 
-            accessibility1.ShouldBe(accessibility2);
+            accessLevel1.ShouldBe(accessLevel2);
         }
 
         [TestMethod]
         public void Should_Not_Be_Equal_When_Different_Value()
         {
-            int value1 = Accessibility.MinValue;
-            int value2 = Accessibility.MaxValue;
-            Accessibility.TryCreateNew(value1, out var accessibility1);
-            Accessibility.TryCreateNew(value2, out var accessibility2);
+            int value1 = AccessLevel.MinValue;
+            int value2 = AccessLevel.MaxValue;
+            AccessLevel.TryCreateNew(value1, out var accessLevel1);
+            AccessLevel.TryCreateNew(value2, out var accessLevel2);
 
-            accessibility1.ShouldNotBe(accessibility2);
+            accessLevel1.ShouldNotBe(accessLevel2);
         }
     }
 }

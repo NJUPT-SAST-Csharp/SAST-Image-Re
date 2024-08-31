@@ -2,19 +2,21 @@
 using Domain.AlbumDomain.Events;
 using Domain.Core.Event;
 using Domain.Extensions;
+using Domain.UserDomain.UserEntity;
 
 namespace Application.AlbumServices.EventHandlers
 {
-    internal sealed class AlbumSubscribedEventHandler(IRepository<AlbumModel, AlbumId> repository)
-        : IDomainEventHandler<AlbumSubscribedEvent>
+    internal sealed class AlbumSubscribedEventHandler(
+        IRepository<SubscribeModel, (AlbumId, UserId)> repository
+    ) : IDomainEventHandler<AlbumSubscribedEvent>
     {
-        private readonly IRepository<AlbumModel, AlbumId> _repository = repository;
+        private readonly IRepository<SubscribeModel, (AlbumId, UserId)> _repository = repository;
 
-        public async Task Handle(AlbumSubscribedEvent e, CancellationToken cancellationToken)
+        public Task Handle(AlbumSubscribedEvent e, CancellationToken cancellationToken)
         {
-            var album = await _repository.GetAsync(e.Album, cancellationToken);
+            SubscribeModel subscribe = new(e.Album.Value, e.User.Value);
 
-            album.Subscribes.Add(new(album.Id, e.User.Value));
+            return _repository.AddAsync(subscribe, cancellationToken);
         }
     }
 }

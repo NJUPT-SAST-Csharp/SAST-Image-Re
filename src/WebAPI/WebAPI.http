@@ -6,7 +6,7 @@ Content-Type: application/json
 {
   "title": "titletitletitletitletitletitletitletitletitle",
   "description": "The album description",
-  "accessibility": 2,
+  "accessLevel": 2,
   "categoryId": 1
 }
 

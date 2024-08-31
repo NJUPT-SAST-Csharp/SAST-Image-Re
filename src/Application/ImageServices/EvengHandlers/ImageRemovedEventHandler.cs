@@ -10,14 +10,11 @@ namespace Application.ImageServices.EvengHandlers
     {
         private readonly IRepository<ImageModel, ImageId> _repository = repository;
 
-        public async Task Handle(
-            ImageRemovedEvent notification,
-            CancellationToken cancellationToken
-        )
+        public async Task Handle(ImageRemovedEvent e, CancellationToken cancellationToken)
         {
-            var image = await _repository.GetAsync(notification.Image, cancellationToken);
+            var image = await _repository.GetAsync(e.Image, cancellationToken);
 
-            image.RemovedAt = DateTime.UtcNow;
+            image.Remove(e);
         }
     }
 }

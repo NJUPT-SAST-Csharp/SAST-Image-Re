@@ -11,11 +11,7 @@
             CancellationToken cancellationToken = default
         );
         public Task<TId> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-    }
 
-    public interface IRepository<TEntity> : IDomainService
-        where TEntity : class
-    {
-        public Task<List<TEntity>> GetAsync(CancellationToken cancellationToken);
+        public Task DeleteAsync(TId id, CancellationToken cancellationToken = default);
     }
 }

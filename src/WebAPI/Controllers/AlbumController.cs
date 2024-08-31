@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
             [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title,
             [Length(AlbumDescription.MinLength, AlbumDescription.MaxLength)] string Description,
             [Range(0, long.MaxValue)] long CategoryId,
-            [Range(Accessibility.MinValue, Accessibility.MaxValue)] int Accessibility
+            [Range(AccessLevel.MinValue, AccessLevel.MaxValue)] int AccessLevel
         );
 
         [HttpPost("album")]
@@ -37,11 +37,11 @@ namespace WebAPI.Controllers
                 return this.ValidationFail(request.Title, nameof(request.Title));
             if (AlbumDescription.TryCreateNew(request.Description, out var description) == false)
                 return this.ValidationFail(request.Description, nameof(request.Description));
-            if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
-                return this.ValidationFail(request.Accessibility, nameof(request.Accessibility));
+            if (AccessLevel.TryCreateNew(request.AccessLevel, out var accessLevel) == false)
+                return this.ValidationFail(request.AccessLevel, nameof(request.AccessLevel));
 
             CreateAlbumCommand command =
-                new(title, description, accessibility, new(request.CategoryId), new(User));
+                new(title, description, accessLevel, new(request.CategoryId), new(User));
 
             var albumId = await _commanderSender.SendAsync(command, cancellationToken);
 
@@ -72,33 +72,21 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{id:long}/archive")]
-        public async Task<IActionResult> Archive(
-            [FromRoute] long id,
-            CancellationToken cancellationToken
-        )
-        {
-            ArchiveCommand command = new(new(id), new(User));
-            await _commanderSender.SendAsync(command, cancellationToken);
-
-            return NoContent();
-        }
-
-        public sealed record class UpdateAccessibilityRequest(
-            [Range(Accessibility.MinValue, Accessibility.MaxValue)] int Accessibility
+        public sealed record class UpdateAccessLevelRequest(
+            [Range(AccessLevel.MinValue, AccessLevel.MaxValue)] int AccessLevel
         );
 
-        [HttpPost("album/{id:long}/accessibility")]
-        public async Task<IActionResult> UpdateAccessibility(
+        [HttpPost("album/{id:long}/accessLevel")]
+        public async Task<IActionResult> UpdateAccessLevel(
             [FromRoute] long id,
-            [Required] [FromBody] UpdateAccessibilityRequest request,
+            [Required] [FromBody] UpdateAccessLevelRequest request,
             CancellationToken cancellationToken
         )
         {
-            if (Accessibility.TryCreateNew(request.Accessibility, out var accessibility) == false)
-                return this.ValidationFail(request.Accessibility, nameof(request.Accessibility));
+            if (AccessLevel.TryCreateNew(request.AccessLevel, out var accessLevel) == false)
+                return this.ValidationFail(request.AccessLevel, nameof(request.AccessLevel));
 
-            UpdateAccessibilityCommand command = new(new(id), accessibility, new(User));
+            UpdateAccessLevelCommand command = new(new(id), accessLevel, new(User));
             await _commanderSender.SendAsync(command, cancellationToken);
 
             return NoContent();

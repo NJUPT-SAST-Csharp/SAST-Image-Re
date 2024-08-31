@@ -5,25 +5,25 @@ using Domain.Shared;
 
 namespace Domain.AlbumDomain.Commands
 {
-    public sealed record class UpdateAccessibilityCommand(
+    public sealed record class UpdateAccessLevelCommand(
         AlbumId Album,
-        Accessibility Accessibility,
+        AccessLevel AccessLevel,
         Actor Actor
     ) : IDomainCommand { }
 
-    internal sealed class UpdateAccessibilityCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<UpdateAccessibilityCommand>
+    internal sealed class UpdateAccessLevelCommandHandler(IRepository<Album, AlbumId> repository)
+        : ICommandHandler<UpdateAccessLevelCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 
         public async Task Handle(
-            UpdateAccessibilityCommand request,
+            UpdateAccessLevelCommand request,
             CancellationToken cancellationToken
         )
         {
             var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            album.UpdateAccessibility(request);
+            album.UpdateAccessLevel(request);
         }
     }
 }

@@ -32,9 +32,9 @@ namespace Infrastructure.Migrations.QueryDb
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("Accessibility")
+                    b.Property<int>("AccessLevel")
                         .HasColumnType("integer")
-                        .HasColumnName("accessibility");
+                        .HasColumnName("access_level");
 
                     b.Property<long>("AuthorId")
                         .HasColumnType("bigint")
@@ -58,13 +58,13 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_archived");
-
                     b.Property<DateTime?>("RemovedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("removed_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -148,17 +148,13 @@ namespace Infrastructure.Migrations.QueryDb
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("Accessibility")
+                    b.Property<int>("AccessLevel")
                         .HasColumnType("integer")
-                        .HasColumnName("accessibility");
+                        .HasColumnName("access_level");
 
                     b.Property<long>("AlbumId")
                         .HasColumnType("bigint")
                         .HasColumnName("album_id");
-
-                    b.Property<long?>("AlbumModelId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("album_model_id");
 
                     b.Property<long>("AuthorId")
                         .HasColumnType("bigint")
@@ -167,6 +163,10 @@ namespace Infrastructure.Migrations.QueryDb
                     b.Property<DateTime?>("RemovedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("removed_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<long[]>("Tags")
                         .IsRequired()
@@ -187,9 +187,6 @@ namespace Infrastructure.Migrations.QueryDb
 
                     b.HasIndex("AlbumId")
                         .HasDatabaseName("ix_images_album_id");
-
-                    b.HasIndex("AlbumModelId")
-                        .HasDatabaseName("ix_images_album_model_id");
 
                     b.HasIndex("AuthorId")
                         .HasDatabaseName("ix_images_author_id");
@@ -314,16 +311,11 @@ namespace Infrastructure.Migrations.QueryDb
             modelBuilder.Entity("Application.ImageServices.ImageModel", b =>
                 {
                     b.HasOne("Application.AlbumServices.AlbumModel", null)
-                        .WithMany()
+                        .WithMany("Images")
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_images_albums_album_id");
-
-                    b.HasOne("Application.AlbumServices.AlbumModel", null)
-                        .WithMany("Images")
-                        .HasForeignKey("AlbumModelId")
-                        .HasConstraintName("fk_images_albums_album_model_id");
 
                     b.HasOne("Application.UserServices.UserModel", null)
                         .WithMany()

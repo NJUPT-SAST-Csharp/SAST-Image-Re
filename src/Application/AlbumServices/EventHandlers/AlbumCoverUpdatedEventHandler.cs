@@ -3,32 +3,32 @@ using Domain.Core.Event;
 
 namespace Application.AlbumServices.EventHandlers
 {
-    internal sealed class AlbumCoverUpdatedEventHandler(IAlbumCoverManager updater)
+    internal sealed class AlbumCoverUpdatedEventHandler(ICoverStorageManager updater)
         : IDomainEventHandler<AlbumCoverUpdatedEvent>
     {
-        private readonly IAlbumCoverManager _updater = updater;
+        private readonly ICoverStorageManager _updater = updater;
 
-        public Task Handle(AlbumCoverUpdatedEvent notification, CancellationToken cancellationToken)
+        public Task Handle(AlbumCoverUpdatedEvent e, CancellationToken cancellationToken)
         {
-            if (notification.ContainedImage is not null)
+            if (e.ContainedImage is not null)
             {
                 return _updater.UpdateWithContainedImageAsync(
-                    notification.Album,
-                    notification.ContainedImage.Value,
+                    e.Album,
+                    e.ContainedImage.Value,
                     cancellationToken
                 );
             }
 
-            if (notification.CoverImage is not null)
+            if (e.CoverImage is not null)
             {
                 return _updater.UpdateWithCustomImageAsync(
-                    notification.Album,
-                    notification.CoverImage,
+                    e.Album,
+                    e.CoverImage,
                     cancellationToken
                 );
             }
 
-            return _updater.RemoveCoverAsync(notification.Album, cancellationToken);
+            return _updater.RemoveCoverAsync(e.Album, cancellationToken);
         }
     }
 }

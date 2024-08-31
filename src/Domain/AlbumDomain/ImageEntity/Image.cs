@@ -10,11 +10,10 @@ namespace Domain.AlbumDomain.ImageEntity
         private Image()
             : base(default) { }
 
-        private List<Like> _likes = [];
-        private bool _isRemoved = false;
-        internal bool IsAvailable => !_isRemoved;
+        private readonly List<Like> _likes = [];
+        private ImageStatus _status = ImageStatus.Available;
 
-        public Image(AddImageCommand command)
+        public Image(AddImageCommand _)
             : base(ImageId.GenerateNew()) { }
 
         public void Like(LikeImageCommand command)
@@ -42,23 +41,42 @@ namespace Domain.AlbumDomain.ImageEntity
             AddDomainEvent(new ImageTagsUpdatedEvent(Id, command.Tags));
         }
 
-        public void Remove()
+        public void Remove(RemoveImageCommand _)
         {
-            if (_isRemoved == false)
-            {
-                _isRemoved = true;
-                AddDomainEvent(new ImageRemovedEvent(Id));
-            }
+            if (_status.IsRemoved || _status.IsAlbumRemoved)
+                return;
+
+            _status = ImageStatus.Removed(DateTime.UtcNow);
+            AddDomainEvent(new ImageRemovedEvent(Id, _status));
         }
 
-        public void Restore()
+        public void Restore(RestoreImageCommand _)
         {
-            if (_isRemoved == true)
-            {
-                _isRemoved = false;
-                AddDomainEvent(new ImageRestoredEvent(Id));
-            }
+            if (_status.IsAvailable || _status.IsAlbumRemoved)
+                return;
+
+            _status = ImageStatus.Available;
+            AddDomainEvent(new ImageRestoredEvent(Id, _status));
         }
+
+        public void AlbumRemoved(RemoveAlbumCommand _)
+        {
+            if (_status.IsRemoved || _status.IsAlbumRemoved)
+                return;
+
+            _status = ImageStatus.AlbumRemoved;
+        }
+
+        public void AlbumRestored(RestoreAlbumCommand _)
+        {
+            if (_status.IsRemoved || _status.IsAvailable)
+                return;
+
+            _status = ImageStatus.Available;
+        }
+
+        internal bool IsRemoved => _status.IsRemoved;
+        internal bool IsAvailable => _status.IsAvailable;
     }
 
     internal static class ImageListExtensions
@@ -88,6 +106,29 @@ namespace Domain.AlbumDomain.ImageEntity
                 .Where(image => image.IsAvailable)
                 .OrderByDescending(image => image.Id.Value)
                 .FirstOrDefault();
+        }
+
+        public static void DeleteImage(this List<Image> images, ImageId id)
+        {
+            var image = images.FirstOrDefault(image => image.Id == id);
+
+            if (image is null)
+                return;
+
+            image.AddDomainEvent(new ImageDeletedEvent(image.Id));
+            images.Remove(image);
+        }
+
+        public static int DeleteAllRemovedImages(this List<Image> images)
+        {
+            var imagesToBeRemoved = images.Where(image => image.IsRemoved).ToList();
+
+            foreach (var image in imagesToBeRemoved)
+            {
+                DeleteImage(images, image.Id);
+            }
+
+            return imagesToBeRemoved.Count;
         }
     }
 }

@@ -3,6 +3,5 @@ using Domain.Event;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct ImageTagsUpdatedEvent(ImageId Image, ImageTags Tags)
-        : IDomainEvent { }
+    public sealed record ImageTagsUpdatedEvent(ImageId Image, ImageTags Tags) : IDomainEvent { }
 }

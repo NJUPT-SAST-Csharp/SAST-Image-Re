@@ -15,15 +15,7 @@ namespace Application.ImageServices.EvengHandlers
 
         public async Task Handle(ImageAddedEvent e, CancellationToken cancellationToken)
         {
-            ImageModel image =
-                new()
-                {
-                    Id = e.ImageId.Value,
-                    AlbumId = e.Album.Value,
-                    AuthorId = e.AuthorId.Value,
-                    Title = e.Title.Value,
-                    Tags = e.Tags.Select(tag => tag.Value).ToArray(),
-                };
+            ImageModel image = new(e);
 
             await _repository.AddAsync(image, cancellationToken);
 

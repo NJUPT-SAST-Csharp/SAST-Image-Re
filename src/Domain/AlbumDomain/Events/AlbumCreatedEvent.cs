@@ -5,12 +5,12 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.Events
 {
-    public readonly record struct AlbumCreatedEvent(
+    public sealed record AlbumCreatedEvent(
         AlbumId AlbumId,
         UserId AuthorId,
         CategoryId CategoryId,
         AlbumTitle Title,
         AlbumDescription Description,
-        Accessibility Accessibility
+        AccessLevel AccessLevel
     ) : IDomainEvent { }
 }

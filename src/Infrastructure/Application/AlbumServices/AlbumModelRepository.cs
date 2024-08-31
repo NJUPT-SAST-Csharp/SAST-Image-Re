@@ -17,10 +17,7 @@ namespace Infrastructure.Application.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            var album = await _context
-                .Albums.Include(a => a.Subscribes)
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
+            var album = await GetOrDefaultAsync(id, cancellationToken);
 
             if (album is null)
                 EntityNotFoundException.Throw(id);
@@ -34,8 +31,8 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             return _context
-                .Albums.Include(a => a.Subscribes)
-                .IgnoreQueryFilters()
+                .Albums.Include(album => album.Images)
+                .Include(album => album.Subscribes)
                 .FirstOrDefaultAsync(a => a.Id == id.Value, cancellationToken);
         }
 
@@ -46,6 +43,14 @@ namespace Infrastructure.Application.AlbumServices
         {
             var album = await _context.Albums.AddAsync(entity, cancellationToken);
             return new(album.Entity.Id);
+        }
+
+        public async Task DeleteAsync(AlbumId id, CancellationToken cancellationToken = default)
+        {
+            var album = await GetOrDefaultAsync(id, cancellationToken);
+
+            if (album is not null)
+                _context.Albums.Remove(album);
         }
     }
 }

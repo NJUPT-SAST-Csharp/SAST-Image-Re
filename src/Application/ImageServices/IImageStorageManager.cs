@@ -9,5 +9,7 @@ namespace Application.ImageServices
             Stream imageFile,
             CancellationToken cancellationToken = default
         );
+
+        public Stream? OpenReadStream(ImageId image, ImageKind kind);
     }
 }

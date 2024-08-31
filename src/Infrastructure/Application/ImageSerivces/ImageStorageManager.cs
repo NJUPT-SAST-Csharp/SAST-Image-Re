@@ -9,6 +9,18 @@ namespace Infrastructure.Application.ImageSerivces
     {
         private readonly IStorageManager _manager = manager;
 
+        public Stream? OpenReadStream(ImageId image, ImageKind kind)
+        {
+            string id = kind switch
+            {
+                ImageKind.Original => image.Value.ToString(),
+                ImageKind.Thumbnail => image.Value.ToString() + "_compressed",
+                _ => throw new ArgumentOutOfRangeException(nameof(kind)),
+            };
+
+            return _manager.FindFile(id, StorageKind.Image);
+        }
+
         public async Task StoreImageAsync(
             ImageId imageId,
             Stream imageFile,

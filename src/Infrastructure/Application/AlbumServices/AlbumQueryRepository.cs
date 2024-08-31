@@ -22,14 +22,15 @@ namespace Infrastructure.Application.AlbumServices
                 .Albums.AsNoTracking()
                 .Where(a =>
                     a.Id == query.Id
+                    && (a.Status == AlbumStatusValue.Available)
                     && (
-                        a.Accessibility == AccessibilityValue.Public
+                        a.AccessLevel == AccessLevelValue.Public
                         || (
-                            a.Accessibility == AccessibilityValue.AuthOnly
+                            a.AccessLevel == AccessLevelValue.AuthOnly
                             && query.Actor.IsAuthenticated
                         )
                         || (
-                            a.Accessibility == AccessibilityValue.Private
+                            a.AccessLevel == AccessLevelValue.Private
                             && (
                                 a.AuthorId == query.Actor.Id.Value
                                 || a.Collaborators.Contains(query.Actor.Id.Value)
@@ -38,18 +39,7 @@ namespace Infrastructure.Application.AlbumServices
                         )
                     )
                 )
-                .Select(a => new DetailedAlbum(
-                    a.Id,
-                    a.Title,
-                    a.Description,
-                    a.AuthorId,
-                    a.CategoryId,
-                    a.IsArchived,
-                    a.UpdatedAt,
-                    a.CreatedAt,
-                    a.Accessibility,
-                    a.Subscribes.Count
-                ))
+                .Select(a => new DetailedAlbum(a, a.Subscribes.Count))
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -62,16 +52,17 @@ namespace Infrastructure.Application.AlbumServices
                 .Albums.AsNoTracking()
                 .Where(a =>
                     (query.CategoryId == null || a.CategoryId == query.CategoryId)
+                    && (a.Status == AlbumStatusValue.Available)
                     && (query.AuthorId == null || a.AuthorId == query.AuthorId)
                     && (query.Title == null || EF.Functions.ILike(a.Title, $"%{query.Title}%"))
                     && (
-                        a.Accessibility == AccessibilityValue.Public
+                        a.AccessLevel == AccessLevelValue.Public
                         || (
-                            a.Accessibility == AccessibilityValue.AuthOnly
+                            a.AccessLevel == AccessLevelValue.AuthOnly
                             && query.Actor.IsAuthenticated
                         )
                         || (
-                            a.Accessibility == AccessibilityValue.Private
+                            a.AccessLevel == AccessLevelValue.Private
                             && (
                                 a.AuthorId == query.Actor.Id.Value
                                 || a.Collaborators.Contains(query.Actor.Id.Value)
@@ -80,14 +71,7 @@ namespace Infrastructure.Application.AlbumServices
                         )
                     )
                 )
-                .Select(a => new AlbumDto(
-                    a.Id,
-                    a.Title,
-                    a.AuthorId,
-                    a.CategoryId,
-                    a.IsArchived,
-                    a.UpdatedAt
-                ))
+                .Select(a => new AlbumDto(a))
                 .ToListAsync(cancellationToken);
         }
 
@@ -97,19 +81,12 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             return _context
-                .Albums.IgnoreQueryFilters()
-                .AsNoTracking()
+                .Albums.AsNoTracking()
                 .Where(a =>
-                    a.RemovedAt != null
+                    (a.Status == AlbumStatusValue.Removed)
                     && (a.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
                 )
-                .Select(a => new RemovedAlbumDto(
-                    a.Id,
-                    a.Title,
-                    a.CategoryId,
-                    a.Accessibility,
-                    a.RemovedAt!.Value
-                ))
+                .Select(a => new RemovedAlbumDto(a))
                 .ToListAsync(cancellationToken);
         }
     }

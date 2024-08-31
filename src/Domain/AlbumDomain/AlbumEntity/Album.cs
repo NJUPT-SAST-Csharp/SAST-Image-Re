@@ -13,13 +13,13 @@ namespace Domain.AlbumDomain.AlbumEntity
         private Album()
             : base(default) { }
 
-        private bool _isRemoved;
-
-        private bool _isArchived;
+        private AlbumStatus _status = AlbumStatus.Available;
 
         private AlbumTitle _title;
 
         private Cover _cover = Cover.Default;
+
+        private AccessLevel _accessLevel;
 
         private readonly UserId _author;
 
@@ -47,7 +47,7 @@ namespace Domain.AlbumDomain.AlbumEntity
                     command.CategoryId,
                     command.Title,
                     command.Description,
-                    command.Accessibility
+                    command.AccessLevel
                 )
             );
         }
@@ -56,28 +56,34 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             AddDomainEvent(new AlbumDescriptionUpdatedEvent(Id, command.Description));
         }
 
-        public void UpdateAccessibility(UpdateAccessibilityCommand command)
+        public void UpdateAccessLevel(UpdateAccessLevelCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (_isRemoved)
+            if (_status.IsRemoved)
                 AlbumImmutableException.Throw(this);
+            if (_accessLevel == command.AccessLevel)
+                return;
 
-            AddDomainEvent(new AlbumAccessibilityUpdatedEvent(Id, command.Accessibility));
+            _accessLevel = command.AccessLevel;
+
+            AddDomainEvent(new AlbumAccessLevelUpdatedEvent(Id, command.AccessLevel));
         }
 
         public void UpdateTitle(UpdateAlbumTitleCommand command)
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
+            if (_title == command.Title)
+                return;
 
             _title = command.Title;
 
@@ -88,7 +94,7 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             if (_collaborators.SequenceEqual(command.Collaborators))
@@ -103,7 +109,7 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             AddDomainEvent(new AlbumCategoryUpdatedEvent(Id, command.Category));
@@ -113,7 +119,7 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             if (command.CoverImage is null)
@@ -132,7 +138,7 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             var image = new Image(command);
@@ -146,6 +152,7 @@ namespace Domain.AlbumDomain.AlbumEntity
                     command.Actor.Id,
                     command.Title,
                     command.Tags,
+                    _accessLevel,
                     command.ImageFile
                 )
             );
@@ -161,11 +168,11 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             var image = _images.FindById(command.Image);
-            image.Remove();
+            image.Remove(command);
 
             if (_cover.Id == command.Image)
             {
@@ -179,11 +186,11 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManageImages(command.Actor))
                 NoPermissionException.Throw();
-            if (IsImmutable)
+            if (IsRemoved)
                 AlbumImmutableException.Throw(this);
 
             var image = _images.FindById(command.Image);
-            image.Restore();
+            image.Restore(command);
 
             if (_cover.IsLatestImage && image.Equals(_images.LatestImage()))
             {
@@ -196,16 +203,15 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (_isRemoved)
+            if (IsRemoved)
                 return;
 
-            _isRemoved = true;
+            _status = AlbumStatus.Removed(DateTime.UtcNow);
 
-            AddDomainEvent(new AlbumRemovedEvent(Id));
+            AddDomainEvent(new AlbumRemovedEvent(Id, _status));
             foreach (var image in _images)
             {
-                RemoveImageCommand c = new(Id, image.Id, command.Actor);
-                image.Remove();
+                image.AlbumRemoved(command);
             }
         }
 
@@ -213,33 +219,16 @@ namespace Domain.AlbumDomain.AlbumEntity
         {
             if (CanNotManage(command.Actor))
                 NoPermissionException.Throw();
-            if (_isRemoved == false)
+            if (_status.IsAvailable)
                 return;
 
-            _isRemoved = false;
+            _status = AlbumStatus.Available;
 
-            AddDomainEvent(new AlbumRestoredEvent(Id));
+            AddDomainEvent(new AlbumRestoredEvent(Id, _status));
             foreach (var image in _images)
             {
-                RestoreImageCommand c = new(Id, image.Id, command.Actor);
-                image.Restore();
+                image.AlbumRestored(command);
             }
-        }
-
-        public void Archive(ArchiveCommand command)
-        {
-            if (CanNotManage(command.Actor))
-                NoPermissionException.Throw();
-            if (IsImmutable)
-                AlbumImmutableException.Throw(this);
-            if (_isArchived == true)
-                return;
-
-            _isArchived = true;
-            Collaborators = [];
-
-            AddDomainEvent(new AlbumArchivedEvent(Id));
-            AddDomainEvent(new AlbumCollaboratorsUpdatedEvent(Id, Collaborators));
         }
 
         public void Subscribe(SubscribeCommand command)
@@ -294,7 +283,7 @@ namespace Domain.AlbumDomain.AlbumEntity
 
         private bool CanNotManageImages(Actor actor) => !CanManageImages(actor);
 
-        private bool IsImmutable => _isRemoved || _isArchived;
-        private bool IsMutable => !IsImmutable;
+        private bool IsRemoved => _status.IsRemoved;
+        private bool IsAvailable => _status.IsAvailable;
     }
 }

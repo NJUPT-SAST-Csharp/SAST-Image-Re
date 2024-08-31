@@ -4,13 +4,14 @@ using Domain.Shared;
 
 namespace Application.AlbumServices.Queries
 {
-    public sealed record class RemovedAlbumDto(
-        long Id,
-        string Title,
-        long Category,
-        AccessibilityValue Accessibility,
-        DateTime RemovedAt
-    );
+    public sealed class RemovedAlbumDto(AlbumModel a)
+    {
+        public long Id { get; } = a.Id;
+        public string Title { get; } = a.Title;
+        public long Category { get; } = a.CategoryId;
+        public AccessLevelValue AccessLevel { get; } = a.AccessLevel;
+        public DateTime RemovedAt { get; } = a.RemovedAt!.Value;
+    }
 
     public sealed record class RemovedAlbumsQuery(Actor Actor)
         : IQueryRequest<List<RemovedAlbumDto>> { }

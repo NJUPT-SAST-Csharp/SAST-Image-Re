@@ -5,7 +5,7 @@ using Infrastructure.Storage;
 
 namespace Infrastructure.Application.AlbumServices
 {
-    sealed class AlbumCoverManager(IStorageManager manager) : IAlbumCoverManager
+    internal sealed class CoverStorageManager(IStorageManager manager) : ICoverStorageManager
     {
         private readonly IStorageManager _manager = manager;
 

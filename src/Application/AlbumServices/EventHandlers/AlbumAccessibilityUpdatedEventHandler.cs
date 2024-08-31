@@ -5,20 +5,20 @@ using Domain.Extensions;
 
 namespace Application.AlbumServices.EventHandlers
 {
-    internal sealed class AlbumAccessibilityUpdatedEventHandler(
+    internal sealed class AlbumAccessLevelUpdatedEventHandler(
         IRepository<AlbumModel, AlbumId> repository
-    ) : IDomainEventHandler<AlbumAccessibilityUpdatedEvent>
+    ) : IDomainEventHandler<AlbumAccessLevelUpdatedEvent>
     {
         private readonly IRepository<AlbumModel, AlbumId> _repository = repository;
 
         public async Task Handle(
-            AlbumAccessibilityUpdatedEvent notification,
+            AlbumAccessLevelUpdatedEvent e,
             CancellationToken cancellationToken
         )
         {
-            var album = await _repository.GetAsync(notification.Album, cancellationToken);
+            var album = await _repository.GetAsync(e.Album, cancellationToken);
 
-            album.Accessibility = notification.Accessibility.Value;
+            album.UpdateAccessLevel(e);
         }
     }
 }
