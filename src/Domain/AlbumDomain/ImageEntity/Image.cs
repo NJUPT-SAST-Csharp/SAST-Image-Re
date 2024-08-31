@@ -2,6 +2,7 @@
 using Domain.AlbumDomain.Events;
 using Domain.AlbumDomain.Exceptions;
 using Domain.Entity;
+using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.ImageEntity
 {
@@ -10,11 +11,15 @@ namespace Domain.AlbumDomain.ImageEntity
         private Image()
             : base(default) { }
 
+        private readonly UserId _uploader;
         private readonly List<Like> _likes = [];
         private ImageStatus _status = ImageStatus.Available;
 
-        public Image(AddImageCommand _)
-            : base(ImageId.GenerateNew()) { }
+        public Image(AddImageCommand command)
+            : base(ImageId.GenerateNew())
+        {
+            _uploader = command.Actor.Id;
+        }
 
         public void Like(LikeImageCommand command)
         {

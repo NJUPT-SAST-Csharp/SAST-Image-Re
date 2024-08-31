@@ -5,7 +5,7 @@ using Domain.Shared;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Application.ImageSerivces
+namespace Infrastructure.Application.ImageServices
 {
     internal sealed class ImageModelRepository(QueryDbContext context)
         : IRepository<ImageModel, ImageId>

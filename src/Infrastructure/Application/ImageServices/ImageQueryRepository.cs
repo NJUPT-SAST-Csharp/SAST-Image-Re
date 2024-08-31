@@ -24,15 +24,11 @@ namespace Infrastructure.Application.ImageServices
                     i.Status == ImageStatusValue.Available
                     && i.AlbumId == query.Album.Value
                     && (
-                        i.AccessLevel == AccessLevelValue.Public
-                        || (
-                            i.AccessLevel == AccessLevelValue.AuthOnly
+                        i.AccessLevel == AccessLevelValue.PublicReadOnly
+                        || i.AccessLevel == AccessLevelValue.AuthReadOnly
                             && query.Actor.IsAuthenticated
-                        )
-                        || (
-                            i.AccessLevel == AccessLevelValue.Private
+                        || i.AccessLevel == AccessLevelValue.Private
                             && (i.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
-                        )
                     )
                 )
                 .Select(i => new AlbumImageDto(i.Id, i.Title))

@@ -5,7 +5,7 @@ using Domain.Shared;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Application.ImageSerivces
+namespace Infrastructure.Application.ImageServices
 {
     internal sealed class ImageAvailabilityChecker(QueryDbContext context)
         : IImageAvailabilityChecker
@@ -39,8 +39,8 @@ namespace Infrastructure.Application.ImageSerivces
 
             return image.AccessLevel switch
             {
-                AccessLevelValue.Public => true,
-                AccessLevelValue.AuthOnly => actor.IsAuthenticated,
+                AccessLevelValue.PublicReadOnly => true,
+                AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
                 AccessLevelValue.Private => await _context
                     .Albums.IgnoreQueryFilters()
                     .AsNoTracking()

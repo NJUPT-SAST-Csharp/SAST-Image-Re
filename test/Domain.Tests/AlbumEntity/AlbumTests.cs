@@ -23,9 +23,9 @@ public class AlbumTests
     {
         Album album = RemovedNewAlbum;
 
-        bool isImmutable = album.GetProperty<bool>("IsRemoved");
+        bool isRemoved = album.GetValue<AlbumStatus>().IsRemoved;
 
-        isImmutable.ShouldBeTrue();
+        isRemoved.ShouldBeTrue();
     }
 
     [TestMethod]
@@ -33,9 +33,9 @@ public class AlbumTests
     {
         Album album = ValidNewAlbum;
 
-        bool isImmutable = album.GetProperty<bool>("IsRemoved");
+        bool isRemoved = album.GetValue<AlbumStatus>().IsRemoved;
 
-        isImmutable.ShouldBeFalse();
+        isRemoved.ShouldBeFalse();
     }
 
     #endregion
@@ -595,7 +595,7 @@ internal static class AlbumTestsHelper
     public static readonly AlbumTitle NewTitle = new("new_title");
     public static readonly CategoryId NewCategory = new(2222222222);
     public static readonly AlbumDescription NewDescription = new("new_description");
-    public static readonly AccessLevel NewAccessLevel = AccessLevel.AuthOnly;
+    public static readonly AccessLevel NewAccessLevel = AccessLevel.AuthReadOnly;
 
     public static T GetProperty<T>(this Album album, string propertyName)
     {

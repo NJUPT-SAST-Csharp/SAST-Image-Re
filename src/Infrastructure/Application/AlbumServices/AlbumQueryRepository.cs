@@ -24,9 +24,9 @@ namespace Infrastructure.Application.AlbumServices
                     a.Id == query.Id
                     && (a.Status == AlbumStatusValue.Available)
                     && (
-                        a.AccessLevel == AccessLevelValue.Public
+                        a.AccessLevel == AccessLevelValue.PublicReadOnly
                         || (
-                            a.AccessLevel == AccessLevelValue.AuthOnly
+                            a.AccessLevel == AccessLevelValue.AuthReadOnly
                             && query.Actor.IsAuthenticated
                         )
                         || (
@@ -56,9 +56,9 @@ namespace Infrastructure.Application.AlbumServices
                     && (query.AuthorId == null || a.AuthorId == query.AuthorId)
                     && (query.Title == null || EF.Functions.ILike(a.Title, $"%{query.Title}%"))
                     && (
-                        a.AccessLevel == AccessLevelValue.Public
+                        a.AccessLevel == AccessLevelValue.PublicReadOnly
                         || (
-                            a.AccessLevel == AccessLevelValue.AuthOnly
+                            a.AccessLevel == AccessLevelValue.AuthReadOnly
                             && query.Actor.IsAuthenticated
                         )
                         || (

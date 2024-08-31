@@ -12,6 +12,7 @@ namespace Domain.AlbumDomain.Events
         ImageTitle Title,
         ImageTags Tags,
         AccessLevel AccessLevel,
+        Collaborators Collaborators,
         Stream ImageFile
     ) : IDomainEvent { }
 }

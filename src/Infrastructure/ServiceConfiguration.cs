@@ -15,7 +15,6 @@ using Domain.Core.Event;
 using Domain.Extensions;
 using Domain.UserDomain.UserEntity;
 using Infrastructure.Application.AlbumServices;
-using Infrastructure.Application.ImageSerivces;
 using Infrastructure.Application.ImageServices;
 using Infrastructure.Database;
 using Infrastructure.Domain.AlbumServices;

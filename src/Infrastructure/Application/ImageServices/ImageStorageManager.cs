@@ -3,7 +3,7 @@ using Domain.AlbumDomain.ImageEntity;
 using Infrastructure.Storage;
 using SkiaSharp;
 
-namespace Infrastructure.Application.ImageSerivces
+namespace Infrastructure.Application.ImageServices
 {
     internal sealed class ImageStorageManager(IStorageManager manager) : IImageStorageManager
     {

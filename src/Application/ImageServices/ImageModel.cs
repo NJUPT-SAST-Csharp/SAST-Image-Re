@@ -12,12 +12,14 @@ namespace Application.ImageServices
         public string Title { get; } = null!;
         public long AlbumId { get; }
         public long AuthorId { get; }
+        public long UploaderId { get; }
         public long[] Tags { get; private set; } = [];
         public DateTime UploadedAt { get; } = DateTime.UtcNow;
         public AccessLevelValue AccessLevel { get; private set; }
         public ImageStatusValue Status { get; private set; }
         public DateTime? RemovedAt { get; private set; }
         public List<LikeModel> Likes { get; } = null!;
+        public long[] Collaborators { get; } = null!;
 
         internal ImageModel(ImageAddedEvent e)
         {
@@ -27,6 +29,7 @@ namespace Application.ImageServices
             Title = e.Title.Value;
             Status = ImageStatusValue.Available;
             Tags = e.Tags.Select(tag => tag.Value).ToArray();
+            Collaborators = e.Collaborators.Select(c => c.Value).ToArray();
             AccessLevel = e.AccessLevel.Value;
         }
 

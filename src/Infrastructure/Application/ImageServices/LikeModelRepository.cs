@@ -5,7 +5,7 @@ using Domain.Shared;
 using Domain.UserDomain.UserEntity;
 using Infrastructure.Database;
 
-namespace Infrastructure.Application.ImageSerivces
+namespace Infrastructure.Application.ImageServices
 {
     internal sealed class LikeModelRepository(QueryDbContext context)
         : IRepository<LikeModel, (ImageId, UserId)>

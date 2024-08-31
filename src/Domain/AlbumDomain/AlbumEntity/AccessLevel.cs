@@ -7,14 +7,16 @@ namespace Domain.AlbumDomain.AlbumEntity
         : IValueObject<AccessLevel, AccessLevelValue>,
             IFactoryConstructor<AccessLevel, int>
     {
-        public const int MaxValue = (int)AccessLevelValue.Private;
-        public const int MinValue = (int)AccessLevelValue.Public;
+        public const int MinValue = (int)AccessLevelValue.Private;
+        public const int MaxValue = (int)AccessLevelValue.PublicReadWrite;
 
         public AccessLevelValue Value { get; }
 
-        public static readonly AccessLevel Public = new(AccessLevelValue.Public);
-        public static readonly AccessLevel AuthOnly = new(AccessLevelValue.AuthOnly);
         public static readonly AccessLevel Private = new(AccessLevelValue.Private);
+        public static readonly AccessLevel AuthReadOnly = new(AccessLevelValue.AuthReadOnly);
+        public static readonly AccessLevel AuthReadWrite = new(AccessLevelValue.AuthReadWrite);
+        public static readonly AccessLevel PublicReadOnly = new(AccessLevelValue.PublicReadOnly);
+        public static readonly AccessLevel PublicReadWrite = new(AccessLevelValue.PublicReadWrite);
 
         internal AccessLevel(AccessLevelValue value) => Value = value;
 
@@ -28,9 +30,11 @@ namespace Domain.AlbumDomain.AlbumEntity
 
             newObject = input switch
             {
-                (int)AccessLevelValue.Public => Public,
-                (int)AccessLevelValue.AuthOnly => AuthOnly,
                 (int)AccessLevelValue.Private => Private,
+                (int)AccessLevelValue.AuthReadOnly => AuthReadOnly,
+                (int)AccessLevelValue.AuthReadWrite => AuthReadWrite,
+                (int)AccessLevelValue.PublicReadOnly => PublicReadOnly,
+                (int)AccessLevelValue.PublicReadWrite => PublicReadWrite,
                 _ => throw new InvalidOperationException(),
             };
             return true;
@@ -39,8 +43,10 @@ namespace Domain.AlbumDomain.AlbumEntity
 
     public enum AccessLevelValue
     {
-        Public,
-        AuthOnly,
         Private,
+        AuthReadOnly,
+        AuthReadWrite,
+        PublicReadOnly,
+        PublicReadWrite,
     }
 }

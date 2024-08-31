@@ -153,6 +153,7 @@ namespace Domain.AlbumDomain.AlbumEntity
                     command.Title,
                     command.Tags,
                     _accessLevel,
+                    Collaborators,
                     command.ImageFile
                 )
             );

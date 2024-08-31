@@ -44,8 +44,8 @@ namespace Infrastructure.Application.AlbumServices
 
             return album.AccessLevel switch
             {
-                AccessLevelValue.Public => true,
-                AccessLevelValue.AuthOnly => actor.IsAuthenticated,
+                AccessLevelValue.PublicReadOnly => true,
+                AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
                 AccessLevelValue.Private => album.AuthorId == actorId
                     || album.Collaborators.Contains(actorId),
                 _ => false,
