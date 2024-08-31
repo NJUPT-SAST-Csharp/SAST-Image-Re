@@ -18,6 +18,9 @@ namespace Domain.AlbumDomain.ImageEntity
 
         public void Like(LikeImageCommand command)
         {
+            if (_status.IsRemoved || _status.IsAlbumRemoved)
+                throw new ImageRemovedException();
+
             if (_likes.ContainsUser(command.Actor.Id))
                 return;
 
@@ -28,6 +31,8 @@ namespace Domain.AlbumDomain.ImageEntity
 
         public void Unlike(UnlikeImageCommand command)
         {
+            if (_status.IsRemoved || _status.IsAlbumRemoved)
+                throw new ImageRemovedException();
             if (_likes.NotContainsUser(command.Actor.Id))
                 return;
 
@@ -38,6 +43,9 @@ namespace Domain.AlbumDomain.ImageEntity
 
         public void UpdateTags(UpdateImageTagsCommand command)
         {
+            if (_status.IsRemoved || _status.IsAlbumRemoved)
+                throw new ImageRemovedException();
+
             AddDomainEvent(new ImageTagsUpdatedEvent(Id, command.Tags));
         }
 

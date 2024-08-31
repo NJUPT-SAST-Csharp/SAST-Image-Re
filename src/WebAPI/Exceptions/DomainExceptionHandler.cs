@@ -19,10 +19,17 @@ namespace WebAPI.Exceptions
 
             ProblemDetails response = exception switch
             {
-                AlbumImmutableException => new()
+                AlbumRemovedException => new()
                 {
                     Status = StatusCodes.Status400BadRequest,
-                    Title = "Album's been removed or archived.",
+                    Title = "Album's been removed.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
+                },
+
+                ImageRemovedException => new()
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Image's been removed.",
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
                 },
 

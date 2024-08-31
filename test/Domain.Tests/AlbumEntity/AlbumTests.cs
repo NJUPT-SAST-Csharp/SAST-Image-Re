@@ -65,7 +65,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         UpdateAlbumDescriptionCommand command = new(Id, NewDescription, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateDescription(command));
+        Should.Throw<AlbumRemovedException>(() => album.UpdateDescription(command));
     }
 
     [DataRow(VisitorId)]
@@ -103,7 +103,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         UpdateAlbumTitleCommand command = new(Id, NewTitle, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateTitle(command));
+        Should.Throw<AlbumRemovedException>(() => album.UpdateTitle(command));
     }
 
     [DataRow(VisitorId)]
@@ -141,7 +141,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         UpdateAlbumCategoryCommand command = new(Id, NewCategory, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateCategory(command));
+        Should.Throw<AlbumRemovedException>(() => album.UpdateCategory(command));
     }
 
     [DataRow(VisitorId)]
@@ -179,7 +179,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         UpdateAccessLevelCommand command = new(Id, NewAccessLevel, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateAccessLevel(command));
+        Should.Throw<AlbumRemovedException>(() => album.UpdateAccessLevel(command));
     }
 
     [DataRow(VisitorId)]
@@ -217,7 +217,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         UpdateCollaboratorsCommand command = new(Id, NewCollaborators, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateCollaborators(command));
+        Should.Throw<AlbumRemovedException>(() => album.UpdateCollaborators(command));
     }
 
     [DataRow(VisitorId)]
@@ -257,7 +257,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         UpdateCoverCommand command = new(Id, null, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.UpdateCover(command));
+        Should.Throw<AlbumRemovedException>(() => album.UpdateCover(command));
     }
 
     [DataRow(VisitorId)]
@@ -295,7 +295,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         AddImageCommand command = new(Id, NewImageTitle, NewImageTags, ImageFileStream, Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.AddImage(command));
+        Should.Throw<AlbumRemovedException>(() => album.AddImage(command));
     }
 
     [TestMethod]
@@ -361,7 +361,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         RemoveImageCommand command = new(Id, new(Image1Id), Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.RemoveImage(command));
+        Should.Throw<AlbumRemovedException>(() => album.RemoveImage(command));
     }
 
     [TestMethod]
@@ -408,7 +408,7 @@ public class AlbumTests
         Album album = RemovedNewAlbum;
         RestoreImageCommand command = new(Id, new(Image1Id), Author);
 
-        Should.Throw<AlbumImmutableException>(() => album.RestoreImage(command));
+        Should.Throw<AlbumRemovedException>(() => album.RestoreImage(command));
     }
 
     [TestMethod]
