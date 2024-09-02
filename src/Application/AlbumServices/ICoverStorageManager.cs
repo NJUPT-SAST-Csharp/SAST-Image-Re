@@ -17,7 +17,7 @@ namespace Application.AlbumServices
             CancellationToken cancellationToken = default
         );
 
-        public Task RemoveCoverAsync(AlbumId album, CancellationToken cancellationToken = default);
+        public Task DeleteCoverAsync(AlbumId album, CancellationToken cancellationToken = default);
 
         public Stream? OpenReadStream(AlbumId album);
     }

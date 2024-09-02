@@ -1,6 +1,7 @@
 ﻿using Application;
 using Application.AlbumServices.Queries;
 using Domain.AlbumDomain.AlbumEntity;
+using Infrastructure.Application.Shared;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,25 +21,9 @@ namespace Infrastructure.Application.AlbumServices
         {
             return _context
                 .Albums.AsNoTracking()
-                .Where(a =>
-                    a.Id == query.Id
-                    && (a.Status == AlbumStatusValue.Available)
-                    && (
-                        a.AccessLevel == AccessLevelValue.PublicReadOnly
-                        || (
-                            a.AccessLevel == AccessLevelValue.AuthReadOnly
-                            && query.Actor.IsAuthenticated
-                        )
-                        || (
-                            a.AccessLevel == AccessLevelValue.Private
-                            && (
-                                a.AuthorId == query.Actor.Id.Value
-                                || a.Collaborators.Contains(query.Actor.Id.Value)
-                                || query.Actor.IsAdmin
-                            )
-                        )
-                    )
-                )
+                .Where(a => a.Id == query.Id)
+                .Where(a => a.Status == AlbumStatusValue.Available)
+                .WhereIsAccessible(query.Actor)
                 .Select(a => new DetailedAlbum(a, a.Subscribes.Count))
                 .FirstOrDefaultAsync(cancellationToken);
         }
@@ -50,27 +35,11 @@ namespace Infrastructure.Application.AlbumServices
         {
             return _context
                 .Albums.AsNoTracking()
-                .Where(a =>
-                    (query.CategoryId == null || a.CategoryId == query.CategoryId)
-                    && (a.Status == AlbumStatusValue.Available)
-                    && (query.AuthorId == null || a.AuthorId == query.AuthorId)
-                    && (query.Title == null || EF.Functions.ILike(a.Title, $"%{query.Title}%"))
-                    && (
-                        a.AccessLevel == AccessLevelValue.PublicReadOnly
-                        || (
-                            a.AccessLevel == AccessLevelValue.AuthReadOnly
-                            && query.Actor.IsAuthenticated
-                        )
-                        || (
-                            a.AccessLevel == AccessLevelValue.Private
-                            && (
-                                a.AuthorId == query.Actor.Id.Value
-                                || a.Collaborators.Contains(query.Actor.Id.Value)
-                                || query.Actor.IsAdmin
-                            )
-                        )
-                    )
-                )
+                .Where(a => a.Status == AlbumStatusValue.Available)
+                .Where(a => query.CategoryId == null || a.CategoryId == query.CategoryId)
+                .Where(a => query.AuthorId == null || a.AuthorId == query.AuthorId)
+                .Where(a => query.Title == null || EF.Functions.ILike(a.Title, $"%{query.Title}%"))
+                .WhereIsAccessible(query.Actor)
                 .Select(a => new AlbumDto(a))
                 .ToListAsync(cancellationToken);
         }
@@ -82,10 +51,8 @@ namespace Infrastructure.Application.AlbumServices
         {
             return _context
                 .Albums.AsNoTracking()
-                .Where(a =>
-                    (a.Status == AlbumStatusValue.Removed)
-                    && (a.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
-                )
+                .Where(a => a.Status == AlbumStatusValue.Removed)
+                .Where(a => a.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
                 .Select(a => new RemovedAlbumDto(a))
                 .ToListAsync(cancellationToken);
         }

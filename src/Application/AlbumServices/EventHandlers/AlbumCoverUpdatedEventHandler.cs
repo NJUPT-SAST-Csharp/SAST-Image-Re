@@ -28,7 +28,7 @@ namespace Application.AlbumServices.EventHandlers
                 );
             }
 
-            return _updater.RemoveCoverAsync(e.Album, cancellationToken);
+            return _updater.DeleteCoverAsync(e.Album, cancellationToken);
         }
     }
 }

@@ -48,10 +48,10 @@ namespace Infrastructure.Database.ModelBuild
             builder.Property(image => image.Title);
             builder.Property(image => image.UploadedAt);
             builder.Property(image => image.AuthorId);
-            builder.Property(image => image.UploaderId);
             builder.PrimitiveCollection(image => image.Tags);
             builder.PrimitiveCollection(image => image.Collaborators);
             builder.HasOne<UserModel>().WithMany().HasForeignKey(image => image.AuthorId);
+            builder.HasOne<UserModel>().WithMany().HasForeignKey(image => image.UploaderId);
             builder
                 .HasMany<UserModel>()
                 .WithMany()

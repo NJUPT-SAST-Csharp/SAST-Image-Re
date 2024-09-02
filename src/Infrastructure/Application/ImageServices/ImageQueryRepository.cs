@@ -1,7 +1,7 @@
 using Application;
 using Application.ImageServices.Queries;
-using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
+using Infrastructure.Application.Shared;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +9,8 @@ namespace Infrastructure.Application.ImageServices
 {
     internal sealed class ImageQueryRepository(QueryDbContext context)
         : IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
-            IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>
+            IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>,
+            IQueryRepository<DetailedImageQuery, DetailedImage?>
     {
         private readonly QueryDbContext _context = context;
 
@@ -20,18 +21,10 @@ namespace Infrastructure.Application.ImageServices
         {
             return _context
                 .Images.AsNoTracking()
-                .Where(i =>
-                    i.Status == ImageStatusValue.Available
-                    && i.AlbumId == query.Album.Value
-                    && (
-                        i.AccessLevel == AccessLevelValue.PublicReadOnly
-                        || i.AccessLevel == AccessLevelValue.AuthReadOnly
-                            && query.Actor.IsAuthenticated
-                        || i.AccessLevel == AccessLevelValue.Private
-                            && (i.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
-                    )
-                )
-                .Select(i => new AlbumImageDto(i.Id, i.Title))
+                .Where(i => i.Status == ImageStatusValue.Available)
+                .Where(i => i.AlbumId == query.Album.Value)
+                .WhereIsAccessible(query.Actor)
+                .Select(i => new AlbumImageDto(i.Id, i.Title, i.Tags))
                 .ToListAsync(cancellationToken);
         }
 
@@ -42,13 +35,33 @@ namespace Infrastructure.Application.ImageServices
         {
             return _context
                 .Images.AsNoTracking()
+                .Where(i => i.Status == ImageStatusValue.Removed)
+                .Where(i => i.AlbumId == query.Album.Value)
                 .Where(i =>
-                    i.Status == ImageStatusValue.Removed
-                    && i.AlbumId == query.Album.Value
-                    && (i.AuthorId == query.Actor.Id.Value || query.Actor.IsAdmin)
+                    i.AuthorId == query.Actor.Id.Value
+                    || i.Collaborators.Contains(query.Actor.Id.Value)
+                    || query.Actor.IsAdmin
                 )
                 .Select(i => new RemovedImageDto(i.Id, i.Title))
                 .ToListAsync(cancellationToken);
+        }
+
+        public Task<DetailedImage?> GetOrDefaultAsync(
+            DetailedImageQuery query,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return _context
+                .Images.AsNoTracking()
+                .Where(i => i.Status == ImageStatusValue.Available)
+                .Where(i => i.Id == query.Image.Value)
+                .WhereIsAccessible(query.Actor)
+                .Select(i => new DetailedImage(
+                    i,
+                    i.Likes.Count,
+                    i.Likes.Select(l => l.User).Contains(query.Actor.Id.Value)
+                ))
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

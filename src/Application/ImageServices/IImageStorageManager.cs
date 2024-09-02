@@ -11,5 +11,7 @@ namespace Application.ImageServices
         );
 
         public Stream? OpenReadStream(ImageId image, ImageKind kind);
+
+        public Task DeleteImageAsync(ImageId image, CancellationToken cancellationToken = default);
     }
 }

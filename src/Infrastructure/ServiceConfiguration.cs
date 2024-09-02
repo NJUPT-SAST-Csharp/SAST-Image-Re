@@ -110,6 +110,7 @@ namespace Infrastructure
                 IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
                 AlbumQueryRepository
             >();
+
             services.AddScoped<
                 IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
                 ImageQueryRepository
@@ -118,12 +119,17 @@ namespace Infrastructure
                 IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>,
                 ImageQueryRepository
             >();
+            services.AddScoped<
+                IQueryRepository<DetailedImageQuery, DetailedImage?>,
+                ImageQueryRepository
+            >();
 
             services.AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();
             services.AddScoped<IImageAvailabilityChecker, ImageAvailabilityChecker>();
 
             services.AddSingleton<IImageStorageManager, ImageStorageManager>();
             services.AddSingleton<ICoverStorageManager, CoverStorageManager>();
+            services.AddSingleton<ICompressProcessor, CompressProcessor>();
 
             return services;
         }

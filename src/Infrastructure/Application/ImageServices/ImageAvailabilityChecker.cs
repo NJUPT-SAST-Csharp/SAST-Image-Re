@@ -20,34 +20,34 @@ namespace Infrastructure.Application.ImageServices
         {
             var image = await _context
                 .Images.AsNoTracking()
+                .Where(i => i.Id == id.Value)
                 .Select(i => new
                 {
-                    i.Id,
                     i.AuthorId,
                     i.Status,
+                    i.Collaborators,
                     i.AccessLevel,
                 })
-                .Where(i => i.Id == id.Value)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (image is null)
                 return false;
-            if (image.AuthorId == actor.Id.Value || actor.IsAdmin)
+            if (
+                image.AuthorId == actor.Id.Value
+                || actor.IsAdmin
+                || image.Collaborators.Contains(actor.Id.Value)
+            )
                 return true;
             if (image.Status != ImageStatusValue.Available)
                 return false;
 
             return image.AccessLevel switch
             {
-                AccessLevelValue.PublicReadOnly => true,
-                AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
-                AccessLevelValue.Private => await _context
-                    .Albums.IgnoreQueryFilters()
-                    .AsNoTracking()
-                    .Where(a => a.Images.Select(i => i.Id).Contains(id.Value))
-                    .AnyAsync(a => a.Collaborators.Contains(actor.Id.Value), cancellationToken),
+                >= AccessLevelValue.PublicReadOnly => true,
+                >= AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
+                AccessLevelValue.Private => false,
 
-                _ => throw new InvalidOperationException("Unknown access level value."),
+                _ => false,
             };
         }
     }

@@ -29,7 +29,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.AlbumDomain.AlbumEntity.Album", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("Image")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -59,7 +59,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("title");
 
-                    b.HasKey("Id")
+                    b.HasKey("Image")
                         .HasName("pk_albums");
 
                     b.HasIndex("_title")
@@ -71,7 +71,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.CategoryDomain.CategoryEntity.Category", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("Image")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -80,7 +80,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
+                    b.HasKey("Image")
                         .HasName("pk_categories");
 
                     b.ToTable("categories", "domain");
@@ -88,7 +88,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.TagDomain.TagEntity.Tag", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("Image")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -97,7 +97,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
+                    b.HasKey("Image")
                         .HasName("pk_tags");
 
                     b.ToTable("tags", "domain");
@@ -105,7 +105,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.UserDomain.UserEntity.User", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("Image")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -119,7 +119,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("username");
 
-                    b.HasKey("Id")
+                    b.HasKey("Image")
                         .HasName("pk_users");
 
                     b.HasIndex("_username")
@@ -167,7 +167,7 @@ namespace Infrastructure.Migrations
                                 .HasColumnType("bigint")
                                 .HasColumnName("id");
 
-                            b1.Property<long?>("Id")
+                            b1.Property<long?>("Image")
                                 .HasColumnType("bigint")
                                 .HasColumnName("cover_id");
 
@@ -186,7 +186,7 @@ namespace Infrastructure.Migrations
 
                     b.OwnsMany("Domain.AlbumDomain.ImageEntity.Image", "_images", b1 =>
                         {
-                            b1.Property<long>("Id")
+                            b1.Property<long>("Image")
                                 .HasColumnType("bigint")
                                 .HasColumnName("id");
 
@@ -194,7 +194,7 @@ namespace Infrastructure.Migrations
                                 .HasColumnType("bigint")
                                 .HasColumnName("album_id");
 
-                            b1.HasKey("Id")
+                            b1.HasKey("Image")
                                 .HasName("pk_images");
 
                             b1.HasIndex("album_id")

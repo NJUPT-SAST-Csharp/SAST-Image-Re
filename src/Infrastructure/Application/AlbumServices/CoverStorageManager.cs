@@ -5,9 +5,13 @@ using Infrastructure.Storage;
 
 namespace Infrastructure.Application.AlbumServices
 {
-    internal sealed class CoverStorageManager(IStorageManager manager) : ICoverStorageManager
+    internal sealed class CoverStorageManager(
+        IStorageManager manager,
+        ICompressProcessor compressor
+    ) : ICoverStorageManager
     {
         private readonly IStorageManager _manager = manager;
+        private readonly ICompressProcessor _compressor = compressor;
 
         public Stream? OpenReadStream(AlbumId album)
         {
@@ -15,10 +19,10 @@ namespace Infrastructure.Application.AlbumServices
             return _manager.FindFile(id, StorageKind.Cover);
         }
 
-        public Task RemoveCoverAsync(AlbumId album, CancellationToken cancellationToken = default)
+        public Task DeleteCoverAsync(AlbumId album, CancellationToken cancellationToken = default)
         {
             var id = album.Value.ToString();
-            return _manager.DeleteAsync(id, cancellationToken);
+            return _manager.DeleteAsync(id, StorageKind.Cover, cancellationToken);
         }
 
         public async Task UpdateWithContainedImageAsync(
@@ -27,7 +31,7 @@ namespace Infrastructure.Application.AlbumServices
             CancellationToken cancellationToken = default
         )
         {
-            string imageId = image.Value.ToString();
+            string imageId = image.Value.ToString() + "_compressed";
             await using var stream =
                 _manager.FindFile(imageId, StorageKind.Image)
                 ?? throw new FileNotFoundException(null, imageId);
@@ -43,8 +47,14 @@ namespace Infrastructure.Application.AlbumServices
         )
         {
             string id = album.Value.ToString();
-            await _manager.StoreAsync(id, stream, StorageKind.Cover, cancellationToken);
-            await stream.DisposeAsync();
+            await using var _ = stream;
+            await using var compressed = await _compressor.CompressAsync(
+                stream,
+                90,
+                cancellationToken
+            );
+
+            await _manager.StoreAsync(id, compressed, StorageKind.Cover, cancellationToken);
         }
     }
 }

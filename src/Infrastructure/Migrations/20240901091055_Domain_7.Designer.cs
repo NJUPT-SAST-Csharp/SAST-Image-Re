@@ -14,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    [Migration("20240831084148_Domain_6")]
-    partial class Domain_6
+    [Migration("20240901091055_Domain_7")]
+    partial class Domain_7
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,6 +195,10 @@ namespace Infrastructure.Migrations
                             b1.Property<long>("Image")
                                 .HasColumnType("bigint")
                                 .HasColumnName("id");
+
+                            b1.Property<long>("_uploader")
+                                .HasColumnType("bigint")
+                                .HasColumnName("uploader");
 
                             b1.Property<long>("album_id")
                                 .HasColumnType("bigint")

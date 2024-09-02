@@ -5,7 +5,8 @@ namespace Domain.AlbumDomain.AlbumEntity
 {
     public readonly record struct AccessLevel
         : IValueObject<AccessLevel, AccessLevelValue>,
-            IFactoryConstructor<AccessLevel, int>
+            IFactoryConstructor<AccessLevel, int>,
+            IComparable<AccessLevel>
     {
         public const int MinValue = (int)AccessLevelValue.Private;
         public const int MaxValue = (int)AccessLevelValue.PublicReadWrite;
@@ -39,6 +40,21 @@ namespace Domain.AlbumDomain.AlbumEntity
             };
             return true;
         }
+
+        public readonly int CompareTo(AccessLevel other)
+        {
+            return Value.CompareTo(other.Value);
+        }
+
+        public readonly bool OthersCanWrite =>
+            Value == AccessLevelValue.PublicReadWrite || Value == AccessLevelValue.AuthReadWrite;
+        public readonly bool OthersCanNotWrite => !OthersCanWrite;
+
+        public static bool operator <(AccessLevel left, AccessLevel right) =>
+            left.CompareTo(right) < 0;
+
+        public static bool operator >(AccessLevel left, AccessLevel right) =>
+            left.CompareTo(right) > 0;
     }
 
     public enum AccessLevelValue

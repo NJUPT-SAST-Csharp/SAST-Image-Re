@@ -43,10 +43,12 @@ namespace Infrastructure.Database.ModelBuild
                 }
             );
 
+            builder.HasOne<User>().WithMany().HasForeignKey("_author");
             builder
                 .Property<UserId>("_author")
                 .HasColumnName("author_id")
-                .HasConversion(x => x.Value, x => new UserId(x));
+                .HasConversion(u => u.Value, v => new(v));
+
             builder
                 .PrimitiveCollection<UserId[]>("_collaborators")
                 .HasColumnName("collaborators")
@@ -97,6 +99,12 @@ namespace Infrastructure.Database.ModelBuild
                         .Property(x => x.Id)
                         .HasColumnName("id")
                         .HasConversion(x => x.Value, x => new(x));
+
+                    image.HasOne<User>().WithMany().HasForeignKey("_uploader");
+                    image
+                        .Property<UserId>("_uploader")
+                        .HasColumnName("uploader_id")
+                        .HasConversion(u => u.Value, v => new(v));
 
                     image.OwnsOne<ImageStatus>(
                         "_status",

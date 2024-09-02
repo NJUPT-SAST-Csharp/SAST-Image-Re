@@ -2,6 +2,7 @@
 using Domain.AlbumDomain.Events;
 using Domain.AlbumDomain.Exceptions;
 using Domain.Entity;
+using Domain.Shared;
 using Domain.UserDomain.UserEntity;
 
 namespace Domain.AlbumDomain.ImageEntity
@@ -46,15 +47,7 @@ namespace Domain.AlbumDomain.ImageEntity
             AddDomainEvent(new ImageUnlikedEvent(Id, command.Actor.Id));
         }
 
-        public void UpdateTags(UpdateImageTagsCommand command)
-        {
-            if (_status.IsRemoved || _status.IsAlbumRemoved)
-                throw new ImageRemovedException();
-
-            AddDomainEvent(new ImageTagsUpdatedEvent(Id, command.Tags));
-        }
-
-        public void Remove(RemoveImageCommand _)
+        public void Remove(RemoveImageCommand command)
         {
             if (_status.IsRemoved || _status.IsAlbumRemoved)
                 return;
@@ -63,7 +56,7 @@ namespace Domain.AlbumDomain.ImageEntity
             AddDomainEvent(new ImageRemovedEvent(Id, _status));
         }
 
-        public void Restore(RestoreImageCommand _)
+        public void Restore(RestoreImageCommand command)
         {
             if (_status.IsAvailable || _status.IsAlbumRemoved)
                 return;
@@ -90,6 +83,10 @@ namespace Domain.AlbumDomain.ImageEntity
 
         internal bool IsRemoved => _status.IsRemoved;
         internal bool IsAvailable => _status.IsAvailable;
+
+        internal bool IsUploader(Actor actor) => _uploader == actor.Id;
+
+        internal bool IsNotUploader(Actor actor) => !IsUploader(actor);
     }
 
     internal static class ImageListExtensions

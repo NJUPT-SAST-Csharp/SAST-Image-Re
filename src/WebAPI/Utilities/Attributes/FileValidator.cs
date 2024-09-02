@@ -21,7 +21,7 @@ namespace WebAPI.Utilities.Attributes
                 return new ValidationResult("Too large file. Max " + maxMB + " MBs.");
             if (file.ContentType.Contains("image") == false)
                 return new ValidationResult("Not supported file type.");
-            var stream = file.OpenReadStream();
+            using var stream = file.OpenReadStream();
             using var code = SKCodec.Create(stream);
             if (code is null)
                 return new ValidationResult("Not supported file type.");

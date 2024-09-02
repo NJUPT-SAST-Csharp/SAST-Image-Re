@@ -5,9 +5,19 @@ using SkiaSharp;
 
 namespace Infrastructure.Application.ImageServices
 {
-    internal sealed class ImageStorageManager(IStorageManager manager) : IImageStorageManager
+    internal sealed class ImageStorageManager(
+        IStorageManager manager,
+        ICompressProcessor compressor
+    ) : IImageStorageManager
     {
         private readonly IStorageManager _manager = manager;
+        private readonly ICompressProcessor _compressor = compressor;
+
+        public Task DeleteImageAsync(ImageId image, CancellationToken cancellationToken = default)
+        {
+            string filename = image.Value.ToString();
+            return _manager.DeleteAsync(filename, StorageKind.Image, cancellationToken);
+        }
 
         public Stream? OpenReadStream(ImageId image, ImageKind kind)
         {
@@ -15,7 +25,7 @@ namespace Infrastructure.Application.ImageServices
             {
                 ImageKind.Original => image.Value.ToString(),
                 ImageKind.Thumbnail => image.Value.ToString() + "_compressed",
-                _ => throw new ArgumentOutOfRangeException(nameof(kind)),
+                _ => throw new ArgumentException("Invalid ImageKind", kind.ToString()),
             };
 
             return _manager.FindFile(id, StorageKind.Image);
@@ -34,15 +44,21 @@ namespace Infrastructure.Application.ImageServices
             imageFile.Seek(0, SeekOrigin.Begin);
             await _manager.StoreAsync(filename, imageFile, StorageKind.Image, cancellationToken);
 
-            string target = Path.ChangeExtension(filename, ".webp")
+            string targetFilename = Path.ChangeExtension(filename, ".webp")
                 .Insert(id.Length, "_compressed");
-            imageFile.Seek(0, SeekOrigin.Begin);
-            using var image = SKBitmap.Decode(imageFile);
-            using var data = image.PeekPixels();
-            using var encoded = data.Encode(SKEncodedImageFormat.Webp, 50);
-            await using var compressed = encoded.AsStream();
-            compressed.Seek(0, SeekOrigin.Begin);
-            await _manager.StoreAsync(target, compressed, StorageKind.Image, cancellationToken);
+
+            await using var compressed = await _compressor.CompressAsync(
+                imageFile,
+                60,
+                cancellationToken
+            );
+
+            await _manager.StoreAsync(
+                targetFilename,
+                compressed,
+                StorageKind.Image,
+                cancellationToken
+            );
         }
     }
 }

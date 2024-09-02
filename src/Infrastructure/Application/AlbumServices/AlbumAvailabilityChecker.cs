@@ -33,21 +33,21 @@ namespace Infrastructure.Application.AlbumServices
 
             if (album is null)
                 return false;
-            if (actor.IsAdmin)
+            if (
+                actor.IsAdmin
+                || album.AuthorId == actor.Id.Value
+                || album.Collaborators.Contains(actor.Id.Value)
+            )
                 return true;
             if (album.Status == AlbumStatusValue.Removed)
-            {
-                if (album.AuthorId == actorId)
-                    return true;
                 return false;
-            }
 
             return album.AccessLevel switch
             {
-                AccessLevelValue.PublicReadOnly => true,
-                AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
-                AccessLevelValue.Private => album.AuthorId == actorId
-                    || album.Collaborators.Contains(actorId),
+                >= AccessLevelValue.PublicReadOnly => true,
+                >= AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
+                AccessLevelValue.Private => false,
+
                 _ => false,
             };
         }

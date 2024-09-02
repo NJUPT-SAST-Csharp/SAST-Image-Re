@@ -11,7 +11,11 @@ namespace Infrastructure.Storage
             CancellationToken cancellationToken = default
         );
 
-        public Task DeleteAsync(string path, CancellationToken cancellationToken = default);
+        public Task DeleteAsync(
+            string filename,
+            StorageKind kind,
+            CancellationToken cancellationToken = default
+        );
 
         public Stream? FindFile(string id, StorageKind kind);
     }
@@ -20,9 +24,26 @@ namespace Infrastructure.Storage
     {
         private readonly StorageOptions _options = options.Value;
 
-        public Task DeleteAsync(string path, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(
+            string filename,
+            StorageKind kind,
+            CancellationToken cancellationToken = default
+        )
         {
-            File.Delete(path);
+            string path = kind switch
+            {
+                StorageKind.Cover => _options.CoverPath,
+                StorageKind.Image => _options.ImagePath,
+                _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+            };
+
+            var files = Directory.GetFiles(path, $"{filename}*.*", SearchOption.TopDirectoryOnly);
+
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
+
             return Task.CompletedTask;
         }
 

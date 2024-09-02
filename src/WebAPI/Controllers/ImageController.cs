@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpGet("image/{id:long}")]
+        [HttpGet("image/{id:long}/file")]
         public async Task<IActionResult> GetImage(
             [FromRoute] long id,
             [FromQuery] ImageKind kind = ImageKind.Thumbnail,
@@ -88,6 +88,19 @@ namespace WebAPI.Controllers
             var image = await _querySender.SendAsync(query, cancellationToken);
 
             return this.ImageOrNotFound(image);
+        }
+
+        [HttpGet("image/{id:long}/info")]
+        public async Task<IActionResult> GetDetailedImage(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            DetailedImageQuery query = new(new(id), new(User));
+
+            var image = await _querySender.SendAsync(query, cancellationToken);
+
+            return this.DataOrNotFound(image);
         }
 
         [HttpGet("album/{albumId:long}/images")]
@@ -114,6 +127,34 @@ namespace WebAPI.Controllers
             var images = await _querySender.SendAsync(query, cancellationToken);
 
             return this.DataOrNotFound(images);
+        }
+
+        [HttpPost("album/{albumId:long}/image/{imageId:long}/like")]
+        public async Task<IActionResult> Like(
+            [FromRoute] long albumId,
+            [FromRoute] long imageId,
+            CancellationToken cancellationToken
+        )
+        {
+            LikeImageCommand command = new(new(albumId), new(imageId), new(User));
+
+            await _commandSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPost("album/{albumId:long}/image/{imageId:long}/unlike")]
+        public async Task<IActionResult> Unlike(
+            [FromRoute] long albumId,
+            [FromRoute] long imageId,
+            CancellationToken cancellationToken
+        )
+        {
+            UnlikeImageCommand command = new(new(albumId), new(imageId), new(User));
+
+            await _commandSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
         }
     }
 }

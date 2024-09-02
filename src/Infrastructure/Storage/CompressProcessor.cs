@@ -4,8 +4,8 @@ namespace Infrastructure.Storage
 {
     public interface ICompressProcessor
     {
-        public Task CompressAsync(
-            string filename,
+        public Task<Stream> CompressAsync(
+            Stream originalFile,
             int rate,
             CancellationToken cancellationToken = default
         );
@@ -13,19 +13,24 @@ namespace Infrastructure.Storage
 
     internal sealed class CompressProcessor : ICompressProcessor
     {
-        public async Task CompressAsync(
-            string filename,
+        public Task<Stream> CompressAsync(
+            Stream originalFile,
             int rate,
             CancellationToken cancellationToken = default
         )
         {
-            string target = Path.ChangeExtension(filename, ".webp");
-
-            using var image = SKBitmap.Decode(filename);
-            using var data = image.PeekPixels();
-            using var encoded = data.Encode(SKEncodedImageFormat.Webp, 50);
-            await using var targetFile = File.OpenWrite(target);
-            encoded.SaveTo(targetFile);
+            return Task.Run(
+                () =>
+                {
+                    originalFile.Seek(0, SeekOrigin.Begin);
+                    using var image = SKBitmap.Decode(originalFile);
+                    using var data = image.PeekPixels();
+                    var stream = data.Encode(SKEncodedImageFormat.Webp, rate).AsStream();
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return stream;
+                },
+                cancellationToken
+            );
         }
     }
 }
