@@ -39,10 +39,9 @@ namespace Infrastructure.ImageServices.Application
             CancellationToken cancellationToken = default
         )
         {
-            var like = await GetOrDefaultAsync(id, cancellationToken);
-
-            if (like is null)
-                EntityNotFoundException.Throw(id);
+            var like =
+                await GetOrDefaultAsync(id, cancellationToken)
+                ?? throw new EntityNotFoundException();
 
             return like;
         }

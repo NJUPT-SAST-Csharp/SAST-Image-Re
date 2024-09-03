@@ -1,4 +1,6 @@
 ﻿using Domain.Entity;
+using Domain.TagDomain.Commands;
+using Domain.TagDomain.Events;
 
 namespace Domain.TagDomain.TagEntity
 {
@@ -8,5 +10,13 @@ namespace Domain.TagDomain.TagEntity
             : base(default) { }
 
         private readonly TagName _name;
+
+        public Tag(CreateTagCommand command)
+            : base(TagId.GenerateNew())
+        {
+            _name = command.Name;
+
+            AddDomainEvent(new TagCreatedEvent(Id, _name));
+        }
     }
 }

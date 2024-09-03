@@ -1,8 +1,18 @@
-﻿namespace Application.TagServices
+﻿using Domain.TagDomain.Events;
+
+namespace Application.TagServices
 {
     public sealed class TagModel
     {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
+        private TagModel() { }
+
+        public TagModel(TagCreatedEvent e)
+        {
+            Id = e.Id.Value;
+            Name = e.TagName.Value;
+        }
+
+        public long Id { get; }
+        public string Name { get; } = null!;
     }
 }

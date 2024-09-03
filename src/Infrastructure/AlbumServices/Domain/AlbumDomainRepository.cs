@@ -30,15 +30,9 @@ namespace Infrastructure.AlbumServices.Domain
 
         public async Task<Album> GetAsync(AlbumId id, CancellationToken cancellationToken = default)
         {
-            var album = await _context.Albums.FirstOrDefaultAsync(
-                a => a.Id == id,
-                cancellationToken
-            );
-
-            if (album is null)
-            {
-                EntityNotFoundException.Throw(id);
-            }
+            var album =
+                await _context.Albums.FirstOrDefaultAsync(a => a.Id == id, cancellationToken)
+                ?? throw new EntityNotFoundException();
 
             return album;
         }

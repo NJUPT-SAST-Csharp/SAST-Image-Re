@@ -8,7 +8,7 @@ namespace Domain.TagDomain.TagEntity
             IFactoryConstructor<TagName, string>
     {
         public const int MaxLength = 10;
-        public const int MinLength = 2;
+        public const int MinLength = 1;
 
         public readonly string Value { get; }
 

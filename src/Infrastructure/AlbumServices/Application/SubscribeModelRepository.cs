@@ -40,10 +40,9 @@ namespace Infrastructure.AlbumServices.Application
             CancellationToken cancellationToken = default
         )
         {
-            var subscribe = await GetOrDefaultAsync(id, cancellationToken);
-
-            if (subscribe is null)
-                EntityNotFoundException.Throw(id);
+            var subscribe =
+                await GetOrDefaultAsync(id, cancellationToken)
+                ?? throw new EntityNotFoundException();
 
             return subscribe;
         }

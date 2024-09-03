@@ -17,10 +17,9 @@ namespace Infrastructure.AlbumServices.Application
             CancellationToken cancellationToken = default
         )
         {
-            var album = await GetOrDefaultAsync(id, cancellationToken);
-
-            if (album is null)
-                EntityNotFoundException.Throw(id);
+            var album =
+                await GetOrDefaultAsync(id, cancellationToken)
+                ?? throw new EntityNotFoundException();
 
             return album;
         }
