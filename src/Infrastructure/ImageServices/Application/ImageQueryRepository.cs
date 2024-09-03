@@ -41,7 +41,7 @@ namespace Infrastructure.ImageServices.Application
                     || i.Collaborators.Contains(query.Actor.Id.Value)
                     || query.Actor.IsAdmin
                 )
-                .Select(i => new RemovedImageDto(i.Id, i.Title))
+                .Select(i => new RemovedImageDto(i.Id, i.Title, i.RemovedAt!.Value))
                 .ToListAsync(cancellationToken);
         }
 

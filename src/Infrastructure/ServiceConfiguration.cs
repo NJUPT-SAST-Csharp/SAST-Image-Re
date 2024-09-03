@@ -30,13 +30,15 @@ namespace Infrastructure
 {
     public static class ServiceConfiguration
     {
-        public static IServiceCollection AddDb(
+        public static IServiceCollection AddInfrastructureServices(
             this IServiceCollection services,
-            string connectionString
+            IConfiguration configuration
         )
         {
             services
-                .AddScoped<DbConnection>(_ => new NpgsqlConnection(connectionString))
+                .AddScoped<DbConnection>(_ => new NpgsqlConnection(
+                    configuration.GetConnectionString("Database")
+                ))
                 .AddDbContext<DomainDbContext>(
                     (services, options) =>
                     {
@@ -52,63 +54,62 @@ namespace Infrastructure
                     }
                 );
 
-            return services;
-        }
+            services
+                .AddMediatR(options =>
+                {
+                    options.NotificationPublisherType = typeof(ForeachAwaitPublisher);
+                    options.RegisterServicesFromAssemblies(
+                        DomainAssembly.Assembly,
+                        ApplicationAssembly.Assembly
+                    );
+                    options.AutoRegisterRequestProcessors = true;
+                    options.AddOpenRequestPostProcessor(typeof(UnitOfWorkPostProcessor<,>));
+                })
+                .AddScoped<IQueryRequestSender, QuerySender>()
+                .AddScoped<IDomainCommandSender, CommandSender>()
+                .AddScoped<IDomainEventPublisher, EventPublisher>()
+                .AddScoped<IUnitOfWork, UnitOfWork>();
 
-        public static IServiceCollection AddHandlers(this IServiceCollection services)
-        {
-            services.AddMediatR(options =>
-            {
-                options.NotificationPublisherType = typeof(ForeachAwaitPublisher);
-                options.RegisterServicesFromAssemblies(
-                    DomainAssembly.Assembly,
-                    ApplicationAssembly.Assembly
-                );
-                options.AutoRegisterRequestProcessors = true;
-                options.AddOpenRequestPostProcessor(typeof(UnitOfWorkPostProcessor<,>));
-            });
-
-            services.AddScoped<IQueryRequestSender, QuerySender>();
-            services.AddScoped<IDomainCommandSender, CommandSender>();
-            services.AddScoped<IDomainEventPublisher, EventPublisher>();
-
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services
+                .Configure<StorageOptions>(configuration.GetRequiredSection("Storage"))
+                .AddSingleton<IStorageManager, StorageManager>();
 
             return services;
         }
 
-        public static IServiceCollection AddDomainServices(this IServiceCollection services)
+        public static IServiceCollection AddAlbumServices(this IServiceCollection services)
         {
-            services.AddScoped<IRepository<Album, AlbumId>, AlbumDomainRepository>();
-            services.AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>();
-            services.AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>();
-            services.AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>();
+            services
+                .AddScoped<IRepository<Album, AlbumId>, AlbumDomainRepository>()
+                .AddScoped<IRepository<AlbumModel, AlbumId>, AlbumModelRepository>()
+                .AddScoped<IQueryRepository<AlbumsQuery, List<AlbumDto>>, AlbumQueryRepository>()
+                .AddScoped<
+                    IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
+                    AlbumQueryRepository
+                >()
+                .AddScoped<
+                    IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
+                    AlbumQueryRepository
+                >()
+                .AddScoped<
+                    IRepository<SubscribeModel, (AlbumId, UserId)>,
+                    SubscribeModelRepository
+                >();
+
+            services
+                .AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>()
+                .AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>()
+                .AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>()
+                .AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>()
+                .AddSingleton<ICoverStorageManager, CoverStorageManager>();
 
             return services;
         }
 
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddImageServices(this IServiceCollection services)
         {
-            services.AddScoped<IRepository<AlbumModel, AlbumId>, AlbumModelRepository>();
             services.AddScoped<IRepository<ImageModel, ImageId>, ImageModelRepository>();
             services.AddScoped<IRepository<LikeModel, (ImageId, UserId)>, LikeModelRepository>();
-            services.AddScoped<
-                IRepository<SubscribeModel, (AlbumId, UserId)>,
-                SubscribeModelRepository
-            >();
-
-            services.AddScoped<
-                IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
-                AlbumQueryRepository
-            >();
-            services.AddScoped<
-                IQueryRepository<AlbumsQuery, List<AlbumDto>>,
-                AlbumQueryRepository
-            >();
-            services.AddScoped<
-                IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
-                AlbumQueryRepository
-            >();
 
             services.AddScoped<
                 IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
@@ -123,23 +124,9 @@ namespace Infrastructure
                 ImageQueryRepository
             >();
 
-            services.AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();
             services.AddScoped<IImageAvailabilityChecker, ImageAvailabilityChecker>();
-
             services.AddSingleton<IImageStorageManager, ImageStorageManager>();
-            services.AddSingleton<ICoverStorageManager, CoverStorageManager>();
             services.AddSingleton<ICompressProcessor, CompressProcessor>();
-
-            return services;
-        }
-
-        public static IServiceCollection ConfigureStorage(
-            this IServiceCollection services,
-            IConfiguration configuration
-        )
-        {
-            services.Configure<StorageOptions>(configuration);
-            services.AddSingleton<IStorageManager, StorageManager>();
 
             return services;
         }

@@ -4,7 +4,7 @@ using Domain.Shared;
 
 namespace Application.ImageServices.Queries
 {
-    public sealed record RemovedImageDto(long Id, string Title);
+    public sealed record RemovedImageDto(long Id, string Title, DateTime RemovedAt);
 
     public sealed record RemovedImagesQuery(AlbumId Album, Actor Actor)
         : IQueryRequest<List<RemovedImageDto>>;
