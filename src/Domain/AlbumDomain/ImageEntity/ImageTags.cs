@@ -1,64 +1,76 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Entity;
-using Domain.TagDomain.TagEntity;
 
 namespace Domain.AlbumDomain.ImageEntity
 {
-    public sealed class ImageTags
-        : ReadOnlyCollection<TagId>,
-            IValueObject<ImageTags, IReadOnlyCollection<TagId>>,
-            IFactoryConstructor<ImageTags, long[]?>
+    public readonly struct ImageTags
+        : IValueObject<ImageTags, string[]>,
+            IFactoryConstructor<ImageTags, string[]?>
     {
         public const int MaxCount = 10;
 
-        internal ImageTags(IList<TagId> list)
-            : base(list) { }
+        public const int MaxLength = 10;
+        public const int MinLength = 1;
 
-        public ImageTags()
-            : this([]) { }
+        public string[] Value { get; }
 
-        public IReadOnlyCollection<TagId> Value => Items.AsReadOnly();
+        internal ImageTags(string[] value)
+        {
+            Value = value;
+        }
 
-        public static bool TryCreateNew(long[]? input, [NotNullWhen(true)] out ImageTags? entity)
+        public static bool TryCreateNew(
+            string[]? input,
+            [NotNullWhen(true)] out ImageTags newObject
+        )
         {
             if (input is null || input.Length == 0)
             {
-                entity = [];
+                newObject = new ImageTags([]);
                 return true;
             }
 
-            var mid = input.Distinct();
+            var value = Array.ConvertAll(input, i => i.Trim()).Distinct().ToArray();
 
-            if (mid.Count() > MaxCount)
+            if (value.Length > MaxCount)
             {
-                entity = null;
+                newObject = default;
                 return false;
             }
 
-            var tagIds = mid.Select(t => new TagId(t)).ToList();
+            if (value.Any(tag => tag.Length > MaxLength || tag.Length < MinLength))
+            {
+                newObject = default;
+                return false;
+            }
 
-            entity = new(tagIds);
+            newObject = new(value);
             return true;
         }
 
-        public bool Equals(ImageTags? other)
+        public bool Equals(ImageTags other)
         {
-            if (other is null)
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            return Items.SequenceEqual(other.Items);
+            return Value.SequenceEqual(other.Value);
         }
 
         public override bool Equals(object? obj)
         {
-            return Equals(obj as ImageTags);
+            return obj is ImageTags tags && Equals(tags);
+        }
+
+        public static bool operator ==(ImageTags left, ImageTags right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ImageTags left, ImageTags right)
+        {
+            return !(left == right);
         }
 
         public override int GetHashCode()
         {
-            return Items.GetHashCode();
+            return Value.GetHashCode();
         }
     }
 }

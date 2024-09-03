@@ -1,7 +1,6 @@
 ﻿using Application.AlbumServices;
 using Application.CategoryServices;
 using Application.ImageServices;
-using Application.TagServices;
 using Application.UserServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,7 +12,6 @@ namespace Infrastructure.Database.ModelBuild
             IEntityTypeConfiguration<ImageModel>,
             IEntityTypeConfiguration<UserModel>,
             IEntityTypeConfiguration<CategoryModel>,
-            IEntityTypeConfiguration<TagModel>,
             IEntityTypeConfiguration<SubscribeModel>,
             IEntityTypeConfiguration<LikeModel>
     {
@@ -74,13 +72,6 @@ namespace Infrastructure.Database.ModelBuild
             builder.HasKey(a => a.Id);
 
             builder.HasIndex(c => c.Name).IsUnique(true);
-        }
-
-        public void Configure(EntityTypeBuilder<TagModel> builder)
-        {
-            builder.HasKey(a => a.Id);
-
-            builder.HasIndex(tag => tag.Name).IsUnique(true);
         }
 
         public void Configure(EntityTypeBuilder<SubscribeModel> builder)

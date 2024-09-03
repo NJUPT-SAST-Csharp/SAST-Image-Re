@@ -11,7 +11,7 @@ namespace Application.ImageServices.Queries
         public long UploaderId { get; } = i.UploaderId;
         public string Title { get; } = i.Title;
         public DateTime UploadedAt { get; } = i.UploadedAt;
-        public long[] Tags { get; } = i.Tags;
+        public string[] Tags { get; } = i.Tags;
         public int LikeCount { get; } = likeCount;
         public bool IsLiked { get; } = isLiked;
     }

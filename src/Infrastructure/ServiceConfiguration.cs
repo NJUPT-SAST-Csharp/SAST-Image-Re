@@ -6,8 +6,6 @@ using Application.ImageServices;
 using Application.ImageServices.Queries;
 using Application.Query;
 using Application.SharedServices;
-using Application.TagServices;
-using Application.TagServices.Queries;
 using Domain;
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
@@ -15,8 +13,6 @@ using Domain.AlbumDomain.Services;
 using Domain.Command;
 using Domain.Core.Event;
 using Domain.Extensions;
-using Domain.TagDomain.Services;
-using Domain.TagDomain.TagEntity;
 using Domain.UserDomain.UserEntity;
 using Infrastructure.AlbumServices.Application;
 using Infrastructure.AlbumServices.Domain;
@@ -24,8 +20,6 @@ using Infrastructure.Database;
 using Infrastructure.ImageServices.Application;
 using Infrastructure.SharedServices.EventBus;
 using Infrastructure.SharedServices.Storage;
-using Infrastructure.TagServices.Application;
-using Infrastructure.TagServices.Domain;
 using MediatR.NotificationPublishers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -86,9 +80,6 @@ namespace Infrastructure
         public static IServiceCollection AddDomainServices(this IServiceCollection services)
         {
             services.AddScoped<IRepository<Album, AlbumId>, AlbumDomainRepository>();
-            services.AddScoped<IRepository<Tag, TagId>, TagDomainRepository>();
-            services.AddScoped<ITagNameUniquenessChecker, TagNameUniquenessChecker>();
-            services.AddScoped<IImageTagsExistenceChecker, ImageTagsExistenceChecker>();
             services.AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>();
             services.AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>();
             services.AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>();
@@ -105,7 +96,6 @@ namespace Infrastructure
                 IRepository<SubscribeModel, (AlbumId, UserId)>,
                 SubscribeModelRepository
             >();
-            services.AddScoped<IRepository<TagModel, TagId>, TagModelRepository>();
 
             services.AddScoped<
                 IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
@@ -132,7 +122,6 @@ namespace Infrastructure
                 IQueryRepository<DetailedImageQuery, DetailedImage?>,
                 ImageQueryRepository
             >();
-            services.AddScoped<IQueryRepository<TagsQuery, List<TagDto>>, TagQueryRepository>();
 
             services.AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();
             services.AddScoped<IImageAvailabilityChecker, ImageAvailabilityChecker>();

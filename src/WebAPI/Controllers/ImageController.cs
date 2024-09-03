@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
         public sealed record AddImageRequest(
             [MaxLength(ImageTitle.MaxLength)] string Title,
             [FileValidator(0, 50)] IFormFile Image,
-            [Length(0, 10)] long[]? Tags = null
+            [Length(0, ImageTags.MaxCount)] string[]? Tags = null
         );
 
         [RequestSizeLimit(1024 * 1024 * 50)]

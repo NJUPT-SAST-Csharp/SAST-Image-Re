@@ -571,7 +571,7 @@ internal static class AlbumTestsHelper
     }
 
     public static readonly ImageTitle NewImageTitle = new("new_title");
-    public static readonly ImageTags NewImageTags = new([new(741), new(852)]);
+    public static readonly ImageTags NewImageTags = new([new("dog"), new("cat")]);
 
     public static readonly Cover DefaultCover = Cover.Default;
     public static readonly Cover ImmutableCover = Cover.UserCustomCover;
