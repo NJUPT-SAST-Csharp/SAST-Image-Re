@@ -51,5 +51,26 @@ namespace WebAPI.Controllers
 
             return Ok(tags);
         }
+
+        public sealed record UpdateTagRequest(
+            [Length(TagName.MinLength, TagName.MaxLength)] string Name
+        );
+
+        [HttpPost("tag/{id:long}")]
+        public async Task<IActionResult> UpdateTag(
+            [FromRoute] long id,
+            [FromBody] UpdateTagRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (TagName.TryCreateNew(request.Name, out var name) == false)
+                return this.ValidationFail(name, nameof(request.Name));
+
+            UpdateTagCommand command = new(new(id), name, new(User));
+
+            await _commandSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
     }
 }
