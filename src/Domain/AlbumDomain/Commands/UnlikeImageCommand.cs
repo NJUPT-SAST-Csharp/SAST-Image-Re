@@ -10,7 +10,7 @@ namespace Domain.AlbumDomain.Commands
         : IDomainCommand { }
 
     internal sealed class UnlikeCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<UnlikeImageCommand>
+        : IDomainCommandHandler<UnlikeImageCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

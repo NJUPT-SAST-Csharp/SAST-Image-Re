@@ -16,7 +16,7 @@ namespace Domain.AlbumDomain.Commands
     internal sealed class UpdateAlbumCategoryCommandHandler(
         IRepository<Album, AlbumId> repository,
         ICategoryExistenceChecker checker
-    ) : ICommandHandler<UpdateAlbumCategoryCommand>
+    ) : IDomainCommandHandler<UpdateAlbumCategoryCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
         private readonly ICategoryExistenceChecker _checker = checker;

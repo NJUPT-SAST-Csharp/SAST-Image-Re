@@ -8,7 +8,7 @@ namespace Domain.AlbumDomain.Commands
     public sealed record class SubscribeCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
 
     internal sealed class SubscribeCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<SubscribeCommand>
+        : IDomainCommandHandler<SubscribeCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

@@ -10,7 +10,7 @@ namespace Domain.AlbumDomain.Commands
         : IDomainCommand { }
 
     public sealed class RestoreImageCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<RestoreImageCommand>
+        : IDomainCommandHandler<RestoreImageCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

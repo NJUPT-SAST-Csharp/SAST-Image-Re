@@ -8,7 +8,7 @@ namespace Domain.AlbumDomain.Commands
     public sealed record class RestoreAlbumCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
 
     internal sealed class RestoreAlbumCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<RestoreAlbumCommand>
+        : IDomainCommandHandler<RestoreAlbumCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

@@ -9,7 +9,7 @@ namespace Domain.TagDomain.Commands
         : IDomainCommand { }
 
     internal sealed class UpdateTagCommandHandler(IRepository<Tag, TagId> repository)
-        : ICommandHandler<UpdateTagCommand>
+        : IDomainCommandHandler<UpdateTagCommand>
     {
         private readonly IRepository<Tag, TagId> _repository = repository;
 

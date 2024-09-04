@@ -19,7 +19,7 @@ namespace Domain.AlbumDomain.Commands
         IRepository<Album, AlbumId> repository,
         IAlbumTitleUniquenessChecker titleChecker,
         ICategoryExistenceChecker categoryChecker
-    ) : ICommandHandler<CreateAlbumCommand, AlbumId>
+    ) : IDomainCommandHandler<CreateAlbumCommand, AlbumId>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
         private readonly IAlbumTitleUniquenessChecker _titleChecker = titleChecker;

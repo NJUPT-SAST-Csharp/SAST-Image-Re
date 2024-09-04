@@ -15,7 +15,7 @@ namespace Domain.AlbumDomain.Commands
     internal sealed class UpdateCollaboratorsCommandHandler(
         IRepository<Album, AlbumId> repository,
         ICollaboratorsExistenceChecker checker
-    ) : ICommandHandler<UpdateCollaboratorsCommand>
+    ) : IDomainCommandHandler<UpdateCollaboratorsCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
         private readonly ICollaboratorsExistenceChecker _checker = checker;

@@ -9,7 +9,7 @@ namespace Domain.AlbumDomain.Commands
         : IDomainCommand { }
 
     internal sealed class UpdateCoverCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<UpdateCoverCommand>
+        : IDomainCommandHandler<UpdateCoverCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

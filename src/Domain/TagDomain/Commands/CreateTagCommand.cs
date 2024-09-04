@@ -11,7 +11,7 @@ namespace Domain.TagDomain.Commands
     internal sealed class CreateTagCommandHandler(
         IRepository<Tag, TagId> repository,
         ITagNameUniquenessChecker checker
-    ) : ICommandHandler<CreateTagCommand, TagId>
+    ) : IDomainCommandHandler<CreateTagCommand, TagId>
     {
         private readonly IRepository<Tag, TagId> _repository = repository;
         private readonly ITagNameUniquenessChecker _checker = checker;

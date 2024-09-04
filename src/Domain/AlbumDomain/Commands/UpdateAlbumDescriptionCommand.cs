@@ -13,7 +13,7 @@ namespace Domain.AlbumDomain.Commands
 
     internal sealed class UpdateAlbumDescriptionCommandHandler(
         IRepository<Album, AlbumId> repository
-    ) : ICommandHandler<UpdateAlbumDescriptionCommand>
+    ) : IDomainCommandHandler<UpdateAlbumDescriptionCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

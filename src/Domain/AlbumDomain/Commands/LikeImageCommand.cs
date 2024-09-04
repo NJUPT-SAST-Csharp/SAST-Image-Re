@@ -10,7 +10,7 @@ namespace Domain.AlbumDomain.Commands
         : IDomainCommand { }
 
     internal sealed class LikeCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<LikeImageCommand>
+        : IDomainCommandHandler<LikeImageCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

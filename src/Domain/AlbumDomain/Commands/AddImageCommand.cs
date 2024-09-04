@@ -18,7 +18,7 @@ namespace Domain.AlbumDomain.Commands
     internal sealed class AddImageCommandHandler(
         IRepository<Album, AlbumId> repository,
         IImageTagsExistenceChecker checker
-    ) : ICommandHandler<AddImageCommand>
+    ) : IDomainCommandHandler<AddImageCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
         private readonly IImageTagsExistenceChecker _checker = checker;

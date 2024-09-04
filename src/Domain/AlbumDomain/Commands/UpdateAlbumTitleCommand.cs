@@ -12,7 +12,7 @@ namespace Domain.AlbumDomain.Commands
     internal sealed class UpdateAlbumTitleCommandHandler(
         IRepository<Album, AlbumId> repository,
         IAlbumTitleUniquenessChecker checker
-    ) : ICommandHandler<UpdateAlbumTitleCommand>
+    ) : IDomainCommandHandler<UpdateAlbumTitleCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
         private readonly IAlbumTitleUniquenessChecker _checker = checker;

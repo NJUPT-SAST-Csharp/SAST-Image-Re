@@ -10,7 +10,7 @@ namespace Domain.AlbumDomain.Commands
         : IDomainCommand { }
 
     internal sealed class DeleteImageCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<RemoveImageCommand>
+        : IDomainCommandHandler<RemoveImageCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 

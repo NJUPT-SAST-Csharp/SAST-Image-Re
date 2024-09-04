@@ -12,7 +12,7 @@ namespace Domain.AlbumDomain.Commands
     ) : IDomainCommand { }
 
     internal sealed class UpdateAccessLevelCommandHandler(IRepository<Album, AlbumId> repository)
-        : ICommandHandler<UpdateAccessLevelCommand>
+        : IDomainCommandHandler<UpdateAccessLevelCommand>
     {
         private readonly IRepository<Album, AlbumId> _repository = repository;
 
