@@ -1,7 +1,7 @@
 ﻿using Domain.Extensions;
 using Domain.TagDomain.TagEntity;
 
-namespace Domain.TagDomain
+namespace Domain.TagDomain.Exceptions
 {
     public sealed class TagNameDuplicateException(TagName name) : DomainException
     {

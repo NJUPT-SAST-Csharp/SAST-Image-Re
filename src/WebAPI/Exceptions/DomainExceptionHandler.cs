@@ -1,6 +1,7 @@
 ﻿using Domain.AlbumDomain.Exceptions;
 using Domain.Extensions;
 using Domain.Shared;
+using Domain.TagDomain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,13 @@ namespace WebAPI.Exceptions
                 {
                     Status = StatusCodes.Status409Conflict,
                     Title = $"The title [{ex.Title.Value}] has been occupied.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.10",
+                },
+
+                TagNameDuplicateException ex => new()
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = $"The name [{ex.Name.Value}] has been occupied.",
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.10",
                 },
 

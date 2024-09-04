@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAlbumServices();
 builder.Services.AddImageServices();
+builder.Services.AddTagServices();
 
 builder.Services.AddExceptionHandlers();
 

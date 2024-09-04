@@ -3,14 +3,23 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Migrations.QueryDb
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Query_3 : Migration
+    public partial class Query_1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<long[]>(
+                name: "tags",
+                schema: "query",
+                table: "images",
+                type: "bigint[]",
+                nullable: false,
+                oldClrType: typeof(string[]),
+                oldType: "text[]");
+
             migrationBuilder.CreateTable(
                 name: "tags",
                 schema: "query",
@@ -24,20 +33,6 @@ namespace Infrastructure.Migrations.QueryDb
                 {
                     table.PrimaryKey("pk_tags", x => x.id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "ix_users_username",
-                schema: "query",
-                table: "users",
-                column: "username",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_categories_name",
-                schema: "query",
-                table: "categories",
-                column: "name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_tags_name",
@@ -54,15 +49,14 @@ namespace Infrastructure.Migrations.QueryDb
                 name: "tags",
                 schema: "query");
 
-            migrationBuilder.DropIndex(
-                name: "ix_users_username",
+            migrationBuilder.AlterColumn<string[]>(
+                name: "tags",
                 schema: "query",
-                table: "users");
-
-            migrationBuilder.DropIndex(
-                name: "ix_categories_name",
-                schema: "query",
-                table: "categories");
+                table: "images",
+                type: "text[]",
+                nullable: false,
+                oldClrType: typeof(long[]),
+                oldType: "bigint[]");
         }
     }
 }

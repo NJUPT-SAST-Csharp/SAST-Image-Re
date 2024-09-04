@@ -1,4 +1,4 @@
-﻿using Domain.TagDomain;
+﻿using Domain.TagDomain.Exceptions;
 using Domain.TagDomain.Services;
 using Domain.TagDomain.TagEntity;
 using Infrastructure.Database;

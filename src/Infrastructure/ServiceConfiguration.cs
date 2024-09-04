@@ -85,11 +85,25 @@ namespace Infrastructure
 
         public static IServiceCollection AddAlbumServices(this IServiceCollection services)
         {
-            services.AddScoped<IRepository<Album, AlbumId>, AlbumDomainRepository>();
-            services.AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>();
-            services.AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>();
-            services.AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>();
+            services
+                .AddScoped<IRepository<Album, AlbumId>, AlbumDomainRepository>()
+                .AddScoped<IRepository<AlbumModel, AlbumId>, AlbumModelRepository>()
+                .AddScoped<ICategoryExistenceChecker, CategoryExistenceChecker>()
+                .AddScoped<ICollaboratorsExistenceChecker, CollaboratorsExistenceChecker>()
+                .AddScoped<IAlbumTitleUniquenessChecker, AlbumTitleUniquenessChecker>()
+                .AddScoped<ICoverStorageManager, CoverStorageManager>()
+                .AddScoped<IAlbumAvailabilityChecker, AlbumAvailabilityChecker>();
 
+            services
+                .AddScoped<IQueryRepository<AlbumsQuery, List<AlbumDto>>, AlbumQueryRepository>()
+                .AddScoped<
+                    IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
+                    AlbumQueryRepository
+                >()
+                .AddScoped<
+                    IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
+                    AlbumQueryRepository
+                >();
             return services;
         }
 
@@ -102,36 +116,45 @@ namespace Infrastructure
                 SubscribeModelRepository
             >();
 
-            services.AddScoped<
-                IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
-                AlbumQueryRepository
-            >();
-            services.AddScoped<
-                IQueryRepository<AlbumsQuery, List<AlbumDto>>,
-                AlbumQueryRepository
-            >();
-            services.AddScoped<
-                IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
-                AlbumQueryRepository
-            >();
-
-            services.AddScoped<
-                IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
-                ImageQueryRepository
-            >();
-            services.AddScoped<
-                IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>,
-                ImageQueryRepository
-            >();
-            services.AddScoped<
-                IQueryRepository<DetailedImageQuery, DetailedImage?>,
-                ImageQueryRepository
-            >();
-            services.AddScoped<IQueryRepository<TagsQuery, List<TagDto>>, TagQueryRepository>();
+            services
+                .AddScoped<IQueryRepository<AlbumsQuery, List<AlbumDto>>, AlbumQueryRepository>()
+                .AddScoped<IQueryRepository<TagsQuery, List<TagDto>>, TagQueryRepository>()
+                .AddScoped<
+                    IQueryRepository<DetailedAlbumQuery, DetailedAlbum?>,
+                    AlbumQueryRepository
+                >()
+                .AddScoped<
+                    IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
+                    AlbumQueryRepository
+                >()
+                .AddScoped<
+                    IQueryRepository<AlbumImagesQuery, List<AlbumImageDto>>,
+                    ImageQueryRepository
+                >()
+                .AddScoped<
+                    IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>>,
+                    ImageQueryRepository
+                >()
+                .AddScoped<
+                    IQueryRepository<DetailedImageQuery, DetailedImage?>,
+                    ImageQueryRepository
+                >();
 
             services.AddScoped<IImageAvailabilityChecker, ImageAvailabilityChecker>();
+            services.AddScoped<IImageTagsExistenceChecker, ImageTagsExistenceChecker>();
             services.AddSingleton<IImageStorageManager, ImageStorageManager>();
             services.AddSingleton<ICompressProcessor, CompressProcessor>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddTagServices(this IServiceCollection services)
+        {
+            services.AddScoped<IRepository<Tag, TagId>, TagDomainRepository>();
+            services.AddScoped<IRepository<TagModel, TagId>, TagModelRepository>();
+            services.AddScoped<ITagNameUniquenessChecker, TagNameUniquenessChecker>();
+
+            services.AddScoped<IQueryRepository<TagsQuery, List<TagDto>>, TagQueryRepository>();
 
             return services;
         }

@@ -29,7 +29,9 @@ namespace Infrastructure.TagServices.Application
             );
 
             if (tag is not null)
+            {
                 _context.Tags.Remove(tag);
+            }
         }
 
         public async Task<TagModel> GetAsync(

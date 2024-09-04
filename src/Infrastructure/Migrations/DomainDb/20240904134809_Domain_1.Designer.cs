@@ -11,11 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.DomainDb
 {
     [DbContext(typeof(DomainDbContext))]
-    [Migration("20240831084148_Domain_6")]
-    partial class Domain_6
+    [Migration("20240904134809_Domain_1")]
+    partial class Domain_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,7 +30,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.AlbumDomain.AlbumEntity.Album", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -65,8 +65,11 @@ namespace Infrastructure.Migrations
                                 .HasColumnName("status");
                         });
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_albums");
+
+                    b.HasIndex("_author")
+                        .HasDatabaseName("ix_albums__author");
 
                     b.HasIndex("_title")
                         .IsUnique()
@@ -77,7 +80,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.CategoryDomain.CategoryEntity.Category", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -86,7 +89,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_categories");
 
                     b.ToTable("categories", "domain");
@@ -94,7 +97,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.TagDomain.TagEntity.Tag", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -103,7 +106,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_tags");
 
                     b.ToTable("tags", "domain");
@@ -111,7 +114,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.UserDomain.UserEntity.User", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -125,7 +128,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("username");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_users");
 
                     b.HasIndex("_username")
@@ -137,6 +140,13 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.AlbumDomain.AlbumEntity.Album", b =>
                 {
+                    b.HasOne("Domain.UserDomain.UserEntity.User", null)
+                        .WithMany()
+                        .HasForeignKey("_author")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_albums_users_author_id");
+
                     b.OwnsMany("Domain.AlbumDomain.AlbumEntity.Subscribe", "_subscribes", b1 =>
                         {
                             b1.Property<long>("User")
@@ -173,7 +183,7 @@ namespace Infrastructure.Migrations
                                 .HasColumnType("bigint")
                                 .HasColumnName("id");
 
-                            b1.Property<long?>("Image")
+                            b1.Property<long?>("Id")
                                 .HasColumnType("bigint")
                                 .HasColumnName("cover_id");
 
@@ -192,21 +202,35 @@ namespace Infrastructure.Migrations
 
                     b.OwnsMany("Domain.AlbumDomain.ImageEntity.Image", "_images", b1 =>
                         {
-                            b1.Property<long>("Image")
+                            b1.Property<long>("Id")
                                 .HasColumnType("bigint")
                                 .HasColumnName("id");
+
+                            b1.Property<long>("_uploader")
+                                .HasColumnType("bigint")
+                                .HasColumnName("uploader_id");
 
                             b1.Property<long>("album_id")
                                 .HasColumnType("bigint")
                                 .HasColumnName("album_id");
 
-                            b1.HasKey("Image")
+                            b1.HasKey("Id")
                                 .HasName("pk_images");
+
+                            b1.HasIndex("_uploader")
+                                .HasDatabaseName("ix_images_uploader_id");
 
                             b1.HasIndex("album_id")
                                 .HasDatabaseName("ix_images_album_id");
 
                             b1.ToTable("images", "domain");
+
+                            b1.HasOne("Domain.UserDomain.UserEntity.User", null)
+                                .WithMany()
+                                .HasForeignKey("_uploader")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired()
+                                .HasConstraintName("fk_images_users_uploader_id");
 
                             b1.WithOwner()
                                 .HasForeignKey("album_id")

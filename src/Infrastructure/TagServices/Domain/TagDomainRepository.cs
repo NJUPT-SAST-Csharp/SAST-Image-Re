@@ -1,5 +1,6 @@
 ﻿using Domain.Extensions;
 using Domain.Shared;
+using Domain.TagDomain.Events;
 using Domain.TagDomain.TagEntity;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,10 @@ namespace Infrastructure.TagServices.Domain
             );
 
             if (tag is not null)
+            {
+                tag.AddDomainEvent(new TagDeletedEvent(tag.Id));
                 _context.Remove(tag);
+            }
         }
 
         public async Task<Tag> GetAsync(TagId id, CancellationToken cancellationToken = default)

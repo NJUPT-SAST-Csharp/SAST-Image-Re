@@ -9,7 +9,7 @@ namespace Domain.TagDomain.TagEntity
         private Tag()
             : base(default) { }
 
-        private readonly TagName _name;
+        private TagName _name;
 
         public Tag(CreateTagCommand command)
             : base(TagId.GenerateNew())
@@ -17,6 +17,13 @@ namespace Domain.TagDomain.TagEntity
             _name = command.Name;
 
             AddDomainEvent(new TagCreatedEvent(Id, _name));
+        }
+
+        public void Update(UpdateTagCommand command)
+        {
+            _name = command.NewName;
+
+            AddDomainEvent(new TagUpdatedEvent(Id, _name));
         }
     }
 }

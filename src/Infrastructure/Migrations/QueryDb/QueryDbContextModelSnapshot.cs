@@ -25,12 +25,12 @@ namespace Infrastructure.Migrations.QueryDb
 
             modelBuilder.Entity("Application.AlbumServices.AlbumModel", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Image"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("AccessLevel")
                         .HasColumnType("integer")
@@ -75,7 +75,7 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_albums");
 
                     b.HasIndex("AuthorId")
@@ -112,12 +112,12 @@ namespace Infrastructure.Migrations.QueryDb
 
             modelBuilder.Entity("Application.CategoryServices.CategoryModel", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Image"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -129,7 +129,7 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_categories");
 
                     b.HasIndex("Name")
@@ -141,12 +141,12 @@ namespace Infrastructure.Migrations.QueryDb
 
             modelBuilder.Entity("Application.ImageServices.ImageModel", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Image"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("AccessLevel")
                         .HasColumnType("integer")
@@ -191,7 +191,7 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("bigint")
                         .HasColumnName("uploader_id");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_images");
 
                     b.HasIndex("AlbumId")
@@ -227,19 +227,19 @@ namespace Infrastructure.Migrations.QueryDb
 
             modelBuilder.Entity("Application.TagServices.TagModel", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Image"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_tags");
 
                     b.HasIndex("Name")
@@ -251,12 +251,12 @@ namespace Infrastructure.Migrations.QueryDb
 
             modelBuilder.Entity("Application.UserServices.UserModel", b =>
                 {
-                    b.Property<long>("Image")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Image"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text")
@@ -276,7 +276,7 @@ namespace Infrastructure.Migrations.QueryDb
                         .HasColumnType("text")
                         .HasColumnName("username");
 
-                    b.HasKey("Image")
+                    b.HasKey("Id")
                         .HasName("pk_users");
 
                     b.HasIndex("Username")
