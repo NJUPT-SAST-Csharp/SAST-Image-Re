@@ -45,7 +45,7 @@ internal static class ImageTestsHelper
     public static readonly AlbumId OuterAlbumId = new(2333);
     public static readonly ImageId Id = new(1);
     public static readonly ImageTitle NewImageTitle = new("new_title");
-    public static readonly ImageTags NewImageTags = new([new("dog"), new("cat")]);
+    public static readonly ImageTags NewImageTags = new([new(741), new(852)]);
 
     public static ImageStatus RemovedStatus => ImageStatus.Removed(DateTime.UtcNow);
 

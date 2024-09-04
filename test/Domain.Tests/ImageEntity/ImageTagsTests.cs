@@ -11,7 +11,7 @@ namespace Domain.Tests.ImageEntity
         {
             var imageTags_more_than_MaxCount = Enumerable
                 .Range(default, ImageTags.MaxCount + 1)
-                .Select(index => index.ToString())
+                .Select(index => (long)index)
                 .ToArray();
 
             var result = ImageTags.TryCreateNew(imageTags_more_than_MaxCount, out var imageTags);
@@ -26,23 +26,23 @@ namespace Domain.Tests.ImageEntity
 
             var valid_ImageTags = Enumerable
                 .Range(default, ImageTags.MaxCount - 1)
-                .Select(index => index.ToString())
+                .Select(index => (long)index)
                 .ToArray();
 
             ImageTags.TryCreateNew(valid_ImageTags, out var imageTags);
 
-            imageTags.Value.Length.ShouldBe(collaborator_count);
+            imageTags!.Count.ShouldBe(collaborator_count);
         }
 
         [TestMethod]
         public void Return_True_When_Count_Valid_After_Remove_Duplicate()
         {
-            const string duplicate_tag = "1";
+            const int duplicate_id = 0;
             const int duplicate_count = 10;
             var imageTags_less_than_MaxCount = Enumerable
                 .Range(default, ImageTags.MaxCount - 1)
-                .Select(index => index.ToString());
-            var duplicate_imageTags = Enumerable.Repeat(duplicate_tag, duplicate_count);
+                .Select(index => (long)index);
+            var duplicate_imageTags = Enumerable.Repeat((long)duplicate_id, duplicate_count);
             var total_imageTags = imageTags_less_than_MaxCount
                 .Concat(duplicate_imageTags)
                 .ToArray();
@@ -55,15 +55,15 @@ namespace Domain.Tests.ImageEntity
         [TestMethod]
         public void Should_Not_Contain_Duplicate_ImageTags()
         {
-            const string duplicate_tag = "rua";
+            const int duplicate_id = 0;
             const int duplicate_count = ImageTags.MaxCount / 2;
             var imageTags_with_duplicate_ones = Enumerable
-                .Repeat(duplicate_tag, duplicate_count)
+                .Repeat((long)duplicate_id, duplicate_count)
                 .ToArray();
 
             _ = ImageTags.TryCreateNew(imageTags_with_duplicate_ones, out var imageTags);
 
-            imageTags.Value.ShouldBeUnique();
+            imageTags!.ShouldBeUnique();
         }
 
         [TestMethod]
@@ -73,18 +73,18 @@ namespace Domain.Tests.ImageEntity
 
             var valid_ImageTags = Enumerable
                 .Range(default, ImageTags.MaxCount - 1)
-                .Select(index => index.ToString())
+                .Select(index => (long)index)
                 .ToArray();
 
             ImageTags.TryCreateNew(valid_ImageTags, out var imageTags);
 
-            imageTags.Value.Length.ShouldBe(collaborator_count);
+            imageTags!.Count.ShouldBe(collaborator_count);
         }
 
         [TestMethod]
         public void Return_True_When_Create_From_Empty()
         {
-            string[] empty_imageTags = [];
+            var empty_imageTags = ImageTags.Empty.Select(i => i.Value).ToArray();
 
             var result = ImageTags.TryCreateNew(empty_imageTags, out var _);
 
@@ -96,7 +96,7 @@ namespace Domain.Tests.ImageEntity
         {
             var maxcount_imageTags = Enumerable
                 .Range(default, ImageTags.MaxCount)
-                .Select(index => index.ToString())
+                .Select(index => (long)index)
                 .ToArray();
 
             var result = ImageTags.TryCreateNew(maxcount_imageTags, out var _);

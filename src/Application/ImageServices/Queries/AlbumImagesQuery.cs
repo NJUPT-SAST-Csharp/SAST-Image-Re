@@ -4,7 +4,7 @@ using Domain.Shared;
 
 namespace Application.ImageServices.Queries
 {
-    public sealed record AlbumImageDto(long Id, string Title, string[] Tags);
+    public sealed record AlbumImageDto(long Id, string Title, long[] Tags);
 
     public sealed record AlbumImagesQuery(AlbumId Album, Actor Actor)
         : IQueryRequest<List<AlbumImageDto>> { }

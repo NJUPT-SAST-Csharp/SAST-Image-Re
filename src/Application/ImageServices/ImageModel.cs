@@ -13,7 +13,7 @@ namespace Application.ImageServices
         public long AlbumId { get; }
         public long AuthorId { get; }
         public long UploaderId { get; }
-        public string[] Tags { get; } = [];
+        public long[] Tags { get; } = [];
         public DateTime UploadedAt { get; } = DateTime.UtcNow;
         public AccessLevelValue AccessLevel { get; private set; }
         public ImageStatusValue Status { get; private set; }
@@ -28,7 +28,7 @@ namespace Application.ImageServices
             AuthorId = e.AuthorId.Value;
             Title = e.Title.Value;
             Status = ImageStatusValue.Available;
-            Tags = e.Tags.Value;
+            Tags = e.Tags.Select(tag => tag.Value).ToArray();
             Collaborators = e.Collaborators.Select(c => c.Value).ToArray();
             AccessLevel = e.AccessLevel.Value;
         }

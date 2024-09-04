@@ -1,6 +1,7 @@
 ﻿using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
 using Domain.CategoryDomain.CategoryEntity;
+using Domain.TagDomain.TagEntity;
 using Domain.UserDomain.UserEntity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,7 +12,8 @@ namespace Infrastructure.Database.ModelBuild
     internal class DomainDbContextEntityTypeConfigurations
         : IEntityTypeConfiguration<Album>,
             IEntityTypeConfiguration<User>,
-            IEntityTypeConfiguration<Category>
+            IEntityTypeConfiguration<Category>,
+            IEntityTypeConfiguration<Tag>
     {
         public void Configure(EntityTypeBuilder<Album> builder)
         {
@@ -170,6 +172,23 @@ namespace Infrastructure.Database.ModelBuild
 
             builder
                 .Property<CategoryName>("_name")
+                .HasColumnName("name")
+                .HasConversion(t => t.Value, v => new(v));
+        }
+
+        public void Configure(EntityTypeBuilder<Tag> builder)
+        {
+            builder.ToTable("tags");
+            builder.HasKey(x => x.Id);
+            builder
+                .Property<TagId>("Id")
+                .HasColumnName("id")
+                .HasConversion(t => t.Value, v => new(v));
+
+            builder.Ignore(x => x.DomainEvents);
+
+            builder
+                .Property<TagName>("_name")
                 .HasColumnName("name")
                 .HasConversion(t => t.Value, v => new(v));
         }
