@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("tags")]
         public async Task<IActionResult> GetTags(
-            [FromQuery] [MaxLength(TagName.MaxLength)] string? name = null,
+            [FromQuery][MaxLength(TagName.MaxLength)] string? name = null,
             CancellationToken cancellationToken = default
         )
         {
@@ -67,6 +67,19 @@ namespace WebAPI.Controllers
                 return this.ValidationFail(name, nameof(request.Name));
 
             UpdateTagCommand command = new(new(id), name, new(User));
+
+            await _commandSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpDelete("tag/{id:long}")]
+        public async Task<IActionResult> DeleteTag(
+            [FromRoute] long id,
+            CancellationToken cancellationToken
+        )
+        {
+            DeleteTagCommand command = new(new(id), new(User));
 
             await _commandSender.SendAsync(command, cancellationToken);
 

@@ -140,6 +140,7 @@ namespace Infrastructure
                     ImageQueryRepository
                 >();
 
+            services.AddScoped<IImageModelTagDeletedRepository, ImageModelTagDeletedRepository>();
             services.AddScoped<IImageAvailabilityChecker, ImageAvailabilityChecker>();
             services.AddScoped<IImageTagsExistenceChecker, ImageTagsExistenceChecker>();
             services.AddSingleton<IImageStorageManager, ImageStorageManager>();

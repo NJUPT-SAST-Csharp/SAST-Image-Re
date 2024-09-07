@@ -21,6 +21,7 @@ builder
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.WriteAsString;
     });
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 

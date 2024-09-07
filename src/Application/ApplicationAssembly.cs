@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
 
-namespace Application
+namespace Application;
+
+public static class ApplicationAssembly
 {
-    public static class ApplicationAssembly
-    {
-        public static Assembly Assembly => typeof(ApplicationAssembly).Assembly;
-    }
+    public static Assembly Assembly => typeof(ApplicationAssembly).Assembly;
 }

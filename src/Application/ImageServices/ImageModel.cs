@@ -1,6 +1,7 @@
 ﻿using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.Events;
 using Domain.AlbumDomain.ImageEntity;
+using Domain.TagDomain.Events;
 
 namespace Application.ImageServices
 {
@@ -13,7 +14,7 @@ namespace Application.ImageServices
         public long AlbumId { get; }
         public long AuthorId { get; }
         public long UploaderId { get; }
-        public long[] Tags { get; } = [];
+        public long[] Tags { get; private set; } = [];
         public DateTime UploadedAt { get; } = DateTime.UtcNow;
         public AccessLevelValue AccessLevel { get; private set; }
         public ImageStatusValue Status { get; private set; }
@@ -64,6 +65,11 @@ namespace Application.ImageServices
         internal void UpdateAccessLevel(AlbumAccessLevelUpdatedEvent e)
         {
             AccessLevel = e.AccessLevel.Value;
+        }
+
+        internal void DeleteTag(TagDeletedEvent e)
+        {
+            Tags = Tags.Except([e.Id.Value]).ToArray();
         }
     }
 
