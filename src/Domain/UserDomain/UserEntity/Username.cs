@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Entity;
+using Domain.Shared;
 
 namespace Domain.UserDomain.UserEntity
 {
@@ -28,6 +29,12 @@ namespace Domain.UserDomain.UserEntity
             input = input.Trim();
 
             if (input.Length > MaxLength || input.Length < MinLength)
+            {
+                newObject = default;
+                return false;
+            }
+
+            if (input.IsLetterOrDigitOrUnderline() == false)
             {
                 newObject = default;
                 return false;

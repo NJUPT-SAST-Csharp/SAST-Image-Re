@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddUserServices(builder.Configuration);
 builder.Services.AddAlbumServices();
 builder.Services.AddImageServices();
 builder.Services.AddTagServices();

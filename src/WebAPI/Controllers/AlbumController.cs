@@ -43,9 +43,9 @@ namespace WebAPI.Controllers
             CreateAlbumCommand command =
                 new(title, description, accessLevel, new(request.CategoryId), new(User));
 
-            var albumId = await _commanderSender.SendAsync(command, cancellationToken);
+            var id = await _commanderSender.SendAsync(command, cancellationToken);
 
-            return Ok(albumId);
+            return Ok(new { id });
         }
 
         [HttpPost("album/{id:long}/remove")]

@@ -17,6 +17,7 @@ using Domain.Core.Event;
 using Domain.Extensions;
 using Domain.TagDomain.Services;
 using Domain.TagDomain.TagEntity;
+using Domain.UserDomain.Services;
 using Domain.UserDomain.UserEntity;
 using Infrastructure.AlbumServices.Application;
 using Infrastructure.AlbumServices.Domain;
@@ -26,6 +27,7 @@ using Infrastructure.SharedServices.EventBus;
 using Infrastructure.SharedServices.Storage;
 using Infrastructure.TagServices.Application;
 using Infrastructure.TagServices.Domain;
+using Infrastructure.UserServices.Domain;
 using MediatR.NotificationPublishers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -156,6 +158,22 @@ namespace Infrastructure
             services.AddScoped<ITagNameUniquenessChecker, TagNameUniquenessChecker>();
 
             services.AddScoped<IQueryRepository<TagsQuery, List<TagDto>>, TagQueryRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddUserServices(
+            this IServiceCollection services,
+            IConfiguration configuration
+        )
+        {
+            services.AddScoped<IRepository<User, Username>, UserDomainRepository>();
+
+            services
+                .Configure<JwtAuthOptions>(configuration.GetRequiredSection("Auth"))
+                .AddSingleton<IPasswordGenerator, PasswordGenerator>()
+                .AddSingleton<IPasswordValidator, PasswordValidator>()
+                .AddSingleton<IJwtProvider, JwtProvider>();
 
             return services;
         }

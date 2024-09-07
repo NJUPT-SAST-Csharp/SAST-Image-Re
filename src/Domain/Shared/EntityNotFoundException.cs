@@ -2,5 +2,5 @@
 
 namespace Domain.Shared
 {
-    public sealed class EntityNotFoundException() : DomainException { }
+    public class EntityNotFoundException : DomainException { }
 }

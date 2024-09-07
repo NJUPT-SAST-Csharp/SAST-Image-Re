@@ -36,12 +36,12 @@ namespace WebAPI.Controllers
 
             var id = await _commandSender.SendAsync(command, cancellationToken);
 
-            return Ok(id);
+            return Ok(new { id });
         }
 
         [HttpGet("tags")]
         public async Task<IActionResult> GetTags(
-            [FromQuery][MaxLength(TagName.MaxLength)] string? name = null,
+            [FromQuery] [MaxLength(TagName.MaxLength)] string? name = null,
             CancellationToken cancellationToken = default
         )
         {

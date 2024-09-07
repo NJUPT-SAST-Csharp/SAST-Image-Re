@@ -47,5 +47,13 @@ namespace Infrastructure.TagServices.Application
 
             return image;
         }
+
+        public Task<TagModel?> GetOrDefaultAsync(
+            TagId id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id.Value, cancellationToken);
+        }
     }
 }
