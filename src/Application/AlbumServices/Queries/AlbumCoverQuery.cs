@@ -4,7 +4,7 @@ using Domain.Shared;
 
 namespace Application.AlbumServices.Queries
 {
-    public sealed record class AlbumCoverQuery(long Id, Actor Actor) : IQueryRequest<Stream?>;
+    public sealed record class AlbumCoverQuery(AlbumId Id, Actor Actor) : IQueryRequest<Stream?>;
 
     internal sealed class AlbumCoverQueryHandler(
         ICoverStorageManager manager,
@@ -19,14 +19,16 @@ namespace Application.AlbumServices.Queries
             CancellationToken cancellationToken
         )
         {
-            AlbumId id = new(request.Id);
-
-            bool available = await _checker.CheckAsync(id, request.Actor, cancellationToken);
+            bool available = await _checker.CheckAsync(
+                request.Id,
+                request.Actor,
+                cancellationToken
+            );
 
             if (available == false)
                 return null;
 
-            var stream = _manager.OpenReadStream(id);
+            var stream = _manager.OpenReadStream(request.Id);
 
             return stream;
         }

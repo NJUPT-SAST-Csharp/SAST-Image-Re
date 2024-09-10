@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Text;
 using Application;
 using Application.AlbumServices;
 using Application.AlbumServices.Queries;
@@ -29,9 +30,11 @@ using Infrastructure.TagServices.Application;
 using Infrastructure.TagServices.Domain;
 using Infrastructure.UserServices.Domain;
 using MediatR.NotificationPublishers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 
 namespace Infrastructure
@@ -174,6 +177,48 @@ namespace Infrastructure
                 .AddSingleton<IPasswordGenerator, PasswordGenerator>()
                 .AddSingleton<IPasswordValidator, PasswordValidator>()
                 .AddSingleton<IJwtProvider, JwtProvider>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddJwtAuth(
+            this IServiceCollection services,
+            IConfiguration configuration
+        )
+        {
+            var jwtOptions =
+                configuration.GetRequiredSection("Auth").Get<JwtAuthOptions>()
+                ?? throw new NullReferenceException();
+
+            services
+                .AddAuthentication(static options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    var secKey = jwtOptions.SecKey;
+
+                    options.TokenValidationParameters = new()
+                    {
+                        NameClaimType = "Username",
+                        RoleClaimType = "Roles",
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.Default.GetBytes(secKey)
+                        ),
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        LifetimeValidator = (notbefore, expires, _, _) =>
+                        {
+                            return DateTime.UtcNow > (notbefore ?? DateTime.MinValue)
+                                && DateTime.UtcNow < (expires ?? DateTime.MaxValue);
+                        },
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidAlgorithms = [jwtOptions.Algorithm],
+                    };
+                });
 
             return services;
         }

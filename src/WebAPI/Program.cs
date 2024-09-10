@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddUserServices(builder.Configuration);
+builder.Services.AddUserServices(builder.Configuration).AddJwtAuth(builder.Configuration);
 builder.Services.AddAlbumServices();
 builder.Services.AddImageServices();
 builder.Services.AddTagServices();
@@ -22,13 +22,12 @@ builder
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.WriteAsString;
     });
-builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
 app.UseExceptionHandler(op => { });
 
-//app.EnsureDatabase();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

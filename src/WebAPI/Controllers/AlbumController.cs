@@ -233,7 +233,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetCover(long id, CancellationToken cancellationToken)
         {
             var result = await _querySender.SendAsync(
-                new AlbumCoverQuery(id, new(User)),
+                new AlbumCoverQuery(new(id), new(User)),
                 cancellationToken
             );
 

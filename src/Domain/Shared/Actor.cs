@@ -11,9 +11,50 @@ namespace Domain.Shared
 
         public Actor(ClaimsPrincipal user)
         {
-            Id = new(1);
+            IsAuthenticated = user.TryFetchId(out long id);
+            Id = new(id);
+            if (IsAuthenticated)
+            {
+                IsAdmin = user.HasRole(Role.Admin);
+            }
+        }
+    }
 
-            // TODO: Implement the logic to get the user id from the claims
+    public static class ClaimsPrincipalExtensions
+    {
+        public static bool TryFetchClaim(this ClaimsPrincipal user, string claim, out string? value)
+        {
+            var c = user.FindFirst(claim);
+            value = c?.Value;
+            return c is not null;
+        }
+
+        public static bool TryFetchId(this ClaimsPrincipal user, out long id)
+        {
+            if (user.TryFetchClaim("Id", out string? claim))
+            {
+                var result = long.TryParse(claim, out id);
+                return result;
+            }
+            id = 0;
+            return false;
+        }
+
+        public static bool HasRole(this ClaimsPrincipal user, Role role)
+        {
+            foreach (var r in user.FindAll("Roles"))
+            {
+                if (
+                    r is { } roleClaim
+                    && string.Equals(
+                        roleClaim.Value,
+                        role.ToString(),
+                        StringComparison.InvariantCultureIgnoreCase
+                    )
+                )
+                    return true;
+            }
+            return false;
         }
     }
 }
