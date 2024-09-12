@@ -13,6 +13,7 @@ namespace Domain.AlbumDomain.Events
         ImageTags Tags,
         AccessLevel AccessLevel,
         Collaborators Collaborators,
-        Stream ImageFile
+        Stream ImageFile,
+        DateTime CreatedAt
     ) : IDomainEvent { }
 }

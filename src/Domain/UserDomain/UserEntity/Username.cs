@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Entity;
-using Domain.Shared;
 
 namespace Domain.UserDomain.UserEntity
 {
@@ -34,14 +33,8 @@ namespace Domain.UserDomain.UserEntity
                 return false;
             }
 
-            if (input.IsLetterOrDigitOrUnderline() == false)
-            {
-                newObject = default;
-                return false;
-            }
-
             newObject = new(input);
-            return false;
+            return true;
         }
     }
 }

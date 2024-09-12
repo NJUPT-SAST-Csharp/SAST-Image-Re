@@ -8,7 +8,7 @@ using WebAPI.Utilities;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account")]
     [ApiController]
     public sealed class AccountController(
         IDomainCommandSender commandSender,
@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
             [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string Password
         );
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(
             [FromBody] LoginRequest request,
             CancellationToken cancellationToken
@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
 
             var jwt = await _commanderSender.SendAsync(command, cancellationToken);
 
-            return Ok(new { jwt });
+            return Ok(jwt);
         }
     }
 }

@@ -5,17 +5,20 @@ using Domain.AlbumDomain.AlbumEntity;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.DomainDb
 {
     [DbContext(typeof(DomainDbContext))]
-    partial class DomainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240912082416_Domain_3")]
+    partial class Domain_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

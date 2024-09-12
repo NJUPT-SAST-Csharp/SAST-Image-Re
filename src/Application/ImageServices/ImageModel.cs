@@ -32,6 +32,7 @@ namespace Application.ImageServices
             Tags = e.Tags.Select(tag => tag.Value).ToArray();
             Collaborators = e.Collaborators.Select(c => c.Value).ToArray();
             AccessLevel = e.AccessLevel.Value;
+            UploadedAt = e.CreatedAt;
         }
 
         internal void Remove(ImageRemovedEvent e)

@@ -6,14 +6,16 @@ namespace Domain.UserDomain.UserEntity
 {
     public readonly record struct Password
     {
+        public Password() { }
+
         internal Password(byte[] hash, byte[] salt)
         {
             Hash = hash;
             Salt = salt;
         }
 
-        public readonly byte[] Hash { get; }
-        public readonly byte[] Salt { get; }
+        public readonly byte[] Hash { get; } = null!;
+        public readonly byte[] Salt { get; } = null!;
     }
 
     public readonly record struct PasswordInput

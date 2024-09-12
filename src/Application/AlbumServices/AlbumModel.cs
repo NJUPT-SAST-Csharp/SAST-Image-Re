@@ -83,6 +83,11 @@ namespace Application.AlbumServices
                 image.AlbumRestored(e);
             }
         }
+
+        internal void ImageAdded(ImageAddedEvent e)
+        {
+            UpdatedAt = e.CreatedAt;
+        }
     }
 
     public sealed record class SubscribeModel(long Album, long User);

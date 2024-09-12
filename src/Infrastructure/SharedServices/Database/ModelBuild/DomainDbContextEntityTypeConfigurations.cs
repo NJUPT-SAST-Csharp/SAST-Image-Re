@@ -157,6 +157,14 @@ namespace Infrastructure.Database.ModelBuild
             builder.HasIndex("_username").IsUnique(true);
 
             builder.PrimitiveCollection<Role[]>("_roles").HasColumnName("roles");
+            builder.ComplexProperty<Password>(
+                "_password",
+                password =>
+                {
+                    password.Property(p => p.Hash).HasColumnName("password_hash");
+                    password.Property(p => p.Salt).HasColumnName("password_salt");
+                }
+            );
         }
 
         public void Configure(EntityTypeBuilder<Category> builder)

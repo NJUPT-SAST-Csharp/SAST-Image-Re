@@ -154,7 +154,8 @@ namespace Domain.AlbumDomain.AlbumEntity
                     command.Tags,
                     _accessLevel,
                     Collaborators,
-                    command.ImageFile
+                    command.ImageFile,
+                    DateTime.UtcNow
                 )
             );
 
