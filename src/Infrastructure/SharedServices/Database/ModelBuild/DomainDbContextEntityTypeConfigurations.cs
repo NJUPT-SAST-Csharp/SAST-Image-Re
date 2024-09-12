@@ -157,7 +157,7 @@ namespace Infrastructure.Database.ModelBuild
             builder.HasIndex("_username").IsUnique(true);
 
             builder.PrimitiveCollection<Role[]>("_roles").HasColumnName("roles");
-            builder.ComplexProperty<Password>(
+            builder.OwnsOne<Password>(
                 "_password",
                 password =>
                 {

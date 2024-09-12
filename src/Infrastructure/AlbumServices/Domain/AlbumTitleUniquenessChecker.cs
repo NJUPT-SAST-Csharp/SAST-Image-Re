@@ -17,15 +17,13 @@ namespace Infrastructure.AlbumServices.Domain
         )
         {
             bool isDuplicated = await _context
-                .Albums.AsNoTracking()
-                .AnyAsync(
-                    album => EF.Property<AlbumTitle>(album, "_title") == title,
-                    cancellationToken
-                );
+                .Albums.FromSql($"SELECT * FROM domain.albums WHERE title ILIKE {title.Value}")
+                .AsNoTracking()
+                .AnyAsync(cancellationToken);
 
             if (isDuplicated)
             {
-                AlbumTitleDuplicateException.Throw(title);
+                throw new AlbumTitleDuplicateException(title);
             }
         }
     }

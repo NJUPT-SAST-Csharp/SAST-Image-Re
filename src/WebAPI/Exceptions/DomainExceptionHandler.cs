@@ -2,6 +2,7 @@
 using Domain.Extensions;
 using Domain.Shared;
 using Domain.TagDomain.Exceptions;
+using Domain.UserDomain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +32,13 @@ namespace WebAPI.Exceptions
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Title = "Image's been removed.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
+                },
+
+                LoginException => new()
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Username or password incorrect.",
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
                 },
 

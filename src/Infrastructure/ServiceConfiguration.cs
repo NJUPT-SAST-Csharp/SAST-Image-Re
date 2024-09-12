@@ -170,7 +170,9 @@ namespace Infrastructure
             IConfiguration configuration
         )
         {
-            services.AddScoped<IRepository<User, Username>, UserDomainRepository>();
+            services
+                .AddScoped<IRepository<User, Username>, UserDomainRepository>()
+                .AddScoped<IRepository<User, UserId>, UserDomainRepository>();
 
             services
                 .Configure<JwtAuthOptions>(configuration.GetRequiredSection("Auth"))

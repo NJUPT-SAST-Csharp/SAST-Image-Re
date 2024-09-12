@@ -40,5 +40,28 @@ namespace WebAPI.Controllers
 
             return Ok(jwt);
         }
+
+        public record ResetPasswordRequest(
+            [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string OldPassword,
+            [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string NewPassword
+        );
+
+        [HttpPost("reset/password")]
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] ResetPasswordRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (PasswordInput.TryCreateNew(request.OldPassword, out var oldPassword) == false)
+                return this.ValidationFail(request.OldPassword, nameof(request.OldPassword));
+            if (PasswordInput.TryCreateNew(request.NewPassword, out var newPassword) == false)
+                return this.ValidationFail(request.NewPassword, nameof(request.NewPassword));
+
+            ResetPasswordCommand command = new(oldPassword, newPassword, new(User));
+
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
     }
 }

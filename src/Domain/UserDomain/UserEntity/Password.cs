@@ -4,9 +4,9 @@ using Domain.Shared;
 
 namespace Domain.UserDomain.UserEntity
 {
-    public readonly record struct Password
+    public sealed record class Password
     {
-        public Password() { }
+        private Password() { }
 
         internal Password(byte[] hash, byte[] salt)
         {
@@ -14,8 +14,8 @@ namespace Domain.UserDomain.UserEntity
             Salt = salt;
         }
 
-        public readonly byte[] Hash { get; } = null!;
-        public readonly byte[] Salt { get; } = null!;
+        public byte[] Hash { get; } = null!;
+        public byte[] Salt { get; } = null!;
     }
 
     public readonly record struct PasswordInput

@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.UserServices.Domain
 {
     internal sealed class UserDomainRepository(DomainDbContext context)
-        : IRepository<User, Username>
+        : IRepository<User, Username>,
+            IRepository<User, UserId>
     {
         private readonly DomainDbContext _context = context;
 
@@ -21,6 +22,16 @@ namespace Infrastructure.UserServices.Domain
             );
         }
 
+        async Task<UserId> IRepository<User, UserId>.AddAsync(
+            User entity,
+            CancellationToken cancellationToken
+        )
+        {
+            var entry = await _context.Users.AddAsync(entity, cancellationToken);
+
+            return entry.Entity.Id;
+        }
+
         Task IRepository<User, Username>.DeleteAsync(
             Username id,
             CancellationToken cancellationToken
@@ -31,14 +42,37 @@ namespace Infrastructure.UserServices.Domain
             );
         }
 
+        async Task IRepository<User, UserId>.DeleteAsync(
+            UserId id,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await _context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+                ?? throw new EntityNotFoundException();
+
+            _context.Users.Remove(user);
+        }
+
         async Task<User> IRepository<User, Username>.GetAsync(
             Username username,
             CancellationToken cancellationToken
         )
         {
             return await _context
-                    .Users.Where(user => EF.Property<Username>(user, "_username") == username)
+                    .Users.FromSql(
+                        $"SELECT * FROM domain.users WHERE username ILIKE {username.Value}"
+                    )
                     .FirstOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException();
+        }
+
+        async Task<User> IRepository<User, UserId>.GetAsync(
+            UserId id,
+            CancellationToken cancellationToken
+        )
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+                ?? throw new EntityNotFoundException();
         }
 
         Task<User?> IRepository<User, Username>.GetOrDefaultAsync(
@@ -47,8 +81,16 @@ namespace Infrastructure.UserServices.Domain
         )
         {
             return _context
-                .Users.Where(user => EF.Property<Username>(user, "_username") == username)
+                .Users.FromSql($"SELECT * FROM domain.users WHERE username ILIKE {username.Value}")
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        Task<User?> IRepository<User, UserId>.GetOrDefaultAsync(
+            UserId id,
+            CancellationToken cancellationToken
+        )
+        {
+            return _context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
     }
 }
