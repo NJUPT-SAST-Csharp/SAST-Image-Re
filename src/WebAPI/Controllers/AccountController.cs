@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
         }
 
         public sealed record ResetUsernameRequest(
-            [Length(Username.MinLength, Username.MaxLength)] string NewUsername
+            [Length(Username.MinLength, Username.MaxLength)] string Username
         );
 
         [HttpPost("reset/username")]
@@ -99,10 +99,10 @@ namespace WebAPI.Controllers
             CancellationToken cancellationToken
         )
         {
-            if (Username.TryCreateNew(request.NewUsername, out var newUsername) == false)
-                return this.ValidationFail(request.NewUsername, nameof(request.NewUsername));
+            if (Username.TryCreateNew(request.Username, out var username) == false)
+                return this.ValidationFail(request.Username, nameof(request.Username));
 
-            UpdateUsernameCommand command = new(newUsername, new(User));
+            ResetUsernameCommand command = new(username, new(User));
 
             await _commanderSender.SendAsync(command, cancellationToken);
 

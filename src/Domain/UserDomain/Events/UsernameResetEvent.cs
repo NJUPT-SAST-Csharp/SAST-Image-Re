@@ -3,5 +3,5 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.UserDomain.Events
 {
-    public sealed record UsernameUpdatedEvent(UserId UserId, Username Username) : IDomainEvent;
+    public sealed record UsernameResetEvent(UserId UserId, Username Username) : IDomainEvent;
 }

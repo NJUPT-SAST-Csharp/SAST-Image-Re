@@ -6,20 +6,20 @@ using Domain.UserEntity.Services;
 
 namespace Domain.UserDomain.Commands
 {
-    public sealed record UpdateUsernameCommand(Username Username, Actor Actor) : IDomainCommand;
+    public sealed record ResetUsernameCommand(Username Username, Actor Actor) : IDomainCommand;
 
-    internal sealed class UpdateUsernameCommandHandler(
+    internal sealed class ResetUsernameCommandHandler(
         IRepository<User, UserId> repository,
         IUsernameUniquenessChecker checker
-    ) : IDomainCommandHandler<UpdateUsernameCommand>
+    ) : IDomainCommandHandler<ResetUsernameCommand>
     {
-        public async Task Handle(UpdateUsernameCommand command, CancellationToken cancellationToken)
+        public async Task Handle(ResetUsernameCommand command, CancellationToken cancellationToken)
         {
             await checker.CheckAsync(command.Username, cancellationToken);
 
             var user = await repository.GetAsync(command.Actor.Id, cancellationToken);
 
-            user.UpdateUsername(command);
+            user.ResetUsername(command);
         }
     }
 }

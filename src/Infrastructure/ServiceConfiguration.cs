@@ -9,6 +9,7 @@ using Application.Query;
 using Application.SharedServices;
 using Application.TagServices;
 using Application.TagServices.Queries;
+using Application.UserServices;
 using Domain;
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
@@ -29,6 +30,7 @@ using Infrastructure.SharedServices.EventBus;
 using Infrastructure.SharedServices.Storage;
 using Infrastructure.TagServices.Application;
 using Infrastructure.TagServices.Domain;
+using Infrastructure.UserServices.Application;
 using Infrastructure.UserServices.Domain;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -175,6 +177,8 @@ namespace Infrastructure
                 .AddScoped<IRepository<User, Username>, UserDomainRepository>()
                 .AddScoped<IRepository<User, UserId>, UserDomainRepository>()
                 .AddScoped<IUsernameUniquenessChecker, UsernameUniquenessChecker>();
+
+            services.AddScoped<IRepository<UserModel, UserId>, UserModelRepository>();
 
             services
                 .Configure<JwtAuthOptions>(configuration.GetRequiredSection("Auth"))

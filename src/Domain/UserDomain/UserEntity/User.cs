@@ -65,9 +65,11 @@ namespace Domain.UserDomain.UserEntity
             _password = await generator.GenerateAsync(command.NewPassword, cancellationToken);
         }
 
-        public void UpdateUsername(UpdateUsernameCommand command)
+        public void ResetUsername(ResetUsernameCommand command)
         {
             _username = command.Username;
+
+            AddDomainEvent(new UsernameResetEvent(Id, _username));
         }
     }
 }
