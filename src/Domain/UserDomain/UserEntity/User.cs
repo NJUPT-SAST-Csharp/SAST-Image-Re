@@ -10,7 +10,7 @@ namespace Domain.UserDomain.UserEntity
         private User()
             : base(default) { }
 
-        private readonly Username _username;
+        private Username _username;
         private Password _password = null!;
         private Role[] _roles = [];
 
@@ -63,6 +63,11 @@ namespace Domain.UserDomain.UserEntity
             await validator.ValidateAsync(_password, command.OldPassword, cancellationToken);
 
             _password = await generator.GenerateAsync(command.NewPassword, cancellationToken);
+        }
+
+        public void UpdateUsername(UpdateUsernameCommand command)
+        {
+            _username = command.Username;
         }
     }
 }

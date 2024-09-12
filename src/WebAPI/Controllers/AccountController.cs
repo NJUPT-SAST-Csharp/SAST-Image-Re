@@ -88,5 +88,25 @@ namespace WebAPI.Controllers
 
             return NoContent();
         }
+
+        public sealed record ResetUsernameRequest(
+            [Length(Username.MinLength, Username.MaxLength)] string NewUsername
+        );
+
+        [HttpPost("reset/username")]
+        public async Task<IActionResult> ResetUsername(
+            [FromBody] ResetUsernameRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (Username.TryCreateNew(request.NewUsername, out var newUsername) == false)
+                return this.ValidationFail(request.NewUsername, nameof(request.NewUsername));
+
+            UpdateUsernameCommand command = new(newUsername, new(User));
+
+            await _commanderSender.SendAsync(command, cancellationToken);
+
+            return NoContent();
+        }
     }
 }
