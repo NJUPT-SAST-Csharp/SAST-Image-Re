@@ -17,7 +17,7 @@ namespace Infrastructure.AlbumServices.Domain
         )
         {
             bool isDuplicated = await _context
-                .Albums.FromSql($"SELECT * FROM domain.albums WHERE title ILIKE {title.Value}")
+                .Albums.FromSql($"SELECT 1 FROM domain.albums WHERE title ILIKE {title.Value}")
                 .AsNoTracking()
                 .AnyAsync(cancellationToken);
 

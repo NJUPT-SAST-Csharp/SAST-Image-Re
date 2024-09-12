@@ -56,6 +56,13 @@ namespace WebAPI.Exceptions
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.10",
                 },
 
+                UsernameDuplicateException ex => new()
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = $"The username [{ex.Username.Value}] has been occupied.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.10",
+                },
+
                 CategoryNotFoundException ex => new()
                 {
                     Status = StatusCodes.Status404NotFound,

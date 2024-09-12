@@ -4,7 +4,7 @@ POST {{WebAPI_HostAddress}}/album/
 Content-Type: application/json
 
 {
-  "title": "titletitletitletitletitletitletitletitletitle",
+  "title": "我是标题",
   "description": "The album description",
   "accessLevel": 2,
   "categoryId": 1

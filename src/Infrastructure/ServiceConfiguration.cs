@@ -20,6 +20,7 @@ using Domain.TagDomain.Services;
 using Domain.TagDomain.TagEntity;
 using Domain.UserDomain.Services;
 using Domain.UserDomain.UserEntity;
+using Domain.UserEntity.Services;
 using Infrastructure.AlbumServices.Application;
 using Infrastructure.AlbumServices.Domain;
 using Infrastructure.Database;
@@ -172,7 +173,8 @@ namespace Infrastructure
         {
             services
                 .AddScoped<IRepository<User, Username>, UserDomainRepository>()
-                .AddScoped<IRepository<User, UserId>, UserDomainRepository>();
+                .AddScoped<IRepository<User, UserId>, UserDomainRepository>()
+                .AddScoped<IUsernameUniquenessChecker, UsernameUniquenessChecker>();
 
             services
                 .Configure<JwtAuthOptions>(configuration.GetRequiredSection("Auth"))

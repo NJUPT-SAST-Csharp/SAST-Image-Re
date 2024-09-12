@@ -1,5 +1,6 @@
 ﻿using Domain.Entity;
 using Domain.UserDomain.Commands;
+using Domain.UserDomain.Events;
 using Domain.UserDomain.Services;
 
 namespace Domain.UserDomain.UserEntity
@@ -10,13 +11,32 @@ namespace Domain.UserDomain.UserEntity
             : base(default) { }
 
         private readonly Username _username;
-        private Password _password;
-
+        private Password _password = null!;
         private Role[] _roles = [];
-        private Roles Roles
+
+        private User(Username username, Password password)
+            : base(UserId.GenerateNew())
         {
-            get => new(_roles);
-            set => _roles = [.. value];
+            _username = username;
+            _password = password;
+            _roles = [Role.User];
+        }
+
+        public static async Task<User> RegisterAsync(
+            RegisterCommand command,
+            IPasswordGenerator generator,
+            CancellationToken cancellationToken
+        )
+        {
+            var password = await generator.GenerateAsync(command.Password, cancellationToken);
+
+            User user = new(command.Username, password);
+
+            user.AddDomainEvent(
+                new UserRegisteredEvent(user.Id, command.Username, command.Biography)
+            );
+
+            return user;
         }
 
         public async Task<LoginResult> LoginAsync(
@@ -28,7 +48,7 @@ namespace Domain.UserDomain.UserEntity
         {
             await validator.ValidateAsync(_password, command.Password, cancellationToken);
 
-            string jwt = provider.GetJwt(Id, _username, Roles);
+            string jwt = provider.GetJwt(Id, _username, new(_roles));
 
             return new(jwt);
         }

@@ -18,7 +18,32 @@ namespace WebAPI.Controllers
         private readonly IDomainCommandSender _commanderSender = commandSender;
         private readonly IQueryRequestSender _querySender = querySender;
 
-        public record LoginRequest(
+        public sealed record RegisterRequest(
+            [Length(Username.MinLength, Username.MaxLength)] string Username,
+            [MaxLength(Biography.MaxLength)] string Biography,
+            [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string Password
+        );
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(
+            [FromBody] RegisterRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            if (Username.TryCreateNew(request.Username, out var username) == false)
+                return this.ValidationFail(request.Username, nameof(request.Username));
+            if (PasswordInput.TryCreateNew(request.Password, out var password) == false)
+                return this.ValidationFail(request.Password, nameof(request.Password));
+            if (Biography.TryCreateNew(request.Biography, out var biography) == false)
+                return this.ValidationFail(request.Biography, nameof(request.Biography));
+
+            RegisterCommand command = new(username, password, biography);
+            var result = await _commanderSender.SendAsync(command, cancellationToken);
+
+            return Ok(result);
+        }
+
+        public sealed record LoginRequest(
             [Length(Username.MinLength, Username.MaxLength)] string Username,
             [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string Password
         );
@@ -41,7 +66,7 @@ namespace WebAPI.Controllers
             return Ok(jwt);
         }
 
-        public record ResetPasswordRequest(
+        public sealed record ResetPasswordRequest(
             [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string OldPassword,
             [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string NewPassword
         );

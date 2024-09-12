@@ -14,8 +14,8 @@ namespace Infrastructure.TagServices.Domain
         public async Task CheckAsync(TagName name, CancellationToken cancellationToken = default)
         {
             bool isDuplicated = await _context
-                .Tags.Select(tag => EF.Property<TagName>(tag, "_name"))
-                .ContainsAsync(name, cancellationToken);
+                .Tags.FromSql($"SELECT 1 FROM domain.tags WHERE name ILIKE {name.Value}")
+                .AnyAsync(cancellationToken);
 
             if (isDuplicated)
                 throw new TagNameDuplicateException(name);
