@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Security.Claims;
 using System.Text;
 using Application;
 using Application.AlbumServices;
@@ -216,25 +217,54 @@ namespace Infrastructure
 
                     options.TokenValidationParameters = new()
                     {
-                        NameClaimType = "Username",
-                        RoleClaimType = "Roles",
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.Default.GetBytes(secKey)
                         ),
                         ValidateIssuerSigningKey = true,
                         ValidateLifetime = true,
-                        LifetimeValidator = (notbefore, expires, _, _) =>
-                        {
-                            return DateTime.UtcNow > (notbefore ?? DateTime.MinValue)
-                                && DateTime.UtcNow < (expires ?? DateTime.MaxValue);
-                        },
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidAlgorithms = [jwtOptions.Algorithm],
                     };
                 });
 
+            services
+                .AddAuthorizationBuilder()
+                .AddDefaultPolicy(
+                    AuthPolicies.Auth,
+                    policy =>
+                        policy
+                            .RequireAuthenticatedUser()
+                            .RequireClaim(ClaimTypes.NameIdentifier)
+                            .RequireClaim(ClaimTypes.Name)
+                )
+                .AddPolicy(
+                    AuthPolicies.User,
+                    policy =>
+                        policy
+                            .RequireAuthenticatedUser()
+                            .RequireClaim(ClaimTypes.NameIdentifier)
+                            .RequireClaim(ClaimTypes.Name)
+                            .RequireRole(AuthPolicies.User)
+                )
+                .AddPolicy(
+                    AuthPolicies.Admin,
+                    policy =>
+                        policy
+                            .RequireAuthenticatedUser()
+                            .RequireClaim(ClaimTypes.NameIdentifier)
+                            .RequireClaim(ClaimTypes.Name)
+                            .RequireRole(AuthPolicies.Admin)
+                );
+
             return services;
         }
+    }
+
+    public readonly struct AuthPolicies
+    {
+        public const string Auth = nameof(Auth);
+        public const string User = nameof(Domain.UserDomain.UserEntity.Role.User);
+        public const string Admin = nameof(Domain.UserDomain.UserEntity.Role.Admin);
     }
 }

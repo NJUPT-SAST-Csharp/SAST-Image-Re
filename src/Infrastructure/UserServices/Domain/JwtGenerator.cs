@@ -14,14 +14,15 @@ namespace Infrastructure.UserServices.Domain
 
         public JwtValue GetJwt(UserId id, Username username, Roles roles)
         {
+            DateTime expireTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_options.Expires));
+
             var claims = new List<Claim>()
             {
-                new("Id", id.Value.ToString()),
-                new("Username", username.Value),
+                new(ClaimTypes.NameIdentifier, id.Value.ToString()),
+                new(ClaimTypes.Name, username.Value),
             };
-            claims.AddRange(roles.Select(r => new Claim("Roles", r.ToString())));
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r.ToString())));
 
-            DateTime expireTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_options.Expires));
             byte[] secBytes = Encoding.Default.GetBytes(_options.SecKey);
             var credentials = new SigningCredentials(
                 new SymmetricSecurityKey(secBytes),

@@ -35,7 +35,7 @@ namespace Domain.UserDomain.UserEntity
             }
 
             newObject = new(input);
-            return false;
+            return true;
         }
     }
 }
