@@ -27,6 +27,10 @@ builder
 
 var app = builder.Build();
 
+app.UseCors(cors =>
+    cors.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials()
+);
+
 app.UseExceptionHandler(op => { });
 
 app.UseAuthentication();

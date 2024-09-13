@@ -1,7 +1,39 @@
 ﻿@page "/"
+@inject HttpClient Http
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+@foreach(var album in list)
+{
+    <div>
+        <h2>@album.Title</h2>
+        <p>@album.Id</p>
+        <p>@album.Author</p>
+        <p>@album.Category</p>
+        <p>@album.IsArchived</p>
+        <p>@album.UpdatedAt</p>
+    </div>
+
+}
+
+@code{
+    private List<Album> list = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var albums = await Http.GetFromJsonAsync<Album[]>("http://localhost:5265/api/albums");
+        if(albums is not null)
+        foreach (var album in albums)
+        {
+            if(album is not null)
+                list.Add(album);
+        } 
+    }
+
+    public sealed record Album(long Id, string Title, long Author, long Category, bool IsArchived, DateTime UpdatedAt);
+}
