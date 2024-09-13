@@ -22,35 +22,36 @@ namespace Domain.UserDomain.UserEntity
             _roles = [Role.User];
         }
 
-        public static async Task<User> RegisterAsync(
+        public static async Task<(User User, JwtValue Jwt)> RegisterAsync(
             RegisterCommand command,
-            IPasswordGenerator generator,
+            IPasswordGenerator pwdGenerator,
+            IJwtGenerator jwtGenerator,
             CancellationToken cancellationToken
         )
         {
-            var password = await generator.GenerateAsync(command.Password, cancellationToken);
+            var password = await pwdGenerator.GenerateAsync(command.Password, cancellationToken);
 
             User user = new(command.Username, password);
 
-            user.AddDomainEvent(
-                new UserRegisteredEvent(user.Id, command.Username, command.Biography)
-            );
+            user.AddDomainEvent(new UserRegisteredEvent(user.Id, command.Username));
 
-            return user;
+            var jwt = jwtGenerator.GetJwt(user.Id, user._username, new(user._roles));
+
+            return (user, jwt);
         }
 
-        public async Task<LoginResult> LoginAsync(
+        public async Task<JwtValue> LoginAsync(
             LoginCommand command,
             IPasswordValidator validator,
-            IJwtProvider provider,
+            IJwtGenerator generator,
             CancellationToken cancellationToken
         )
         {
             await validator.ValidateAsync(_password, command.Password, cancellationToken);
 
-            string jwt = provider.GetJwt(Id, _username, new(_roles));
+            var jwt = generator.GetJwt(Id, _username, new(_roles));
 
-            return new(jwt);
+            return jwt;
         }
 
         public async Task ResetPasswordAsync(
@@ -70,6 +71,11 @@ namespace Domain.UserDomain.UserEntity
             _username = command.Username;
 
             AddDomainEvent(new UsernameResetEvent(Id, _username));
+        }
+
+        public void UpdateBiography(UpdateBiographyCommand command)
+        {
+            AddDomainEvent(new BiographyUpdatedEvent(Id, command.Biography));
         }
     }
 }

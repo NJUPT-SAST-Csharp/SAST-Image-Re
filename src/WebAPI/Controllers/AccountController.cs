@@ -20,8 +20,8 @@ namespace WebAPI.Controllers
 
         public sealed record RegisterRequest(
             [Length(Username.MinLength, Username.MaxLength)] string Username,
-            [MaxLength(Biography.MaxLength)] string Biography,
-            [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string Password
+            [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string Password,
+            [Range(RegistryCode.MinValue, RegistryCode.MaxValue)] int Code
         );
 
         [HttpPost("register")]
@@ -34,13 +34,13 @@ namespace WebAPI.Controllers
                 return this.ValidationFail(request.Username, nameof(request.Username));
             if (PasswordInput.TryCreateNew(request.Password, out var password) == false)
                 return this.ValidationFail(request.Password, nameof(request.Password));
-            if (Biography.TryCreateNew(request.Biography, out var biography) == false)
-                return this.ValidationFail(request.Biography, nameof(request.Biography));
+            if (RegistryCode.TryCreateNew(request.Code, out var code) == false)
+                return this.ValidationFail(request.Code, nameof(request.Code));
 
-            RegisterCommand command = new(username, password, biography);
+            RegisterCommand command = new(username, password, code);
             var result = await _commanderSender.SendAsync(command, cancellationToken);
 
-            return Ok(result);
+            return Ok(new { jwt = result.Value });
         }
 
         public sealed record LoginRequest(
@@ -61,9 +61,9 @@ namespace WebAPI.Controllers
 
             LoginCommand command = new(username, password);
 
-            var jwt = await _commanderSender.SendAsync(command, cancellationToken);
+            var result = await _commanderSender.SendAsync(command, cancellationToken);
 
-            return Ok(jwt);
+            return Ok(new { jwt = result.Value });
         }
 
         public sealed record ResetPasswordRequest(

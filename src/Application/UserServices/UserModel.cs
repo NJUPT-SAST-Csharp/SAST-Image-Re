@@ -16,12 +16,16 @@ namespace Application.UserServices
         {
             Id = e.Id.Value;
             Username = e.Username.Value;
-            Biography = e.Biography.Value;
         }
 
         internal void ResetUsername(UsernameResetEvent e)
         {
             Username = e.Username.Value;
+        }
+
+        internal void UpdateBiography(BiographyUpdatedEvent e)
+        {
+            Biography = e.Biography.Value;
         }
     }
 }

@@ -9,29 +9,37 @@ namespace Domain.UserDomain.Commands
     public sealed record RegisterCommand(
         Username Username,
         PasswordInput Password,
-        Biography Biography
-    ) : IDomainCommand<RegisterCommandResult>;
-
-    public sealed record RegisterCommandResult(long Id, string Username);
+        RegistryCode Code
+    ) : IDomainCommand<JwtValue>;
 
     internal sealed class RegisterCommandHandler(
-        IUsernameUniquenessChecker checker,
-        IPasswordGenerator generator,
+        IRegistryCodeChecker codeChecker,
+        IUsernameUniquenessChecker usernameChecker,
+        IPasswordGenerator pwdGenerator,
+        IJwtGenerator jwtGenerator,
         IRepository<User, UserId> repository
-    ) : IDomainCommandHandler<RegisterCommand, RegisterCommandResult>
+    ) : IDomainCommandHandler<RegisterCommand, JwtValue>
     {
-        public async Task<RegisterCommandResult> Handle(
+        public async Task<JwtValue> Handle(
             RegisterCommand command,
             CancellationToken cancellationToken
         )
         {
-            await checker.CheckAsync(command.Username, cancellationToken);
+            await Task.WhenAll(
+                usernameChecker.CheckAsync(command.Username, cancellationToken),
+                codeChecker.CheckAsync(command.Username, command.Code, cancellationToken)
+            );
 
-            var user = await User.RegisterAsync(command, generator, cancellationToken);
+            var result = await User.RegisterAsync(
+                command,
+                pwdGenerator,
+                jwtGenerator,
+                cancellationToken
+            );
 
-            await repository.AddAsync(user, cancellationToken);
+            await repository.AddAsync(result.User, cancellationToken);
 
-            return new(user.Id.Value, command.Username.Value);
+            return result.Jwt;
         }
     }
 }

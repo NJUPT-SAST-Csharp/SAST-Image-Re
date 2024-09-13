@@ -42,6 +42,13 @@ namespace WebAPI.Exceptions
                     Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
                 },
 
+                RegistryCodeException => new()
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Registry code incorrect.",
+                    Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
+                },
+
                 AlbumTitleDuplicateException ex => new()
                 {
                     Status = StatusCodes.Status409Conflict,

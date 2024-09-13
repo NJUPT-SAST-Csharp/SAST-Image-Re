@@ -6,31 +6,25 @@ using Domain.UserDomain.UserEntity;
 
 namespace Domain.UserDomain.Commands
 {
-    public record LoginResult(string Jwt);
-
     public sealed record LoginCommand(Username Username, PasswordInput Password)
-        : IDomainCommand<LoginResult>;
+        : IDomainCommand<JwtValue>;
 
     internal sealed class LoginCommandHandler(
         IRepository<User, Username> repository,
         IPasswordValidator validator,
-        IJwtProvider provider
-    ) : IDomainCommandHandler<LoginCommand, LoginResult>
+        IJwtGenerator jwtGenerator
+    ) : IDomainCommandHandler<LoginCommand, JwtValue>
     {
-        private readonly IRepository<User, Username> _repository = repository;
-        private readonly IPasswordValidator _validator = validator;
-        private readonly IJwtProvider _provider = provider;
-
-        public async Task<LoginResult> Handle(
+        public async Task<JwtValue> Handle(
             LoginCommand command,
             CancellationToken cancellationToken
         )
         {
             var user =
-                await _repository.GetOrDefaultAsync(command.Username, cancellationToken)
+                await repository.GetOrDefaultAsync(command.Username, cancellationToken)
                 ?? throw new LoginException();
 
-            return await user.LoginAsync(command, _validator, _provider, cancellationToken);
+            return await user.LoginAsync(command, validator, jwtGenerator, cancellationToken);
         }
     }
 }

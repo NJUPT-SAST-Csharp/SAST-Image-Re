@@ -8,11 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.UserServices.Domain
 {
-    internal sealed class JwtProvider(IOptions<JwtAuthOptions> options) : IJwtProvider
+    internal sealed class JwtGenerator(IOptions<JwtAuthOptions> options) : IJwtGenerator
     {
         private readonly JwtAuthOptions _options = options.Value;
 
-        public string GetJwt(UserId id, Username username, Roles roles)
+        public JwtValue GetJwt(UserId id, Username username, Roles roles)
         {
             var claims = new List<Claim>()
             {
@@ -35,7 +35,7 @@ namespace Infrastructure.UserServices.Domain
             );
 
             string jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-            return jwt;
+            return new(jwt);
         }
     }
 }

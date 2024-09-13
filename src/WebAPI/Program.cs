@@ -15,6 +15,8 @@ builder.Services.AddTagServices();
 
 builder.Services.AddExceptionHandlers();
 
+builder.Logging.AddLogger();
+
 builder
     .Services.AddControllers()
     .AddJsonOptions(options =>

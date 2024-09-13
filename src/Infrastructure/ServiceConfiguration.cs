@@ -39,6 +39,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using StackExchange.Redis;
 
 namespace Infrastructure
 {
@@ -87,6 +88,10 @@ namespace Infrastructure
             services
                 .Configure<StorageOptions>(configuration.GetRequiredSection("Storage"))
                 .AddSingleton<IStorageManager, StorageManager>();
+
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(configuration.GetConnectionString("Cache")!)
+            );
 
             return services;
         }
@@ -176,7 +181,8 @@ namespace Infrastructure
             services
                 .AddScoped<IRepository<User, Username>, UserDomainRepository>()
                 .AddScoped<IRepository<User, UserId>, UserDomainRepository>()
-                .AddScoped<IUsernameUniquenessChecker, UsernameUniquenessChecker>();
+                .AddScoped<IUsernameUniquenessChecker, UsernameUniquenessChecker>()
+                .AddScoped<IRegistryCodeChecker, RegistryCodeChecker>();
 
             services.AddScoped<IRepository<UserModel, UserId>, UserModelRepository>();
 
@@ -184,7 +190,7 @@ namespace Infrastructure
                 .Configure<JwtAuthOptions>(configuration.GetRequiredSection("Auth"))
                 .AddSingleton<IPasswordGenerator, PasswordGenerator>()
                 .AddSingleton<IPasswordValidator, PasswordValidator>()
-                .AddSingleton<IJwtProvider, JwtProvider>();
+                .AddSingleton<IJwtGenerator, JwtGenerator>();
 
             return services;
         }
