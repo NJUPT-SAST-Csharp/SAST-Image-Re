@@ -67,6 +67,8 @@ namespace Infrastructure.Database.ModelBuild
             builder.HasKey(a => a.Id);
 
             builder.HasIndex(user => user.Username).IsUnique(true);
+
+            builder.Property(u => u.RegisteredAt);
         }
 
         public void Configure(EntityTypeBuilder<CategoryModel> builder)

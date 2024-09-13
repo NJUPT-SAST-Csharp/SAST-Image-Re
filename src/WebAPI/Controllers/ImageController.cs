@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
         );
 
         [RequestSizeLimit(1024 * 1024 * 50)]
-        [HttpPost("album/{albumId:long}/add")]
+        [HttpPost("albums/{albumId:long}/add")]
         public async Task<IActionResult> AddImage(
             [FromRoute] long albumId,
             [Required] [FromForm] AddImageRequest request,
@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{albumId:long}/image/{imageId:long}/remove")]
+        [HttpPost("albums/{albumId:long}/images/{imageId:long}/remove")]
         public async Task<IActionResult> Remove(
             [FromRoute] long albumId,
             [FromRoute] long imageId,
@@ -62,7 +62,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{albumId:long}/image/{imageId:long}/restore")]
+        [HttpPost("albums/{albumId:long}/images/{imageId:long}/restore")]
         public async Task<IActionResult> Restore(
             [FromRoute] long albumId,
             [FromRoute] long imageId,
@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpGet("image/{id:long}/file")]
+        [HttpGet("images/{id:long}/file")]
         public async Task<IActionResult> GetImage(
             [FromRoute] long id,
             [FromQuery] ImageKind kind = ImageKind.Thumbnail,
@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
             return this.ImageOrNotFound(image);
         }
 
-        [HttpGet("image/{id:long}/info")]
+        [HttpGet("images/{id:long}/info")]
         public async Task<IActionResult> GetDetailedImage(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -103,7 +103,7 @@ namespace WebAPI.Controllers
             return this.DataOrNotFound(image);
         }
 
-        [HttpGet("album/{albumId:long}/images")]
+        [HttpGet("albums/{albumId:long}/images")]
         public async Task<IActionResult> GetAlbumImages(
             [FromRoute] long albumId,
             CancellationToken cancellationToken
@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
             return this.DataOrNotFound(images);
         }
 
-        [HttpGet("album/{albumId:long}/images/removed")]
+        [HttpGet("albums/{albumId:long}/images/removed")]
         public async Task<IActionResult> GetRemovedImages(
             [FromRoute] long albumId,
             CancellationToken cancellationToken
@@ -129,7 +129,7 @@ namespace WebAPI.Controllers
             return this.DataOrNotFound(images);
         }
 
-        [HttpPost("album/{albumId:long}/image/{imageId:long}/like")]
+        [HttpPost("albums/{albumId:long}/images/{imageId:long}/like")]
         public async Task<IActionResult> Like(
             [FromRoute] long albumId,
             [FromRoute] long imageId,
@@ -143,7 +143,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{albumId:long}/image/{imageId:long}/unlike")]
+        [HttpPost("albums/{albumId:long}/images/{imageId:long}/unlike")]
         public async Task<IActionResult> Unlike(
             [FromRoute] long albumId,
             [FromRoute] long imageId,

@@ -9,13 +9,13 @@ namespace Application.UserServices
         public long Id { get; }
         public string Username { get; private set; } = null!;
         public string Biography { get; private set; } = string.Empty;
-        public Uri? AvatarUrl { get; private set; } = null;
-        public Uri? HeaderUrl { get; private set; } = null;
+        public DateTime RegisteredAt { get; private init; }
 
         internal UserModel(UserRegisteredEvent e)
         {
             Id = e.Id.Value;
             Username = e.Username.Value;
+            RegisteredAt = DateTime.UtcNow;
         }
 
         internal void ResetUsername(UsernameResetEvent e)

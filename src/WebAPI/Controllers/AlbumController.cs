@@ -10,7 +10,7 @@ using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers
 {
-    [Route("api")]
+    [Route("api/albums")]
     [ApiController]
     public sealed class AlbumController(
         IDomainCommandSender commandSender,
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
             [Range(AccessLevel.MinValue, AccessLevel.MaxValue)] int AccessLevel
         );
 
-        [HttpPost("album")]
+        [HttpPost]
         public async Task<IActionResult> Create(
             [Required] [FromBody] CreateAlbumRequest request,
             CancellationToken cancellationToken
@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
             return Ok(new { id });
         }
 
-        [HttpPost("album/{id:long}/remove")]
+        [HttpPost("{id:long}/remove")]
         public async Task<IActionResult> Remove(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{id:long}/restore")]
+        [HttpPost("{id:long}/restore")]
         public async Task<IActionResult> Restore(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
             [Range(AccessLevel.MinValue, AccessLevel.MaxValue)] int AccessLevel
         );
 
-        [HttpPost("album/{id:long}/accessLevel")]
+        [HttpPost("{id:long}/accessLevel")]
         public async Task<IActionResult> UpdateAccessLevel(
             [FromRoute] long id,
             [Required] [FromBody] UpdateAccessLevelRequest request,
@@ -96,7 +96,7 @@ namespace WebAPI.Controllers
             [Length(AlbumDescription.MinLength, AlbumDescription.MaxLength)] string Description
         );
 
-        [HttpPost("album/{id:long}/description")]
+        [HttpPost("{id:long}/description")]
         public async Task<IActionResult> UpdateDescription(
             [FromRoute] long id,
             [Required] [FromBody] UpdateDescriptionRequest request,
@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
             [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title
         );
 
-        [HttpPost("album/{id:long}/title")]
+        [HttpPost("{id:long}/title")]
         public async Task<IActionResult> UpdateTitle(
             [FromRoute] long id,
             [FromBody] UpdateTitleRequest request,
@@ -134,7 +134,7 @@ namespace WebAPI.Controllers
 
         public sealed record class UpdateCollaboratorsRequest(long[] Collaborators);
 
-        [HttpPost("album/{id:long}/collaborators")]
+        [HttpPost("{id:long}/collaborators")]
         public async Task<IActionResult> UpdateCollaborators(
             [FromRoute] long id,
             [Required] [FromBody] UpdateCollaboratorsRequest request
@@ -149,7 +149,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{id:long}/cover")]
+        [HttpPost("{id:long}/cover")]
         [RequestFormLimits(MultipartBodyLengthLimit = 1024 * 1024 * 20)]
         public async Task<IActionResult> UpdateCover(
             [FromRoute] long id,
@@ -164,7 +164,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{id:long}/subscribe")]
+        [HttpPost("{id:long}/subscribe")]
         public async Task<IActionResult> Subscribe(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -177,7 +177,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("album/{id:long}/unsubscribe")]
+        [HttpPost("{id:long}/unsubscribe")]
         public async Task<IActionResult> Unsubscribe(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -190,7 +190,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpGet("album/{id:long}")]
+        [HttpGet("{id:long}")]
         public async Task<IActionResult> GetDetailedAlbum(
             [FromRoute] long id,
             CancellationToken cancellationToken
@@ -204,7 +204,7 @@ namespace WebAPI.Controllers
             return this.DataOrNotFound(result);
         }
 
-        [HttpGet("albums")]
+        [HttpGet]
         public async Task<IActionResult> GetAlbums(
             [FromQuery(Name = "c")] long? category = null,
             [FromQuery(Name = "a")] long? author = null,
@@ -222,14 +222,14 @@ namespace WebAPI.Controllers
             return this.DataOrNotFound(result);
         }
 
-        [HttpGet("albums/removed")]
+        [HttpGet("removed")]
         public async Task<IActionResult> GetRemovedAlbums()
         {
             var result = await _querySender.SendAsync(new RemovedAlbumsQuery(new(User)));
             return this.DataOrNotFound(result);
         }
 
-        [HttpGet("album/cover/{id:long}")]
+        [HttpGet("{id:long}/cover")]
         public async Task<IActionResult> GetCover(long id, CancellationToken cancellationToken)
         {
             var result = await _querySender.SendAsync(

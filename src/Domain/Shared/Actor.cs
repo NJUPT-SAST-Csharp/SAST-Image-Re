@@ -31,7 +31,7 @@ namespace Domain.Shared
 
         public static bool TryFetchId(this ClaimsPrincipal user, out long id)
         {
-            if (user.TryFetchClaim("Id", out string? claim))
+            if (user.TryFetchClaim(ClaimTypes.NameIdentifier, out string? claim))
             {
                 var result = long.TryParse(claim, out id);
                 return result;

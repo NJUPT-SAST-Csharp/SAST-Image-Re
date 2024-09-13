@@ -9,7 +9,7 @@ using WebAPI.Utilities;
 
 namespace WebAPI.Controllers
 {
-    [Route("api")]
+    [Route("api/tags")]
     [ApiController]
     public sealed class TagController(
         IDomainCommandSender commandSender,
@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
             [Length(TagName.MinLength, TagName.MaxLength)] string Name
         );
 
-        [HttpPost("tag")]
+        [HttpPost]
         public async Task<IActionResult> CreateTag(
             [FromBody] CreateTagRequest request,
             CancellationToken cancellationToken
@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
             return Ok(new { id });
         }
 
-        [HttpGet("tags")]
+        [HttpGet]
         public async Task<IActionResult> GetTags(
             [FromQuery] [MaxLength(TagName.MaxLength)] string? name = null,
             CancellationToken cancellationToken = default
@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
             [Length(TagName.MinLength, TagName.MaxLength)] string Name
         );
 
-        [HttpPost("tag/{id:long}")]
+        [HttpPost("{id:long}")]
         public async Task<IActionResult> UpdateTag(
             [FromRoute] long id,
             [FromBody] UpdateTagRequest request,
@@ -73,7 +73,7 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("tag/{id:long}")]
+        [HttpDelete("{id:long}")]
         public async Task<IActionResult> DeleteTag(
             [FromRoute] long id,
             CancellationToken cancellationToken
