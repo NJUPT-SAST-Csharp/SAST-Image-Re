@@ -4,32 +4,31 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class UpdateCollaboratorsCommand(
+    AlbumId Album,
+    Collaborators Collaborators,
+    Actor Actor
+) : IDomainCommand { }
+
+internal sealed class UpdateCollaboratorsCommandHandler(
+    IRepository<Album, AlbumId> repository,
+    ICollaboratorsExistenceChecker checker
+) : IDomainCommandHandler<UpdateCollaboratorsCommand>
 {
-    public sealed record class UpdateCollaboratorsCommand(
-        AlbumId Album,
-        Collaborators Collaborators,
-        Actor Actor
-    ) : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
+    private readonly ICollaboratorsExistenceChecker _checker = checker;
 
-    internal sealed class UpdateCollaboratorsCommandHandler(
-        IRepository<Album, AlbumId> repository,
-        ICollaboratorsExistenceChecker checker
-    ) : IDomainCommandHandler<UpdateCollaboratorsCommand>
+    public async Task Handle(
+        UpdateCollaboratorsCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
-        private readonly ICollaboratorsExistenceChecker _checker = checker;
+        await _checker.CheckAsync(request.Collaborators, cancellationToken);
 
-        public async Task Handle(
-            UpdateCollaboratorsCommand request,
-            CancellationToken cancellationToken
-        )
-        {
-            await _checker.CheckAsync(request.Collaborators, cancellationToken);
+        var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            var album = await _repository.GetAsync(request.Album, cancellationToken);
-
-            album.UpdateCollaborators(request);
-        }
+        album.UpdateCollaborators(request);
     }
 }

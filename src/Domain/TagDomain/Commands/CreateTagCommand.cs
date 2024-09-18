@@ -4,30 +4,26 @@ using Domain.Shared;
 using Domain.TagDomain.Services;
 using Domain.TagDomain.TagEntity;
 
-namespace Domain.TagDomain.Commands
+namespace Domain.TagDomain.Commands;
+
+public sealed record CreateTagCommand(TagName Name, Actor Actor) : IDomainCommand<TagId> { }
+
+internal sealed class CreateTagCommandHandler(
+    IRepository<Tag, TagId> repository,
+    ITagNameUniquenessChecker checker
+) : IDomainCommandHandler<CreateTagCommand, TagId>
 {
-    public sealed record CreateTagCommand(TagName Name, Actor Actor) : IDomainCommand<TagId> { }
+    private readonly IRepository<Tag, TagId> _repository = repository;
+    private readonly ITagNameUniquenessChecker _checker = checker;
 
-    internal sealed class CreateTagCommandHandler(
-        IRepository<Tag, TagId> repository,
-        ITagNameUniquenessChecker checker
-    ) : IDomainCommandHandler<CreateTagCommand, TagId>
+    public async Task<TagId> Handle(CreateTagCommand command, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Tag, TagId> _repository = repository;
-        private readonly ITagNameUniquenessChecker _checker = checker;
+        await _checker.CheckAsync(command.Name, cancellationToken);
 
-        public async Task<TagId> Handle(
-            CreateTagCommand command,
-            CancellationToken cancellationToken
-        )
-        {
-            await _checker.CheckAsync(command.Name, cancellationToken);
+        Tag tag = new(command);
 
-            var tag = new Tag(command);
+        var id = await _repository.AddAsync(tag, cancellationToken);
 
-            var id = await _repository.AddAsync(tag, cancellationToken);
-
-            return id;
-        }
+        return id;
     }
 }

@@ -2,28 +2,27 @@
 using Domain.TagDomain.Commands;
 using Domain.TagDomain.Events;
 
-namespace Domain.TagDomain.TagEntity
+namespace Domain.TagDomain.TagEntity;
+
+public sealed class Tag : EntityBase<TagId>
 {
-    public sealed class Tag : EntityBase<TagId>
+    private Tag()
+        : base(default) { }
+
+    private TagName _name;
+
+    public Tag(CreateTagCommand command)
+        : base(TagId.GenerateNew())
     {
-        private Tag()
-            : base(default) { }
+        _name = command.Name;
 
-        private TagName _name;
+        AddDomainEvent(new TagCreatedEvent(Id, _name));
+    }
 
-        public Tag(CreateTagCommand command)
-            : base(TagId.GenerateNew())
-        {
-            _name = command.Name;
+    public void Update(UpdateTagCommand command)
+    {
+        _name = command.NewName;
 
-            AddDomainEvent(new TagCreatedEvent(Id, _name));
-        }
-
-        public void Update(UpdateTagCommand command)
-        {
-            _name = command.NewName;
-
-            AddDomainEvent(new TagUpdatedEvent(Id, _name));
-        }
+        AddDomainEvent(new TagUpdatedEvent(Id, _name));
     }
 }

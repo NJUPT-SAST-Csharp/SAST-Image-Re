@@ -1,6 +1,5 @@
 ﻿using Domain.Extensions;
 
-namespace Domain.UserDomain.Exceptions
-{
-    public sealed class LoginException : DomainException { }
-}
+namespace Domain.UserDomain.Exceptions;
+
+public sealed class LoginException : DomainException { }

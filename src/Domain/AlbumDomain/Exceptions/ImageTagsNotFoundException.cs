@@ -2,13 +2,12 @@
 using Domain.AlbumDomain.ImageEntity;
 using Domain.Extensions;
 
-namespace Domain.AlbumDomain.Exceptions
-{
-    public sealed class ImageTagsNotFoundException(ImageTags tags) : DomainException
-    {
-        public ImageTags Tags { get; } = tags;
+namespace Domain.AlbumDomain.Exceptions;
 
-        [DoesNotReturn]
-        public static void Throw(ImageTags tags) => throw new ImageTagsNotFoundException(tags);
-    }
+public sealed class ImageTagsNotFoundException(ImageTags tags) : DomainException
+{
+    public ImageTags Tags { get; } = tags;
+
+    [DoesNotReturn]
+    public static void Throw(ImageTags tags) => throw new ImageTagsNotFoundException(tags);
 }

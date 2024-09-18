@@ -2,14 +2,12 @@
 using Domain.CategoryDomain.CategoryEntity;
 using Domain.Extensions;
 
-namespace Domain.AlbumDomain.Exceptions
-{
-    public sealed class CategoryNotFoundException(CategoryId category) : DomainException
-    {
-        public CategoryId Category { get; } = category;
+namespace Domain.AlbumDomain.Exceptions;
 
-        [DoesNotReturn]
-        public static void Throw(CategoryId category) =>
-            throw new CategoryNotFoundException(category);
-    }
+public sealed class CategoryNotFoundException(CategoryId category) : DomainException
+{
+    public CategoryId Category { get; } = category;
+
+    [DoesNotReturn]
+    public static void Throw(CategoryId category) => throw new CategoryNotFoundException(category);
 }

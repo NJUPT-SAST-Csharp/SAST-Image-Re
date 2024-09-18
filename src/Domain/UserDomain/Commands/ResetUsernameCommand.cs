@@ -4,22 +4,21 @@ using Domain.Shared;
 using Domain.UserDomain.UserEntity;
 using Domain.UserEntity.Services;
 
-namespace Domain.UserDomain.Commands
+namespace Domain.UserDomain.Commands;
+
+public sealed record ResetUsernameCommand(Username Username, Actor Actor) : IDomainCommand;
+
+internal sealed class ResetUsernameCommandHandler(
+    IRepository<User, UserId> repository,
+    IUsernameUniquenessChecker checker
+) : IDomainCommandHandler<ResetUsernameCommand>
 {
-    public sealed record ResetUsernameCommand(Username Username, Actor Actor) : IDomainCommand;
-
-    internal sealed class ResetUsernameCommandHandler(
-        IRepository<User, UserId> repository,
-        IUsernameUniquenessChecker checker
-    ) : IDomainCommandHandler<ResetUsernameCommand>
+    public async Task Handle(ResetUsernameCommand command, CancellationToken cancellationToken)
     {
-        public async Task Handle(ResetUsernameCommand command, CancellationToken cancellationToken)
-        {
-            await checker.CheckAsync(command.Username, cancellationToken);
+        await checker.CheckAsync(command.Username, cancellationToken);
 
-            var user = await repository.GetAsync(command.Actor.Id, cancellationToken);
+        var user = await repository.GetAsync(command.Actor.Id, cancellationToken);
 
-            user.ResetUsername(command);
-        }
+        user.ResetUsername(command);
     }
 }

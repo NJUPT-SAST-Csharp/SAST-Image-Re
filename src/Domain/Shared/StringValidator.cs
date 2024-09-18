@@ -1,31 +1,30 @@
-﻿namespace Domain.Shared
+﻿namespace Domain.Shared;
+
+internal static class StringValidator
 {
-    internal static class StringValidator
+    public static bool IsLetterOrDigitOrUnderline(this string value)
     {
-        public static bool IsLetterOrDigitOrUnderline(this string value)
+        foreach (char c in value)
         {
-            foreach (var c in value)
+            if (!char.IsLetterOrDigit(c) && c != '_')
             {
-                if (!char.IsLetterOrDigit(c) && c != '_')
-                {
-                    return false;
-                }
+                return false;
             }
-
-            return true;
         }
 
-        public static bool IsLetterOrDigit(this string value)
-        {
-            foreach (var c in value)
-            {
-                if (!char.IsLetterOrDigit(c))
-                {
-                    return false;
-                }
-            }
+        return true;
+    }
 
-            return true;
+    public static bool IsLetterOrDigit(this string value)
+    {
+        foreach (char c in value)
+        {
+            if (!char.IsLetterOrDigit(c))
+            {
+                return false;
+            }
         }
+
+        return true;
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Application.ImageServices
+﻿namespace Application.ImageServices;
+
+public enum ImageKind
 {
-    public enum ImageKind
-    {
-        Original,
-        Thumbnail,
-    }
+    Original,
+    Thumbnail,
 }

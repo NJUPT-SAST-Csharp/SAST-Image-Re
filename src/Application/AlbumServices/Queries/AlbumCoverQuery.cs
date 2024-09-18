@@ -2,35 +2,27 @@
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.Shared;
 
-namespace Application.AlbumServices.Queries
+namespace Application.AlbumServices.Queries;
+
+public sealed record class AlbumCoverQuery(AlbumId Id, Actor Actor) : IQueryRequest<Stream?>;
+
+internal sealed class AlbumCoverQueryHandler(
+    ICoverStorageManager manager,
+    IAlbumAvailabilityChecker checker
+) : IQueryRequestHandler<AlbumCoverQuery, Stream?>
 {
-    public sealed record class AlbumCoverQuery(AlbumId Id, Actor Actor) : IQueryRequest<Stream?>;
+    private readonly ICoverStorageManager _manager = manager;
+    private readonly IAlbumAvailabilityChecker _checker = checker;
 
-    internal sealed class AlbumCoverQueryHandler(
-        ICoverStorageManager manager,
-        IAlbumAvailabilityChecker checker
-    ) : IQueryRequestHandler<AlbumCoverQuery, Stream?>
+    public async Task<Stream?> Handle(AlbumCoverQuery request, CancellationToken cancellationToken)
     {
-        private readonly ICoverStorageManager _manager = manager;
-        private readonly IAlbumAvailabilityChecker _checker = checker;
+        bool available = await _checker.CheckAsync(request.Id, request.Actor, cancellationToken);
 
-        public async Task<Stream?> Handle(
-            AlbumCoverQuery request,
-            CancellationToken cancellationToken
-        )
-        {
-            bool available = await _checker.CheckAsync(
-                request.Id,
-                request.Actor,
-                cancellationToken
-            );
+        if (available == false)
+            return null;
 
-            if (available == false)
-                return null;
+        var stream = _manager.OpenReadStream(request.Id);
 
-            var stream = _manager.OpenReadStream(request.Id);
-
-            return stream;
-        }
+        return stream;
     }
 }

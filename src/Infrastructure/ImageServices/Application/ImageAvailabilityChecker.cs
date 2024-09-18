@@ -5,50 +5,48 @@ using Domain.Shared;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.ImageServices.Application
+namespace Infrastructure.ImageServices.Application;
+
+internal sealed class ImageAvailabilityChecker(QueryDbContext context) : IImageAvailabilityChecker
 {
-    internal sealed class ImageAvailabilityChecker(QueryDbContext context)
-        : IImageAvailabilityChecker
+    private readonly QueryDbContext _context = context;
+
+    public async Task<bool> CheckAsync(
+        ImageId id,
+        Actor actor,
+        CancellationToken cancellationToken = default
+    )
     {
-        private readonly QueryDbContext _context = context;
-
-        public async Task<bool> CheckAsync(
-            ImageId id,
-            Actor actor,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var image = await _context
-                .Images.AsNoTracking()
-                .Where(i => i.Id == id.Value)
-                .Select(i => new
-                {
-                    i.AuthorId,
-                    i.Status,
-                    i.Collaborators,
-                    i.AccessLevel,
-                })
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (image is null)
-                return false;
-            if (
-                image.AuthorId == actor.Id.Value
-                || actor.IsAdmin
-                || image.Collaborators.Contains(actor.Id.Value)
-            )
-                return true;
-            if (image.Status != ImageStatusValue.Available)
-                return false;
-
-            return image.AccessLevel switch
+        var image = await _context
+            .Images.AsNoTracking()
+            .Where(i => i.Id == id.Value)
+            .Select(i => new
             {
-                >= AccessLevelValue.PublicReadOnly => true,
-                >= AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
-                AccessLevelValue.Private => false,
+                i.AuthorId,
+                i.Status,
+                i.Collaborators,
+                i.AccessLevel,
+            })
+            .FirstOrDefaultAsync(cancellationToken);
 
-                _ => false,
-            };
-        }
+        if (image is null)
+            return false;
+        if (
+            image.AuthorId == actor.Id.Value
+            || actor.IsAdmin
+            || image.Collaborators.Contains(actor.Id.Value)
+        )
+            return true;
+        if (image.Status != ImageStatusValue.Available)
+            return false;
+
+        return image.AccessLevel switch
+        {
+            >= AccessLevelValue.PublicReadOnly => true,
+            >= AccessLevelValue.AuthReadOnly => actor.IsAuthenticated,
+            AccessLevelValue.Private => false,
+
+            _ => false,
+        };
     }
 }

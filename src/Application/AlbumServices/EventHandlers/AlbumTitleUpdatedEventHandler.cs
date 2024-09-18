@@ -3,18 +3,17 @@ using Domain.AlbumDomain.Events;
 using Domain.Core.Event;
 using Domain.Extensions;
 
-namespace Application.AlbumServices.EventHandlers
+namespace Application.AlbumServices.EventHandlers;
+
+internal sealed class AlbumTitleUpdatedEventHandler(IRepository<AlbumModel, AlbumId> repository)
+    : IDomainEventHandler<AlbumTitleUpdatedEvent>
 {
-    internal sealed class AlbumTitleUpdatedEventHandler(IRepository<AlbumModel, AlbumId> repository)
-        : IDomainEventHandler<AlbumTitleUpdatedEvent>
+    private readonly IRepository<AlbumModel, AlbumId> _repository = repository;
+
+    public async Task Handle(AlbumTitleUpdatedEvent e, CancellationToken cancellationToken)
     {
-        private readonly IRepository<AlbumModel, AlbumId> _repository = repository;
+        var album = await _repository.GetAsync(e.Album, cancellationToken);
 
-        public async Task Handle(AlbumTitleUpdatedEvent e, CancellationToken cancellationToken)
-        {
-            var album = await _repository.GetAsync(e.Album, cancellationToken);
-
-            album.UpdateTitle(e);
-        }
+        album.UpdateTitle(e);
     }
 }

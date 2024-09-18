@@ -1,4 +1,3 @@
-﻿namespace Domain
-{
-    public interface IDomainService { }
-}
+﻿namespace Domain;
+
+public interface IDomainService { }

@@ -3,20 +3,19 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class RestoreAlbumCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
+
+internal sealed class RestoreAlbumCommandHandler(IRepository<Album, AlbumId> repository)
+    : IDomainCommandHandler<RestoreAlbumCommand>
 {
-    public sealed record class RestoreAlbumCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
 
-    internal sealed class RestoreAlbumCommandHandler(IRepository<Album, AlbumId> repository)
-        : IDomainCommandHandler<RestoreAlbumCommand>
+    public async Task Handle(RestoreAlbumCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
+        var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-        public async Task Handle(RestoreAlbumCommand request, CancellationToken cancellationToken)
-        {
-            var album = await _repository.GetAsync(request.Album, cancellationToken);
-
-            album.Restore(request);
-        }
+        album.Restore(request);
     }
 }

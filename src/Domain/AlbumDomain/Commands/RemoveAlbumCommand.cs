@@ -3,20 +3,19 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class RemoveAlbumCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
+
+internal sealed class RemoveAlbumCommandHandler(IRepository<Album, AlbumId> repository)
+    : IDomainCommandHandler<RemoveAlbumCommand>
 {
-    public sealed record class RemoveAlbumCommand(AlbumId Album, Actor Actor) : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
 
-    internal sealed class RemoveAlbumCommandHandler(IRepository<Album, AlbumId> repository)
-        : IDomainCommandHandler<RemoveAlbumCommand>
+    public async Task Handle(RemoveAlbumCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
+        var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-        public async Task Handle(RemoveAlbumCommand request, CancellationToken cancellationToken)
-        {
-            var album = await _repository.GetAsync(request.Album, cancellationToken);
-
-            album.Remove(request);
-        }
+        album.Remove(request);
     }
 }

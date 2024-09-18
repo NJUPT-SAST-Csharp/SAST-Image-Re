@@ -1,7 +1,6 @@
-﻿namespace Domain.Entity
+﻿namespace Domain.Entity;
+
+public interface IValueObject<TObject, TValue> : IEquatable<TObject>
 {
-    public interface IValueObject<TObject, TValue> : IEquatable<TObject>
-    {
-        public TValue Value { get; }
-    }
+    public TValue Value { get; }
 }

@@ -1,29 +1,28 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Entity;
 
-namespace Domain.UserDomain.UserEntity
+namespace Domain.UserDomain.UserEntity;
+
+public readonly record struct RegistryCode
+    : IValueObject<RegistryCode, int>,
+        IFactoryConstructor<RegistryCode, int>
 {
-    public readonly record struct RegistryCode
-        : IValueObject<RegistryCode, int>,
-            IFactoryConstructor<RegistryCode, int>
+    public const int MinValue = 100000;
+    public const int MaxValue = 999999;
+
+    internal RegistryCode(int value) => Value = value;
+
+    public int Value { get; }
+
+    public static bool TryCreateNew(int input, [NotNullWhen(true)] out RegistryCode newObject)
     {
-        public const int MinValue = 100000;
-        public const int MaxValue = 999999;
-
-        internal RegistryCode(int value) => Value = value;
-
-        public int Value { get; }
-
-        public static bool TryCreateNew(int input, [NotNullWhen(true)] out RegistryCode newObject)
+        if (input < 100000 || input > 999999)
         {
-            if (input < 100000 || input > 999999)
-            {
-                newObject = default;
-                return false;
-            }
-
-            newObject = new(input);
-            return true;
+            newObject = default;
+            return false;
         }
+
+        newObject = new(input);
+        return true;
     }
 }

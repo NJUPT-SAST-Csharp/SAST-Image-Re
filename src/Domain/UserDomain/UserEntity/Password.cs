@@ -2,63 +2,59 @@
 using Domain.Entity;
 using Domain.Shared;
 
-namespace Domain.UserDomain.UserEntity
+namespace Domain.UserDomain.UserEntity;
+
+public sealed record class Password
 {
-    public sealed record class Password
+    private Password() { }
+
+    internal Password(byte[] hash, byte[] salt)
     {
-        private Password() { }
-
-        internal Password(byte[] hash, byte[] salt)
-        {
-            Hash = hash;
-            Salt = salt;
-        }
-
-        public byte[] Hash { get; } = null!;
-        public byte[] Salt { get; } = null!;
+        Hash = hash;
+        Salt = salt;
     }
 
-    public readonly record struct PasswordInput
-        : IValueObject<PasswordInput, string>,
-            IFactoryConstructor<PasswordInput, string>
+    public byte[] Hash { get; } = null!;
+    public byte[] Salt { get; } = null!;
+}
+
+public readonly record struct PasswordInput
+    : IValueObject<PasswordInput, string>,
+        IFactoryConstructor<PasswordInput, string>
+{
+    public const int MaxLength = 20;
+    public const int MinLength = 6;
+
+    public string Value { get; }
+
+    internal PasswordInput(string value)
     {
-        public const int MaxLength = 20;
-        public const int MinLength = 6;
+        Value = value;
+    }
 
-        public string Value { get; }
-
-        internal PasswordInput(string value)
+    public static bool TryCreateNew(string input, [NotNullWhen(true)] out PasswordInput newObject)
+    {
+        if (string.IsNullOrWhiteSpace(input))
         {
-            Value = value;
+            newObject = default;
+            return false;
         }
 
-        public static bool TryCreateNew(
-            string input,
-            [NotNullWhen(true)] out PasswordInput newObject
-        )
+        input = input.Trim();
+
+        if (input.Length < MinLength || input.Length > MaxLength)
         {
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                newObject = default;
-                return false;
-            }
-
-            input = input.Trim();
-
-            if (input.Length < MinLength || input.Length > MaxLength)
-            {
-                newObject = default;
-                return false;
-            }
-
-            if (input.IsLetterOrDigitOrUnderline() == false)
-            {
-                newObject = default;
-                return false;
-            }
-
-            newObject = new(input);
-            return true;
+            newObject = default;
+            return false;
         }
+
+        if (input.IsLetterOrDigitOrUnderline() == false)
+        {
+            newObject = default;
+            return false;
+        }
+
+        newObject = new(input);
+        return true;
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject HttpClient Http
+@inject IAlbumAPI api
 
 <PageTitle>Home</PageTitle>
 
@@ -7,33 +7,19 @@
 
 Welcome to your new app.
 
-@foreach(var album in list)
+@foreach (var album in albums)
 {
-    <div>
-        <h2>@album.Title</h2>
-        <p>@album.Id</p>
-        <p>@album.Author</p>
-        <p>@album.Category</p>
-        <p>@album.IsArchived</p>
-        <p>@album.UpdatedAt</p>
-    </div>
-
+    <li>@album.ToString()</li>
 }
 
+
 @code{
-    private List<Album> list = [];
 
-    protected override async Task OnInitializedAsync()
+    List<AlbumDto> albums = [];
+
+    protected async override Task OnInitializedAsync()
     {
-
-        var albums = await Http.GetFromJsonAsync<Album[]>("http://localhost:5265/api/albums");
-        if(albums is not null)
-        foreach (var album in albums)
-        {
-            if(album is not null)
-                list.Add(album);
-        } 
+        albums = await api.GetAlbums(authorId: 1276461256283164672);
     }
 
-    public sealed record Album(long Id, string Title, long Author, long Category, bool IsArchived, DateTime UpdatedAt);
 }

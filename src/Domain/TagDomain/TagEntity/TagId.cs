@@ -1,9 +1,8 @@
 ﻿using Domain.Entity;
 
-namespace Domain.TagDomain.TagEntity
+namespace Domain.TagDomain.TagEntity;
+
+public readonly record struct TagId(long Value) : ITypedId<TagId, long>
 {
-    public readonly record struct TagId(long Value) : ITypedId<TagId, long>
-    {
-        public static TagId GenerateNew() => new(Snowflake.NewId);
-    }
+    public static TagId GenerateNew() => new(Snowflake.NewId);
 }

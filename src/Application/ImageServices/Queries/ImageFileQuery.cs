@@ -2,34 +2,26 @@
 using Domain.AlbumDomain.ImageEntity;
 using Domain.Shared;
 
-namespace Application.ImageServices.Queries
+namespace Application.ImageServices.Queries;
+
+public sealed record ImageFileQuery(ImageId Image, ImageKind Kind, Actor Actor)
+    : IQueryRequest<Stream?>;
+
+internal sealed class ImageFileQueryHandler(
+    IImageStorageManager manager,
+    IImageAvailabilityChecker checker
+) : IQueryRequestHandler<ImageFileQuery, Stream?>
 {
-    public sealed record ImageFileQuery(ImageId Image, ImageKind Kind, Actor Actor)
-        : IQueryRequest<Stream?>;
+    private readonly IImageStorageManager _manager = manager;
+    private readonly IImageAvailabilityChecker _checker = checker;
 
-    internal sealed class ImageFileQueryHandler(
-        IImageStorageManager manager,
-        IImageAvailabilityChecker checker
-    ) : IQueryRequestHandler<ImageFileQuery, Stream?>
+    public async Task<Stream?> Handle(ImageFileQuery request, CancellationToken cancellationToken)
     {
-        private readonly IImageStorageManager _manager = manager;
-        private readonly IImageAvailabilityChecker _checker = checker;
+        bool result = await _checker.CheckAsync(request.Image, request.Actor, cancellationToken);
 
-        public async Task<Stream?> Handle(
-            ImageFileQuery request,
-            CancellationToken cancellationToken
-        )
-        {
-            bool result = await _checker.CheckAsync(
-                request.Image,
-                request.Actor,
-                cancellationToken
-            );
+        if (result == false)
+            return null;
 
-            if (result == false)
-                return null;
-
-            return _manager.OpenReadStream(request.Image, request.Kind);
-        }
+        return _manager.OpenReadStream(request.Image, request.Kind);
     }
 }

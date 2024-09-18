@@ -5,32 +5,31 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class UpdateAlbumCategoryCommand(
+    AlbumId Album,
+    CategoryId Category,
+    Actor Actor
+) : IDomainCommand { }
+
+internal sealed class UpdateAlbumCategoryCommandHandler(
+    IRepository<Album, AlbumId> repository,
+    ICategoryExistenceChecker checker
+) : IDomainCommandHandler<UpdateAlbumCategoryCommand>
 {
-    public sealed record class UpdateAlbumCategoryCommand(
-        AlbumId Album,
-        CategoryId Category,
-        Actor Actor
-    ) : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
+    private readonly ICategoryExistenceChecker _checker = checker;
 
-    internal sealed class UpdateAlbumCategoryCommandHandler(
-        IRepository<Album, AlbumId> repository,
-        ICategoryExistenceChecker checker
-    ) : IDomainCommandHandler<UpdateAlbumCategoryCommand>
+    public async Task Handle(
+        UpdateAlbumCategoryCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
-        private readonly ICategoryExistenceChecker _checker = checker;
+        await _checker.CheckAsync(request.Category, cancellationToken);
 
-        public async Task Handle(
-            UpdateAlbumCategoryCommand request,
-            CancellationToken cancellationToken
-        )
-        {
-            await _checker.CheckAsync(request.Category, cancellationToken);
+        var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            var album = await _repository.GetAsync(request.Album, cancellationToken);
-
-            album.UpdateCategory(request);
-        }
+        album.UpdateCategory(request);
     }
 }

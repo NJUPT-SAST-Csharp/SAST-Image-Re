@@ -7,83 +7,82 @@ using Domain.TagDomain.TagEntity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers;
+
+[Route("api/tags")]
+[ApiController]
+public sealed class TagController(
+    IDomainCommandSender commandSender,
+    IQueryRequestSender querySender
+) : ControllerBase
 {
-    [Route("api/tags")]
-    [ApiController]
-    public sealed class TagController(
-        IDomainCommandSender commandSender,
-        IQueryRequestSender querySender
-    ) : ControllerBase
+    private readonly IDomainCommandSender _commandSender = commandSender;
+    private readonly IQueryRequestSender _querySender = querySender;
+
+    public sealed record CreateTagRequest(
+        [Length(TagName.MinLength, TagName.MaxLength)] string Name
+    );
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTag(
+        [FromBody] CreateTagRequest request,
+        CancellationToken cancellationToken
+    )
     {
-        private readonly IDomainCommandSender _commandSender = commandSender;
-        private readonly IQueryRequestSender _querySender = querySender;
+        if (TagName.TryCreateNew(request.Name, out var name) == false)
+            return this.ValidationFail(name, nameof(request.Name));
 
-        public sealed record CreateTagRequest(
-            [Length(TagName.MinLength, TagName.MaxLength)] string Name
-        );
+        CreateTagCommand command = new(name, new(User));
 
-        [HttpPost]
-        public async Task<IActionResult> CreateTag(
-            [FromBody] CreateTagRequest request,
-            CancellationToken cancellationToken
-        )
-        {
-            if (TagName.TryCreateNew(request.Name, out var name) == false)
-                return this.ValidationFail(name, nameof(request.Name));
+        var id = await _commandSender.SendAsync(command, cancellationToken);
 
-            CreateTagCommand command = new(name, new(User));
+        return Ok(new { id });
+    }
 
-            var id = await _commandSender.SendAsync(command, cancellationToken);
+    [HttpGet]
+    public async Task<IActionResult> GetTags(
+        [FromQuery] [MaxLength(TagName.MaxLength)] string? name = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        TagsQuery query = new(name);
 
-            return Ok(new { id });
-        }
+        var tags = await _querySender.SendAsync(query, cancellationToken);
 
-        [HttpGet]
-        public async Task<IActionResult> GetTags(
-            [FromQuery] [MaxLength(TagName.MaxLength)] string? name = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            TagsQuery query = new(name);
+        return Ok(tags);
+    }
 
-            var tags = await _querySender.SendAsync(query, cancellationToken);
+    public sealed record UpdateTagRequest(
+        [Length(TagName.MinLength, TagName.MaxLength)] string Name
+    );
 
-            return Ok(tags);
-        }
+    [HttpPost("{id:long}")]
+    public async Task<IActionResult> UpdateTag(
+        [FromRoute] long id,
+        [FromBody] UpdateTagRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        if (TagName.TryCreateNew(request.Name, out var name) == false)
+            return this.ValidationFail(name, nameof(request.Name));
 
-        public sealed record UpdateTagRequest(
-            [Length(TagName.MinLength, TagName.MaxLength)] string Name
-        );
+        UpdateTagCommand command = new(new(id), name, new(User));
 
-        [HttpPost("{id:long}")]
-        public async Task<IActionResult> UpdateTag(
-            [FromRoute] long id,
-            [FromBody] UpdateTagRequest request,
-            CancellationToken cancellationToken
-        )
-        {
-            if (TagName.TryCreateNew(request.Name, out var name) == false)
-                return this.ValidationFail(name, nameof(request.Name));
+        await _commandSender.SendAsync(command, cancellationToken);
 
-            UpdateTagCommand command = new(new(id), name, new(User));
+        return NoContent();
+    }
 
-            await _commandSender.SendAsync(command, cancellationToken);
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> DeleteTag(
+        [FromRoute] long id,
+        CancellationToken cancellationToken
+    )
+    {
+        DeleteTagCommand command = new(new(id), new(User));
 
-            return NoContent();
-        }
+        await _commandSender.SendAsync(command, cancellationToken);
 
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> DeleteTag(
-            [FromRoute] long id,
-            CancellationToken cancellationToken
-        )
-        {
-            DeleteTagCommand command = new(new(id), new(User));
-
-            await _commandSender.SendAsync(command, cancellationToken);
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

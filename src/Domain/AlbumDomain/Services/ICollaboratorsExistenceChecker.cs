@@ -1,12 +1,11 @@
 ﻿using Domain.AlbumDomain.AlbumEntity;
 
-namespace Domain.AlbumDomain.Services
+namespace Domain.AlbumDomain.Services;
+
+public interface ICollaboratorsExistenceChecker
 {
-    public interface ICollaboratorsExistenceChecker
-    {
-        public Task CheckAsync(
-            Collaborators collaborators,
-            CancellationToken cancellationToken = default
-        );
-    }
+    public Task CheckAsync(
+        Collaborators collaborators,
+        CancellationToken cancellationToken = default
+    );
 }

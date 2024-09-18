@@ -2,8 +2,7 @@
 using Domain.CategoryDomain.CategoryEntity;
 using Domain.Event;
 
-namespace Domain.AlbumDomain.Events
-{
-    public sealed record class AlbumCategoryUpdatedEvent(AlbumId Album, CategoryId Category)
-        : IDomainEvent { }
-}
+namespace Domain.AlbumDomain.Events;
+
+public sealed record class AlbumCategoryUpdatedEvent(AlbumId Album, CategoryId Category)
+    : IDomainEvent { }

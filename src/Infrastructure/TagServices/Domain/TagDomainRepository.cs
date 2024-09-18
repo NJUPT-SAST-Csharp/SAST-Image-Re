@@ -5,46 +5,42 @@ using Domain.TagDomain.TagEntity;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.TagServices.Domain
+namespace Infrastructure.TagServices.Domain;
+
+internal sealed class TagDomainRepository(DomainDbContext context) : IRepository<Tag, TagId>
 {
-    internal sealed class TagDomainRepository(DomainDbContext context) : IRepository<Tag, TagId>
+    private readonly DomainDbContext _context = context;
+
+    public async Task<TagId> AddAsync(Tag entity, CancellationToken cancellationToken = default)
     {
-        private readonly DomainDbContext _context = context;
+        var entry = await _context.Tags.AddAsync(entity, cancellationToken);
 
-        public async Task<TagId> AddAsync(Tag entity, CancellationToken cancellationToken = default)
+        return entry.Entity.Id;
+    }
+
+    public async Task DeleteAsync(TagId id, CancellationToken cancellationToken = default)
+    {
+        Tag? tag = await _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id, cancellationToken);
+
+        if (tag is not null)
         {
-            var entry = await _context.Tags.AddAsync(entity, cancellationToken);
-
-            return entry.Entity.Id;
+            tag.AddDomainEvent(new TagDeletedEvent(tag.Id));
+            _context.Remove(tag);
         }
+    }
 
-        public async Task DeleteAsync(TagId id, CancellationToken cancellationToken = default)
-        {
-            var tag = await _context.Tags.FirstOrDefaultAsync(
-                tag => tag.Id == id,
-                cancellationToken
-            );
+    public async Task<Tag> GetAsync(TagId id, CancellationToken cancellationToken = default)
+    {
+        var tag = await GetOrDefaultAsync(id, cancellationToken);
 
-            if (tag is not null)
-            {
-                tag.AddDomainEvent(new TagDeletedEvent(tag.Id));
-                _context.Remove(tag);
-            }
-        }
+        if (tag is not null)
+            return tag;
 
-        public async Task<Tag> GetAsync(TagId id, CancellationToken cancellationToken = default)
-        {
-            var tag = await GetOrDefaultAsync(id, cancellationToken);
+        throw new EntityNotFoundException();
+    }
 
-            if (tag is not null)
-                return tag;
-
-            throw new EntityNotFoundException();
-        }
-
-        public Task<Tag?> GetOrDefaultAsync(TagId id, CancellationToken cancellationToken = default)
-        {
-            return _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id, cancellationToken);
-        }
+    public Task<Tag?> GetOrDefaultAsync(TagId id, CancellationToken cancellationToken = default)
+    {
+        return _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id, cancellationToken);
     }
 }

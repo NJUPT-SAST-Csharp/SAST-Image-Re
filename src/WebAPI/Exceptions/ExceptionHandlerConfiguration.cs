@@ -1,14 +1,13 @@
-﻿namespace WebAPI.Exceptions
-{
-    public static class ExceptionHandlerConfiguration
-    {
-        public static IServiceCollection AddExceptionHandlers(this IServiceCollection services)
-        {
-            services.AddProblemDetails();
-            services.AddExceptionHandler<DomainExceptionHandler>();
-            services.AddExceptionHandler<DefaultExceptionHandler>();
+﻿namespace WebAPI.Exceptions;
 
-            return services;
-        }
+public static class ExceptionHandlerConfiguration
+{
+    public static IServiceCollection AddExceptionHandlers(this IServiceCollection services)
+    {
+        services.AddProblemDetails();
+        services.AddExceptionHandler<DomainExceptionHandler>();
+        services.AddExceptionHandler<DefaultExceptionHandler>();
+
+        return services;
     }
 }

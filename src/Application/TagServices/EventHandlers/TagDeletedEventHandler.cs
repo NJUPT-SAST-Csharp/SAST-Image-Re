@@ -3,16 +3,15 @@ using Domain.Extensions;
 using Domain.TagDomain.Events;
 using Domain.TagDomain.TagEntity;
 
-namespace Application.TagServices.EventHandlers
-{
-    internal sealed class TagDeletedEventHandler(IRepository<TagModel, TagId> repository)
-        : IDomainEventHandler<TagDeletedEvent>
-    {
-        private readonly IRepository<TagModel, TagId> _repository = repository;
+namespace Application.TagServices.EventHandlers;
 
-        public Task Handle(TagDeletedEvent e, CancellationToken cancellationToken)
-        {
-            return _repository.DeleteAsync(e.Id, cancellationToken);
-        }
+internal sealed class TagDeletedEventHandler(IRepository<TagModel, TagId> repository)
+    : IDomainEventHandler<TagDeletedEvent>
+{
+    private readonly IRepository<TagModel, TagId> _repository = repository;
+
+    public Task Handle(TagDeletedEvent e, CancellationToken cancellationToken)
+    {
+        return _repository.DeleteAsync(e.Id, cancellationToken);
     }
 }

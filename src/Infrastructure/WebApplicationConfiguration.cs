@@ -1,4 +1,3 @@
-﻿namespace Infrastructure
-{
-    public static class WebApplicationConfiguration { }
-}
+﻿namespace Infrastructure;
+
+public static class WebApplicationConfiguration { }

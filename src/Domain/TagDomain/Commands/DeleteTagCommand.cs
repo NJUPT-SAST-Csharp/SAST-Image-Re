@@ -3,21 +3,20 @@ using Domain.Extensions;
 using Domain.Shared;
 using Domain.TagDomain.TagEntity;
 
-namespace Domain.TagDomain.Commands
+namespace Domain.TagDomain.Commands;
+
+public sealed record DeleteTagCommand(TagId Id, Actor Actor) : IDomainCommand { }
+
+internal sealed class DeleteTagCommandHandler(IRepository<Tag, TagId> repository)
+    : IDomainCommandHandler<DeleteTagCommand>
 {
-    public sealed record DeleteTagCommand(TagId Id, Actor Actor) : IDomainCommand { }
+    private readonly IRepository<Tag, TagId> _repository = repository;
 
-    internal sealed class DeleteTagCommandHandler(IRepository<Tag, TagId> repository)
-        : IDomainCommandHandler<DeleteTagCommand>
+    public Task Handle(DeleteTagCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Tag, TagId> _repository = repository;
+        if (request.Actor.IsAdmin == false)
+            throw new NoPermissionException();
 
-        public Task Handle(DeleteTagCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Actor.IsAdmin == false)
-                throw new NoPermissionException();
-
-            return _repository.DeleteAsync(request.Id, cancellationToken);
-        }
+        return _repository.DeleteAsync(request.Id, cancellationToken);
     }
 }

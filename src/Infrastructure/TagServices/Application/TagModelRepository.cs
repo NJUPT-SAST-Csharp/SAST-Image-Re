@@ -5,55 +5,49 @@ using Domain.TagDomain.TagEntity;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.TagServices.Application
+namespace Infrastructure.TagServices.Application;
+
+internal sealed class TagModelRepository(QueryDbContext context) : IRepository<TagModel, TagId>
 {
-    internal sealed class TagModelRepository(QueryDbContext context) : IRepository<TagModel, TagId>
+    private readonly QueryDbContext _context = context;
+
+    public async Task<TagId> AddAsync(
+        TagModel entity,
+        CancellationToken cancellationToken = default
+    )
     {
-        private readonly QueryDbContext _context = context;
+        var entry = await _context.Tags.AddAsync(entity, cancellationToken);
 
-        public async Task<TagId> AddAsync(
-            TagModel entity,
-            CancellationToken cancellationToken = default
-        )
+        return new(entry.Entity.Id);
+    }
+
+    public async Task DeleteAsync(TagId id, CancellationToken cancellationToken = default)
+    {
+        TagModel? tag = await _context.Tags.FirstOrDefaultAsync(
+            tag => tag.Id == id.Value,
+            cancellationToken
+        );
+
+        if (tag is not null)
         {
-            var entry = await _context.Tags.AddAsync(entity, cancellationToken);
-
-            return new(entry.Entity.Id);
+            _context.Tags.Remove(tag);
         }
+    }
 
-        public async Task DeleteAsync(TagId id, CancellationToken cancellationToken = default)
-        {
-            var tag = await _context.Tags.FirstOrDefaultAsync(
-                tag => tag.Id == id.Value,
-                cancellationToken
-            );
+    public async Task<TagModel> GetAsync(TagId id, CancellationToken cancellationToken = default)
+    {
+        var image =
+            await _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id.Value, cancellationToken)
+            ?? throw new EntityNotFoundException();
 
-            if (tag is not null)
-            {
-                _context.Tags.Remove(tag);
-            }
-        }
+        return image;
+    }
 
-        public async Task<TagModel> GetAsync(
-            TagId id,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var image =
-                await _context.Tags.FirstOrDefaultAsync(
-                    tag => tag.Id == id.Value,
-                    cancellationToken
-                ) ?? throw new EntityNotFoundException();
-
-            return image;
-        }
-
-        public Task<TagModel?> GetOrDefaultAsync(
-            TagId id,
-            CancellationToken cancellationToken = default
-        )
-        {
-            return _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id.Value, cancellationToken);
-        }
+    public Task<TagModel?> GetOrDefaultAsync(
+        TagId id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return _context.Tags.FirstOrDefaultAsync(tag => tag.Id == id.Value, cancellationToken);
     }
 }

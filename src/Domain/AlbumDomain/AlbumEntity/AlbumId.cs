@@ -1,9 +1,8 @@
 ﻿using Domain.Entity;
 
-namespace Domain.AlbumDomain.AlbumEntity
+namespace Domain.AlbumDomain.AlbumEntity;
+
+public readonly record struct AlbumId(long Value) : ITypedId<AlbumId, long>
 {
-    public readonly record struct AlbumId(long Value) : ITypedId<AlbumId, long>
-    {
-        public static AlbumId GenerateNew() => new(Snowflake.NewId);
-    }
+    public static AlbumId GenerateNew() => new(Snowflake.NewId);
 }

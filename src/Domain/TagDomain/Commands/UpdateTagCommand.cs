@@ -3,24 +3,22 @@ using Domain.Extensions;
 using Domain.Shared;
 using Domain.TagDomain.TagEntity;
 
-namespace Domain.TagDomain.Commands
+namespace Domain.TagDomain.Commands;
+
+public sealed record UpdateTagCommand(TagId Id, TagName NewName, Actor Actor) : IDomainCommand { }
+
+internal sealed class UpdateTagCommandHandler(IRepository<Tag, TagId> repository)
+    : IDomainCommandHandler<UpdateTagCommand>
 {
-    public sealed record UpdateTagCommand(TagId Id, TagName NewName, Actor Actor)
-        : IDomainCommand { }
+    private readonly IRepository<Tag, TagId> _repository = repository;
 
-    internal sealed class UpdateTagCommandHandler(IRepository<Tag, TagId> repository)
-        : IDomainCommandHandler<UpdateTagCommand>
+    public async Task Handle(UpdateTagCommand command, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Tag, TagId> _repository = repository;
+        if (command.Actor.IsAdmin == false)
+            throw new NoPermissionException();
 
-        public async Task Handle(UpdateTagCommand command, CancellationToken cancellationToken)
-        {
-            if (command.Actor.IsAdmin == false)
-                throw new NoPermissionException();
+        var tag = await _repository.GetAsync(command.Id, cancellationToken);
 
-            var tag = await _repository.GetAsync(command.Id, cancellationToken);
-
-            tag.Update(command);
-        }
+        tag.Update(command);
     }
 }

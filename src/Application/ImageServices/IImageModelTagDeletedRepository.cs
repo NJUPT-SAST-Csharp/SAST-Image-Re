@@ -1,9 +1,8 @@
 ﻿using Domain.TagDomain.TagEntity;
 
-namespace Application.ImageServices
+namespace Application.ImageServices;
+
+public interface IImageModelTagDeletedRepository
 {
-    public interface IImageModelTagDeletedRepository
-    {
-        public Task<List<ImageModel>> GetAsync(TagId id, CancellationToken cancellationToken);
-    }
+    public Task<List<ImageModel>> GetAsync(TagId id, CancellationToken cancellationToken);
 }

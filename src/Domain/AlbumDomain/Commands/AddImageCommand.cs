@@ -5,31 +5,30 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class AddImageCommand(
+    AlbumId Album,
+    ImageTitle Title,
+    ImageTags Tags,
+    Stream ImageFile,
+    Actor Actor
+) : IDomainCommand { }
+
+internal sealed class AddImageCommandHandler(
+    IRepository<Album, AlbumId> repository,
+    IImageTagsExistenceChecker checker
+) : IDomainCommandHandler<AddImageCommand>
 {
-    public sealed record class AddImageCommand(
-        AlbumId Album,
-        ImageTitle Title,
-        ImageTags Tags,
-        Stream ImageFile,
-        Actor Actor
-    ) : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
+    private readonly IImageTagsExistenceChecker _checker = checker;
 
-    internal sealed class AddImageCommandHandler(
-        IRepository<Album, AlbumId> repository,
-        IImageTagsExistenceChecker checker
-    ) : IDomainCommandHandler<AddImageCommand>
+    public async Task Handle(AddImageCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
-        private readonly IImageTagsExistenceChecker _checker = checker;
+        await _checker.CheckAsync(request.Tags, cancellationToken);
 
-        public async Task Handle(AddImageCommand request, CancellationToken cancellationToken)
-        {
-            await _checker.CheckAsync(request.Tags, cancellationToken);
+        var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-            var album = await _repository.GetAsync(request.Album, cancellationToken);
-
-            album.AddImage(request);
-        }
+        album.AddImage(request);
     }
 }

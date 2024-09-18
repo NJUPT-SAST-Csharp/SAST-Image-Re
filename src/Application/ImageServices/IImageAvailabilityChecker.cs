@@ -1,14 +1,13 @@
 ﻿using Domain.AlbumDomain.ImageEntity;
 using Domain.Shared;
 
-namespace Application.ImageServices
+namespace Application.ImageServices;
+
+public interface IImageAvailabilityChecker
 {
-    public interface IImageAvailabilityChecker
-    {
-        public Task<bool> CheckAsync(
-            ImageId id,
-            Actor actor,
-            CancellationToken cancellationToken = default
-        );
-    }
+    public Task<bool> CheckAsync(
+        ImageId id,
+        Actor actor,
+        CancellationToken cancellationToken = default
+    );
 }

@@ -4,17 +4,16 @@ using Domain.Core.Event;
 using Domain.Extensions;
 using Domain.UserDomain.UserEntity;
 
-namespace Application.AlbumServices.EventHandlers
-{
-    internal sealed class AlbumUnsubscribedEventHandler(
-        IRepository<SubscribeModel, (AlbumId, UserId)> repository
-    ) : IDomainEventHandler<AlbumUnsubscribedEvent>
-    {
-        private readonly IRepository<SubscribeModel, (AlbumId, UserId)> _repository = repository;
+namespace Application.AlbumServices.EventHandlers;
 
-        public Task Handle(AlbumUnsubscribedEvent e, CancellationToken cancellationToken)
-        {
-            return _repository.DeleteAsync((e.Album, e.User), cancellationToken);
-        }
+internal sealed class AlbumUnsubscribedEventHandler(
+    IRepository<SubscribeModel, (AlbumId, UserId)> repository
+) : IDomainEventHandler<AlbumUnsubscribedEvent>
+{
+    private readonly IRepository<SubscribeModel, (AlbumId, UserId)> _repository = repository;
+
+    public Task Handle(AlbumUnsubscribedEvent e, CancellationToken cancellationToken)
+    {
+        return _repository.DeleteAsync((e.Album, e.User), cancellationToken);
     }
 }

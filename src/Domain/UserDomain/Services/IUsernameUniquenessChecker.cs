@@ -1,9 +1,8 @@
 ﻿using Domain.UserDomain.UserEntity;
 
-namespace Domain.UserEntity.Services
+namespace Domain.UserEntity.Services;
+
+public interface IUsernameUniquenessChecker
 {
-    public interface IUsernameUniquenessChecker
-    {
-        public Task CheckAsync(Username username, CancellationToken cancellationToken = default);
-    }
+    public Task CheckAsync(Username username, CancellationToken cancellationToken = default);
 }

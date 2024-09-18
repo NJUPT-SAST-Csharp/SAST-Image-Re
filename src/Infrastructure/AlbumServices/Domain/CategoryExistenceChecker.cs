@@ -4,26 +4,21 @@ using Domain.CategoryDomain.CategoryEntity;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.AlbumServices.Domain
+namespace Infrastructure.AlbumServices.Domain;
+
+internal sealed class CategoryExistenceChecker(DomainDbContext context) : ICategoryExistenceChecker
 {
-    internal sealed class CategoryExistenceChecker(DomainDbContext context)
-        : ICategoryExistenceChecker
+    private readonly DomainDbContext _context = context;
+
+    public async Task CheckAsync(CategoryId category, CancellationToken cancellationToken = default)
     {
-        private readonly DomainDbContext _context = context;
+        bool isExisting = await _context
+            .Categories.AsNoTracking()
+            .AnyAsync(c => c.Id == category, cancellationToken);
 
-        public async Task CheckAsync(
-            CategoryId category,
-            CancellationToken cancellationToken = default
-        )
+        if (isExisting == false)
         {
-            bool isExisting = await _context
-                .Categories.AsNoTracking()
-                .AnyAsync(c => c.Id == category, cancellationToken);
-
-            if (isExisting == false)
-            {
-                CategoryNotFoundException.Throw(category);
-            }
+            CategoryNotFoundException.Throw(category);
         }
     }
 }

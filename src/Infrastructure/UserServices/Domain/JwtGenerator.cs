@@ -6,37 +6,31 @@ using Domain.UserDomain.UserEntity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Infrastructure.UserServices.Domain
+namespace Infrastructure.UserServices.Domain;
+
+internal sealed class JwtGenerator(IOptions<JwtAuthOptions> options) : IJwtGenerator
 {
-    internal sealed class JwtGenerator(IOptions<JwtAuthOptions> options) : IJwtGenerator
+    private readonly JwtAuthOptions _options = options.Value;
+
+    public JwtValue GetJwt(UserId id, Username username, Roles roles)
     {
-        private readonly JwtAuthOptions _options = options.Value;
+        var expireTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_options.Expires));
 
-        public JwtValue GetJwt(UserId id, Username username, Roles roles)
-        {
-            DateTime expireTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_options.Expires));
+        List<Claim> claims =
+        [
+            new("id", id.Value.ToString()),
+            new("username", username.Value),
+            .. roles.Select(r => new Claim("role", r.ToString())),
+        ];
 
-            var claims = new List<Claim>()
-            {
-                new(ClaimTypes.NameIdentifier, id.Value.ToString()),
-                new(ClaimTypes.Name, username.Value),
-            };
-            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r.ToString())));
+        byte[] secBytes = Encoding.Default.GetBytes(_options.SecKey);
+        SigningCredentials credentials =
+            new(new SymmetricSecurityKey(secBytes), _options.Algorithm);
 
-            byte[] secBytes = Encoding.Default.GetBytes(_options.SecKey);
-            var credentials = new SigningCredentials(
-                new SymmetricSecurityKey(secBytes),
-                _options.Algorithm
-            );
+        JwtSecurityToken tokenDescriptor =
+            new(claims: claims, expires: expireTime, signingCredentials: credentials);
 
-            var tokenDescriptor = new JwtSecurityToken(
-                claims: claims,
-                expires: expireTime,
-                signingCredentials: credentials
-            );
-
-            string jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-            return new(jwt);
-        }
+        string jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+        return new(jwt);
     }
 }

@@ -4,21 +4,20 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class UnlikeImageCommand(AlbumId Album, ImageId Image, Actor Actor)
+    : IDomainCommand { }
+
+internal sealed class UnlikeCommandHandler(IRepository<Album, AlbumId> repository)
+    : IDomainCommandHandler<UnlikeImageCommand>
 {
-    public sealed record class UnlikeImageCommand(AlbumId Album, ImageId Image, Actor Actor)
-        : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
 
-    internal sealed class UnlikeCommandHandler(IRepository<Album, AlbumId> repository)
-        : IDomainCommandHandler<UnlikeImageCommand>
+    public async Task Handle(UnlikeImageCommand request, CancellationToken cancellationToken)
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
+        var album = await _repository.GetAsync(request.Album, cancellationToken);
 
-        public async Task Handle(UnlikeImageCommand request, CancellationToken cancellationToken)
-        {
-            var album = await _repository.GetAsync(request.Album, cancellationToken);
-
-            album.UnlikeImage(request);
-        }
+        album.UnlikeImage(request);
     }
 }

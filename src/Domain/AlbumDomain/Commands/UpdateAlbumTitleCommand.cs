@@ -4,29 +4,28 @@ using Domain.Command;
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.AlbumDomain.Commands
+namespace Domain.AlbumDomain.Commands;
+
+public sealed record class UpdateAlbumTitleCommand(AlbumId Album, AlbumTitle Title, Actor Actor)
+    : IDomainCommand { }
+
+internal sealed class UpdateAlbumTitleCommandHandler(
+    IRepository<Album, AlbumId> repository,
+    IAlbumTitleUniquenessChecker checker
+) : IDomainCommandHandler<UpdateAlbumTitleCommand>
 {
-    public sealed record class UpdateAlbumTitleCommand(AlbumId Album, AlbumTitle Title, Actor Actor)
-        : IDomainCommand { }
+    private readonly IRepository<Album, AlbumId> _repository = repository;
+    private readonly IAlbumTitleUniquenessChecker _checker = checker;
 
-    internal sealed class UpdateAlbumTitleCommandHandler(
-        IRepository<Album, AlbumId> repository,
-        IAlbumTitleUniquenessChecker checker
-    ) : IDomainCommandHandler<UpdateAlbumTitleCommand>
+    public async Task Handle(
+        UpdateAlbumTitleCommand command,
+        CancellationToken cancellationToken = default
+    )
     {
-        private readonly IRepository<Album, AlbumId> _repository = repository;
-        private readonly IAlbumTitleUniquenessChecker _checker = checker;
+        await _checker.CheckAsync(command.Title, cancellationToken);
 
-        public async Task Handle(
-            UpdateAlbumTitleCommand command,
-            CancellationToken cancellationToken = default
-        )
-        {
-            await _checker.CheckAsync(command.Title, cancellationToken);
+        var album = await _repository.GetAsync(command.Album, cancellationToken);
 
-            var album = await _repository.GetAsync(command.Album, cancellationToken);
-
-            album.UpdateTitle(command);
-        }
+        album.UpdateTitle(command);
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Infrastructure.SharedServices.Storage
+﻿namespace Infrastructure.SharedServices.Storage;
+
+public enum StorageKind
 {
-    public enum StorageKind
-    {
-        Cover,
-        Image,
-    }
+    Cover,
+    Image,
 }

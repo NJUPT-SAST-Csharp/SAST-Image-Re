@@ -1,17 +1,16 @@
 ﻿using Domain.AlbumDomain.ImageEntity;
 
-namespace Application.ImageServices
+namespace Application.ImageServices;
+
+public interface IImageStorageManager
 {
-    public interface IImageStorageManager
-    {
-        public Task StoreImageAsync(
-            ImageId imageId,
-            Stream imageFile,
-            CancellationToken cancellationToken = default
-        );
+    public Task StoreImageAsync(
+        ImageId imageId,
+        Stream imageFile,
+        CancellationToken cancellationToken = default
+    );
 
-        public Stream? OpenReadStream(ImageId image, ImageKind kind);
+    public Stream? OpenReadStream(ImageId image, ImageKind kind);
 
-        public Task DeleteImageAsync(ImageId image, CancellationToken cancellationToken = default);
-    }
+    public Task DeleteImageAsync(ImageId image, CancellationToken cancellationToken = default);
 }

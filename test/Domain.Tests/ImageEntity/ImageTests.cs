@@ -16,7 +16,7 @@ public class ImageTests
     [TestMethod]
     public void Raise_Event_When_Image_Removed()
     {
-        Image image = ValidNewImage;
+        var image = ValidNewImage;
         RemoveImageCommand command = new(OuterAlbumId, Id, OuterAuthor);
 
         image.Remove(command);
@@ -28,7 +28,7 @@ public class ImageTests
     [TestMethod]
     public void Raise_Event_When_Image_Restored()
     {
-        Image image = ValidNewImage;
+        var image = ValidNewImage;
         image.SetValue(RemovedStatus);
         RestoreImageCommand command = new(OuterAlbumId, Id, OuterAuthor);
 
@@ -73,7 +73,7 @@ internal static class ImageTestsHelper
 
     public static T GetValue<T>(this Image image)
     {
-        var value = typeof(Image)
+        object? value = typeof(Image)
             .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
             .First(f => f.FieldType == typeof(T))
             .GetValue(image);
