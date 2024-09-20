@@ -1,13 +1,12 @@
 ﻿@page "/albums/{id:long}"
 
-@inject DataCollectionStorage<DetailedAlbum> Storage
+@inject IKeyDataStorage<DetailedAlbum, long> Storage
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 
 @code {
     [Parameter]
     public long Id { get; set; }
-
 
     DetailedAlbum Album { get; set; }
 
@@ -16,14 +15,11 @@
         var cover = await Api.GetCover(Id);
         _ = JS.SetSrcAsync(cover, "cover-img", "cover");
 
-        if(Storage.Items.Any(item => item.Id == Id))
-        {
-            Album = Storage.Items.First(item => item.Id == Id);
-            return;
-        }
+        if(Storage.TryGet(Id, out var album))
+            Album = album;
 
         Album =  await Api.GetDetail(Id);
-        Storage.Add(Album);
+        Storage.Add(Album, Id);
     }
 }
 

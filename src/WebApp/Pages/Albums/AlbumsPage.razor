@@ -2,48 +2,35 @@
 
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
-@inject DataCollectionStorage<AlbumDto> Storage
+@inject KeyDataStorage<AlbumItemDto, long> Storage
 
 @code {
-    List<AlbumDto>? albums = null;
+    bool isLoading = true;
+
+    IEnumerable<AlbumItemDto> albums = [];
 
     protected override async Task OnInitializedAsync()
     {
-        if(Storage.Count == 0)
+        var remoteAlbums = await Api.GetAlbums();
+
+        await Task.Delay(1000);
+
+        isLoading = false;
+
+        foreach (var album in remoteAlbums)
         {
-            albums = await Api.GetAlbums();
-            foreach (var album in albums)
-            {
-                Storage.Add(album);
-            }
+            Storage.Add(album, album.Id);
         }
     }
 }
 
 <PageTitle>SastImg - Albums</PageTitle>
 
-@if(albums is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    @foreach (var album in Storage.Items)
-    {
-        <AlbumItem @key="album.Id" Album="album" />
-    }
-}
 
 
-@* <Virtualize Items="Storage.Value" Context="album">
-    <ItemContent>
-        <AlbumItem @key="album.Id" Album="album" />
-    </ItemContent>
-    <EmptyContent>
-        <p><em>No albums found.</em></p>
-    </EmptyContent>
-    <Placeholder>
-        <p><em>Loading...</em></p>
-    </Placeholder>
-</Virtualize> *@
+@if(isLoading)
+{
+    <FluentHeader>Loading..</FluentHeader>
+}
+
 

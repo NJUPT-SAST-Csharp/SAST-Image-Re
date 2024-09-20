@@ -12,6 +12,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/albums")]
 [ApiController]
+[ResponseCache(Duration = 10, Location = ResponseCacheLocation.Client)]
 public sealed class AlbumController(
     IDomainCommandSender commandSender,
     IQueryRequestSender querySender
@@ -19,6 +20,8 @@ public sealed class AlbumController(
 {
     private readonly IDomainCommandSender _commanderSender = commandSender;
     private readonly IQueryRequestSender _querySender = querySender;
+
+    #region Command / Post
 
     public sealed record class CreateAlbumRequest(
         [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title,
@@ -204,7 +207,16 @@ public sealed class AlbumController(
         return this.DataOrNotFound(result);
     }
 
+    #endregion
+
+    #region Query / Get
+
     [HttpGet]
+    [ResponseCache(
+        Duration = 10,
+        Location = ResponseCacheLocation.Client,
+        VaryByQueryKeys = ["c", "a", "t"]
+    )]
     public async Task<IActionResult> GetAlbums(
         [FromQuery(Name = "c")] long? category = null,
         [FromQuery(Name = "a")] long? author = null,
@@ -223,14 +235,19 @@ public sealed class AlbumController(
     }
 
     [HttpGet("removed")]
+    [ResponseCache(NoStore = true)]
     public async Task<IActionResult> GetRemovedAlbums()
     {
         var result = await _querySender.SendAsync(new RemovedAlbumsQuery(new(User)));
         return this.DataOrNotFound(result);
     }
 
-    [HttpGet("{id:long}/cover")]
-    public async Task<IActionResult> GetCover(long id, CancellationToken cancellationToken)
+    [HttpGet("cover")]
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["a"])]
+    public async Task<IActionResult> GetCover(
+        [FromQuery(Name = "a")] long id,
+        CancellationToken cancellationToken
+    )
     {
         var result = await _querySender.SendAsync(
             new AlbumCoverQuery(new(id), new(User)),
@@ -239,4 +256,6 @@ public sealed class AlbumController(
 
         return this.ImageOrNotFound(result);
     }
+
+    #endregion
 }

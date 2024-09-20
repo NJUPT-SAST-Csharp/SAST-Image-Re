@@ -1,16 +1,22 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<MApp>
 
-        <article class="content px-4">
+    <NavMenu />
+
+    <MAppBar App InvertedScroll ScrollThreshold="20">
+        <!-- -->
+    </MAppBar>
+
+    <!-- 根据应用组件来调整你的内容 -->
+    <MMain>
+        <!-- 给应用提供合适的间距 -->
+        <MContainer>
             @Body
-        </article>
-    </main>
-</div>
+        </MContainer>
+    </MMain>
+
+    <MFooter App>
+        <!-- -->
+    </MFooter>
+</MApp>

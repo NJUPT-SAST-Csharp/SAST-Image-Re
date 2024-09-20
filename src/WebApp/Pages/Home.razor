@@ -1,25 +1,16 @@
 ﻿@page "/"
-@inject IAlbumAPI api
-
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-@foreach (var album in albums)
-{
-    <li>@album.ToString()</li>
-}
-
+@inject I18n I18n
 
 @code{
 
-    List<AlbumDto> albums = [];
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        albums = await api.GetAlbums(authorId: 1276461256283164672);
     }
-
 }
+
+<PageTitle>SastImg - Home</PageTitle>
+
+<h1>@I18n.T("HelloWorld")</h1>
+
+Welcome to your new app.
