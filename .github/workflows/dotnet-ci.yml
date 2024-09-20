@@ -23,8 +23,6 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Setup .NET Aspire
-      run: dotnet workload install aspire
     - name: Read dependency cache
       uses: actions/cache@v3
       with:
