@@ -1,0 +1,41 @@
+﻿@page "/login"
+@inject IAccountAPI Api
+@inject AuthStateProvider Auth
+@inject NavigationManager Nav
+
+<h1>Login</h1>
+
+<EditForm Model="request" OnSubmit="Submit">
+    <AntiforgeryToken />
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="request.Username" />
+    <InputText @bind-Value="request.Password" />
+
+    <ValidationMessage For="() => request.Username" />
+
+    <button type="submit">Login</button>
+</EditForm>
+
+
+
+@code {
+    [SupplyParameterFromForm]
+    LoginRequest request { get; set; } = new();
+
+    async Task Submit()
+    {
+        var response = await Api.Login(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await Auth.SetTokenAsync(response.Content!.Token);
+            Nav.NavigateTo("/");
+        }
+        else
+        {
+            // Handle error
+        }
+    }
+}

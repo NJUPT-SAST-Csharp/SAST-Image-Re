@@ -1,0 +1,36 @@
+﻿@page "/albums"
+
+@inject IAlbumAPI Api
+@inject IJSRuntime JS
+@inject KeyDataStorage<AlbumItemDto, long> Storage
+
+@code {
+    bool isLoading = true;
+
+    IEnumerable<AlbumItemDto> albums = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var remoteAlbums = await Api.GetAlbums();
+
+        await Task.Delay(1000);
+
+        isLoading = false;
+
+        foreach (var album in remoteAlbums)
+        {
+            Storage.Add(album, album.Id);
+        }
+    }
+}
+
+<PageTitle>SastImg - Albums</PageTitle>
+
+
+
+@if(isLoading)
+{
+    <FluentHeader>Loading..</FluentHeader>
+}
+
+

@@ -1,0 +1,37 @@
+﻿@inject IAlbumAPI Api
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+@code {
+
+    [Parameter, EditorRequired]
+    public AlbumItemDto Album { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var cover = await Api.GetCover(Album.Id);
+        _ = JS.SetSrcAsync(cover, $"cover-img-{Album.Id}", Album.Title);
+    }
+
+
+    void Enter() => Nav.NavigateTo("albums/" + Album.Id);
+}
+
+<div class="item" @onclick="Enter">
+    <img id="cover-img-@Album.Id" class="img-fluid img-thumbnail"/>
+</div>
+
+<style>
+    .item {
+        transition: ease-in-out, 0.2s;
+        max-width: 200px;
+        cursor: pointer;
+        view-transition-name: cover-@Album.Id;
+    }
+
+        .item:hover {
+            transform: scale(1.1);
+        }
+</style>
+
+

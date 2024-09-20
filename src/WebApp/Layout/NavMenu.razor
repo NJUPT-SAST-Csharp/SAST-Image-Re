@@ -1,0 +1,46 @@
+﻿<MNavigationDrawer App ExpandOnHover Permanent Class="d-none d-sm-block">
+
+    <MListItem Href="/account" Class="px-2 mt-4">
+        <MListItemAvatar Size="40">
+            <MImage Src="@("https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png")"></MImage>
+        </MListItemAvatar>
+
+        <MListItemTitle>MASA</MListItemTitle>
+    </MListItem>
+
+    <MDivider />
+    
+    <MList Dense Nav>
+        @foreach (var item in items)
+        {
+            <MListItem Href="@item.Href">
+                <MListItemIcon>
+                    <MIcon>@item.Icon</MIcon>
+                </MListItemIcon>
+
+                <MListItemContent>
+                    <MListItemTitle>@item.Title</MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+        }
+    </MList>
+</MNavigationDrawer>
+
+
+
+@code {
+    sealed class Item
+    {
+        public required string Title { get; set; }
+        public required string Icon { get; set; }
+        public required string Href { get; set; }
+    }
+
+
+    private Item[] items = 
+    [
+         new() { Title= "Home", Icon= "mdi-view-dashboard", Href = "/" },
+         new() { Title= "Albums", Icon= "mdi-image-album", Href="/albums" },
+         new() { Title= "Login", Icon= "mdi-help-box", Href="/login" }
+    ];
+}

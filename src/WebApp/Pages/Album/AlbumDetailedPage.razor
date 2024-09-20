@@ -1,0 +1,39 @@
+﻿@page "/albums/{id:long}"
+
+@inject IKeyDataStorage<DetailedAlbum, long> Storage
+@inject IAlbumAPI Api
+@inject IJSRuntime JS
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    DetailedAlbum Album { get; set; }
+
+    protected async override Task OnInitializedAsync() 
+    { 
+        var cover = await Api.GetCover(Id);
+        _ = JS.SetSrcAsync(cover, "cover-img", "cover");
+
+        if(Storage.TryGet(Id, out var album))
+            Album = album;
+
+        Album =  await Api.GetDetail(Id);
+        Storage.Add(Album, Id);
+    }
+}
+
+<PageTitle>SastImg - @Album.Title</PageTitle>
+
+<div>@Album</div>
+
+<div class="cover-frame ms-5" style="view-transition-name: cover-@Id">
+    <img id="cover-img" class="img-fluid img-thumbnail" />
+</div>
+
+<style>
+    .cover-frame{
+        max-width: 300px
+    }
+</style>
+
