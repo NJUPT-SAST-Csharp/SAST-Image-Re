@@ -1,30 +1,30 @@
 ﻿@inject I18n I18n
 
 @code {
-	[Parameter, EditorRequired]
-	public bool Value { get; set; } = false;
+	[CascadingParameter(Name = "loading")]
+	public IStatusStorage<bool> Loading { get; set; } = null!;
 
 	private bool visible = false;
 
-	private bool init = true;
+	protected override void OnInitialized()
+    {
+        Loading.OnChange += SetAsync;
+        base.OnInitialized();
+    }
 
-	protected override async Task OnParametersSetAsync()
+	private async void SetAsync()
 	{
-		if (init)
-		{
-			init = false;
-			return;
-		}
-
 		visible = true;
+		StateHasChanged();
 		await Task.Delay(600);
 		visible = false;
+		StateHasChanged();
 	}
 }
 
-@if(Value)
+@if (Loading.Value)
 {
-	<MBanner SingleLine Value="visible || Value">
+	<MBanner SingleLine Value="visible || Loading.Value">
 		<div class="spinner-border text-warning center" role="status">
 			<span class="visually-hidden">Loading...</span>
 		</div>

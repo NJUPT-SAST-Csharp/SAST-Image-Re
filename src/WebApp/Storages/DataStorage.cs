@@ -13,7 +13,7 @@ public interface IKeyDataStorage<TItem, TKey>
     public bool HasValue => !IsEmpty;
 }
 
-public sealed class KeyDataStorage<TItem, TKey> : IKeyDataStorage<TItem, TKey>
+file sealed class DataStorage<TItem, TKey> : IKeyDataStorage<TItem, TKey>
     where TKey : IEquatable<TKey>
 {
     private readonly Dictionary<TKey, TItem> items = [];
@@ -44,31 +44,23 @@ public sealed class KeyDataStorage<TItem, TKey> : IKeyDataStorage<TItem, TKey>
     }
 }
 
-public static class KeyDataStorageConfiguration
+public static class DataStorageConfiguration
 {
-    public static IServiceCollection AddKeyDataStorage<TItem, TKey>(
-        this IServiceCollection services
-    )
+    public static IServiceCollection AddDataStorage<TItem, TKey>(this IServiceCollection services)
         where TKey : IEquatable<TKey>
     {
-        services
-            .AddSingleton(new KeyDataStorage<TItem, TKey>())
-            .AddSingleton<IKeyDataStorage<TItem, TKey>>(p =>
-                p.GetRequiredService<KeyDataStorage<TItem, TKey>>()
-            );
+        services.AddSingleton<IKeyDataStorage<TItem, TKey>>(new DataStorage<TItem, TKey>());
 
         return services;
     }
 
-    public static IServiceCollection AddKeyDataStorage<TItem, TKey, TStorage>(
+    public static IServiceCollection AddDataStorage<TItem, TKey, TStorage>(
         this IServiceCollection services
     )
         where TKey : IEquatable<TKey>
         where TStorage : class, IKeyDataStorage<TItem, TKey>, new()
     {
-        services
-            .AddSingleton<TStorage>()
-            .AddSingleton<IKeyDataStorage<TItem, TKey>>(p => p.GetRequiredService<TStorage>());
+        services.AddSingleton<IKeyDataStorage<TItem, TKey>>(new TStorage());
 
         return services;
     }

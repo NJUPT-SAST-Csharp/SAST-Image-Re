@@ -3,23 +3,29 @@
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 @inject I18n I18n
-@inject KeyDataStorage<AlbumItemDto, long> Storage
+@inject DataStorage<AlbumItemDto, long> Storage
 
 @code {
-    private bool loading = false;
+    [CascadingParameter(Name = "loading")]
+    private IStatusStorage<bool> Loading { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
+        IEnumerable<AlbumItemDto> albums = [];
+
         if(Storage.Count == 0)
         {
-            loading = true;
+            Loading.Value = true;
+            albums = await Api.GetAlbums();
+            Loading.Value = false;
+        }
+        else
+        {
+            albums = await Api.GetAlbums();
         }
 
-        var remoteAlbums = await Api.GetAlbums();
 
-        loading = false;
-
-        foreach (var album in remoteAlbums)
+        foreach (var album in albums)
         {
             Storage.Add(album, album.Id);
         }
@@ -28,20 +34,19 @@
 
 <PageTitle>SastImg - Albums</PageTitle>
 
-<LoadingStatusBanner Value="loading"/>
+
 
 <div class="list">
     @foreach (var album in Storage.Items)
     {
-        <AlbumItem  Album="album.Value" />
+        <AlbumItem @key="album.Key" Album="album.Value" />
     }
 </div>
-
 
 <style>
 .list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     column-gap: 10px;
     row-gap: 1em;
 }

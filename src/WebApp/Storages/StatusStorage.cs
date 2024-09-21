@@ -1,16 +1,35 @@
 ﻿namespace WebApp.Storages;
 
-public interface IStatusStorage<TStatus>
+public interface IStatusStorage<TStatus> : IDisposable
 {
     public TStatus Value { get; set; }
+
+    public event Action? OnChange;
 }
 
-public sealed class StatusStorage<TStatus> : IStatusStorage<TStatus>
+public sealed class StatusStorage<TStatus>(TStatus status) : IStatusStorage<TStatus>
 {
-    public required TStatus Value { get; set; }
+    public TStatus Value
+    {
+        get => status!;
+        set
+        {
+            status = value;
+            NotifyStateChanged();
+        }
+    }
+
+    public event Action? OnChange;
+
+    public void Dispose()
+    {
+        OnChange = null;
+    }
+
+    private void NotifyStateChanged() => OnChange?.Invoke();
 }
 
-public static class DataStorageConfiguration
+public static class StatusStorageConfiguration
 {
     public static IServiceCollection AddStatusStorage<TStatus>(
         this IServiceCollection services,
@@ -18,10 +37,8 @@ public static class DataStorageConfiguration
     )
     {
         services
-            .AddSingleton(new StatusStorage<TStatus>() { Value = defaultValue })
-            .AddSingleton<IStatusStorage<TStatus>>(p =>
-                p.GetRequiredService<StatusStorage<TStatus>>()
-            );
+            .AddSingleton<IStatusStorage<TStatus>>(new StatusStorage<TStatus>(defaultValue))
+            .AddCascadingValue(sp => sp.GetRequiredService<IStatusStorage<TStatus>>());
 
         return services;
     }
@@ -33,11 +50,11 @@ public static class DataStorageConfiguration
     )
     {
         services
-            .AddKeyedSingleton(key, new StatusStorage<TStatus>() { Value = defaultValue })
             .AddKeyedSingleton<IStatusStorage<TStatus>>(
                 key,
-                (p, k) => p.GetRequiredKeyedService<StatusStorage<TStatus>>(k)
-            );
+                new StatusStorage<TStatus>(defaultValue)
+            )
+            .AddCascadingValue(key, sp => sp.GetRequiredKeyedService<IStatusStorage<TStatus>>(key));
 
         return services;
     }
