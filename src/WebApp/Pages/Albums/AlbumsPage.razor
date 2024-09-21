@@ -2,10 +2,11 @@
 
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
+@inject I18n I18n
 @inject KeyDataStorage<AlbumItemDto, long> Storage
 
 @code {
-    bool isLoading = true;
+    private bool loading = true;
 
     IEnumerable<AlbumItemDto> albums = [];
 
@@ -15,7 +16,9 @@
 
         await Task.Delay(1000);
 
-        isLoading = false;
+        loading = false;
+
+        StateHasChanged();
 
         foreach (var album in remoteAlbums)
         {
@@ -26,11 +29,21 @@
 
 <PageTitle>SastImg - Albums</PageTitle>
 
+<LoadingStatusBanner Loading="loading"/>
+
+<div class="list">
+    @foreach (var album in Storage.Items)
+    {
+        <AlbumItem  Album="album.Value" />
+    }
+</div>
 
 
-@if(isLoading)
-{
-    <p>Loading...</p>
+<style>
+.list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    column-gap: 10px;
+    row-gap: 1em;
 }
-
-
+</style>

@@ -1,0 +1,41 @@
+﻿@inject I18n I18n
+
+@code {
+	[Parameter, EditorRequired]
+	public bool Loading { get; set; }
+
+	private bool visible = true;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		visible = true;
+		await Task.Delay(600);
+		visible = false;
+	}
+}
+
+@if(Loading)
+{
+	<MBanner SingleLine Value="visible || Loading">
+		<div class="spinner-border text-warning center" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</MBanner>
+}
+else
+{
+	<MBanner SingleLine Value="visible">
+		<MAvatar Size="40" Class="center">
+			<ChildContent>
+				<MIcon Color="success">mdi-check-outline</MIcon>
+			</ChildContent>
+		</MAvatar>
+	</MBanner>
+}
+
+<style>
+.center
+{
+	margin-left: 50%
+}
+</style>
