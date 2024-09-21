@@ -1,6 +1,7 @@
 ﻿@page "/albums/{id:long}"
 
 @inject IKeyDataStorage<DetailedAlbum, long> Storage
+@inject IKeyDataStorage<Stream, long> Images
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 
@@ -12,8 +13,16 @@
 
     protected async override Task OnInitializedAsync() 
     { 
-        var cover = await Api.GetCover(Id);
-        _ = JS.SetSrcAsync(cover, "cover-img", "cover");
+        if(Images.TryGet(Id, out var cover) == false)
+        {
+            cover = await Api.GetCover(Album.Id);
+            var memory = new MemoryStream();
+            await cover.CopyToAsync(memory);
+            await cover.DisposeAsync();
+            cover = memory;
+            Images.Add(cover, Album.Id);
+        }
+        _ = JS.SetSrcAsync(cover!, "cover-img", "cover");
 
         if(Storage.TryGet(Id, out var album))
             Album = album;
@@ -25,15 +34,29 @@
 
 <PageTitle>SastImg - @Album.Title</PageTitle>
 
-<div>@Album</div>
+<MRow Class="ma-md-1" AlignContent="AlignContentTypes.Center">
 
-<div class="cover-frame ms-5" style="view-transition-name: cover-@Id">
-    <img id="cover-img" class="img-fluid img-thumbnail" />
-</div>
+    <MCol Md="6" Class="d-flex">
+        <img id="cover-img" style="max-height: 300px;" class="img-thumbnail m-auto" />
+    </MCol>
 
-<style>
-    .cover-frame{
-        max-width: 300px
-    }
-</style>
+    <MCol Md="6" Class="align-self-center vstack gap-1">
+        <h3 class="text-center mx-5 my-3 my-md-3 ma-md-auto pt-md-3">
+            @Album.Title
+        </h3>
+
+        <div class="d-flex justify-content-center">
+            <a href=""
+               class="btn badge rounded-pill bg-info"
+               type="button">
+                @Album.Category
+            </a>
+        </div>
+
+        <h6 class="mt-3 text-center text-muted">@Album.UpdatedAt</h6>
+    </MCol>
+</MRow>
+
+<MDivider />
+
 

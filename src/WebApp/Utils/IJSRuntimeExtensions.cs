@@ -11,8 +11,9 @@ public static class IJSRuntimeExtensions
         string? title = null
     )
     {
-        using var strRef = new DotNetStreamReference(image);
+        image.Seek(0, SeekOrigin.Begin);
+        var strRef = new DotNetStreamReference(image, true);
         await js.InvokeVoidAsync("setSource", elementId, strRef, "image/*", title);
-        await image.DisposeAsync();
+        //await image.DisposeAsync();
     }
 }

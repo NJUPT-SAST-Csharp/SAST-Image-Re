@@ -6,19 +6,18 @@
 @inject KeyDataStorage<AlbumItemDto, long> Storage
 
 @code {
-    private bool loading = true;
-
-    IEnumerable<AlbumItemDto> albums = [];
+    private bool loading = false;
 
     protected override async Task OnInitializedAsync()
     {
+        if(Storage.Count == 0)
+        {
+            loading = true;
+        }
+
         var remoteAlbums = await Api.GetAlbums();
 
-        await Task.Delay(1000);
-
         loading = false;
-
-        StateHasChanged();
 
         foreach (var album in remoteAlbums)
         {
@@ -29,7 +28,7 @@
 
 <PageTitle>SastImg - Albums</PageTitle>
 
-<LoadingStatusBanner Loading="loading"/>
+<LoadingStatusBanner Value="loading"/>
 
 <div class="list">
     @foreach (var album in Storage.Items)

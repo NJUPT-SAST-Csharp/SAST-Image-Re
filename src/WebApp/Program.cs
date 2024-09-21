@@ -18,8 +18,14 @@ await builder
 
 builder.Services.AddApiClients().AddAuth();
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder.Services.AddKeyDataStorage<AlbumItemDto, long>().AddKeyDataStorage<DetailedAlbum, long>();
-
+builder
+    .Services.AddKeyDataStorage<AlbumItemDto, long>()
+    .AddKeyDataStorage<DetailedAlbum, long>()
+    .AddKeyDataStorage<Stream, long>();
+builder.Services.AddScoped(_ => new HttpClient()
+{
+    BaseAddress = new(builder.HostEnvironment.BaseAddress),
+});
 builder.Services.AddI18nText(options =>
     options.PersistenceLevel = PersistanceLevel.SessionAndLocal
 );

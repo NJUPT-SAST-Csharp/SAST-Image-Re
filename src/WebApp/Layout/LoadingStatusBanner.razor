@@ -2,21 +2,29 @@
 
 @code {
 	[Parameter, EditorRequired]
-	public bool Loading { get; set; }
+	public bool Value { get; set; } = false;
 
-	private bool visible = true;
+	private bool visible = false;
+
+	private bool init = true;
 
 	protected override async Task OnParametersSetAsync()
 	{
+		if (init)
+		{
+			init = false;
+			return;
+		}
+
 		visible = true;
 		await Task.Delay(600);
 		visible = false;
 	}
 }
 
-@if(Loading)
+@if(Value)
 {
-	<MBanner SingleLine Value="visible || Loading">
+	<MBanner SingleLine Value="visible || Value">
 		<div class="spinner-border text-warning center" role="status">
 			<span class="visually-hidden">Loading...</span>
 		</div>

@@ -1,6 +1,7 @@
 ﻿@inject IAlbumAPI Api
 @inject IJSRuntime JS
 @inject NavigationManager Nav
+@inject IKeyDataStorage<Stream, long> Images
 
 @code {
 
@@ -9,8 +10,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var cover = await Api.GetCover(Album.Id);
-        _ = JS.SetSrcAsync(cover, $"cover-img-{Album.Id}", Album.Title);
+        if (Images.TryGet(Album.Id, out var cover) == false)
+        {
+            cover = await Api.GetCover(Album.Id);
+            var memory = new MemoryStream();
+            await cover.CopyToAsync(memory);
+            await cover.DisposeAsync();
+            cover = memory;
+            Images.Add(cover, Album.Id);
+        }
+        _ = JS.SetSrcAsync(cover!, $"cover-img-{Album.Id}", Album.Title);
     }
 
 
@@ -26,7 +35,6 @@
         transition: ease-in-out, 0.2s;
         max-width: 200px;
         cursor: pointer;
-        view-transition-name: cover-@Album.Id;
     }
 
         .item:hover {
