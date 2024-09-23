@@ -1,0 +1,28 @@
+﻿@inject IJSRuntime JS
+@inject IDataStorage<Stream, long> Images
+@inject IImageAPI Api
+
+@code {
+    [Parameter, EditorRequired]
+    public ImageItemDto Image { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Images.TryGet(Image.Id, out var cover) == false)
+        {
+            var result = await Api.GetFile(Image.Id);
+            if (result.IsSuccessStatusCode)
+                cover = result.Content;
+            else return;
+
+            var memory = new MemoryStream();
+            await cover!.CopyToAsync(memory);
+            await cover.DisposeAsync();
+            cover = memory;
+            Images.Add(cover, Image.Id);
+        }
+        _ = JS.SetSrcAsync(cover!, $"img-{Image.Id}", Image.Title);
+    }
+}
+
+<img id="img-@Image.Id"/>

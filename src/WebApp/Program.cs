@@ -16,9 +16,19 @@ await builder
     .Services.AddMasaBlazor()
     .AddI18nForWasmAsync($"{builder.HostEnvironment.BaseAddress}/i18n");
 
-builder.Services.AddApiClients().AddAuth();
+builder
+    .Services.AddAuth()
+    .AddApiClient<IAlbumAPI>("albums")
+    .AddApiClient<IAccountAPI>("account")
+    .AddApiClient<IImageAPI>("images");
+
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder.Services.AddKeyDataStorage<AlbumItemDto, long>().AddKeyDataStorage<DetailedAlbum, long>();
+builder
+    .Services.AddDataStorage<AlbumItemDto, long>()
+    .AddDataStorage<DetailedAlbum, long>()
+    .AddDataStorage<Stream, long>();
+
+builder.Services.AddKeyedStatusStorage("loading", false);
 
 builder.Services.AddI18nText(options =>
     options.PersistenceLevel = PersistanceLevel.SessionAndLocal

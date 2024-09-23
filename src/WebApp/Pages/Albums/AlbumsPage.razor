@@ -2,22 +2,30 @@
 
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
-@inject KeyDataStorage<AlbumItemDto, long> Storage
+@inject I18n I18n
+@inject IDataStorage<AlbumItemDto, long> Storage
 
 @code {
-    bool isLoading = true;
-
-    IEnumerable<AlbumItemDto> albums = [];
+    [CascadingParameter(Name = "loading")]
+    private IStatusStorage<bool> Loading { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        var remoteAlbums = await Api.GetAlbums();
+        IEnumerable<AlbumItemDto> albums = [];
 
-        await Task.Delay(1000);
+        if(Storage.Count == 0)
+        {
+            Loading.Value = true;
+            albums = await Api.GetAlbums();
+            Loading.Value = false;
+        }
+        else
+        {
+            albums = await Api.GetAlbums();
+        }
 
-        isLoading = false;
 
-        foreach (var album in remoteAlbums)
+        foreach (var album in albums)
         {
             Storage.Add(album, album.Id);
         }
@@ -28,9 +36,18 @@
 
 
 
-@if(isLoading)
-{
-    <FluentHeader>Loading..</FluentHeader>
+<div class="list">
+    @foreach (var album in Storage.Items)
+    {
+        <AlbumItem @key="album.Key" Album="album.Value" />
+    }
+</div>
+
+<style>
+.list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    column-gap: 10px;
+    row-gap: 1em;
 }
-
-
+</style>

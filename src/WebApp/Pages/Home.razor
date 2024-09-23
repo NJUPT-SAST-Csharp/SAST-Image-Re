@@ -2,11 +2,8 @@
 @inject I18n I18n
 
 @code{
-
-
-    protected override async Task OnInitializedAsync()
-    {
-    }
+    [CascadingParameter]
+    IStatusStorage<string> Rua { get; set; } = null!;
 }
 
 <PageTitle>SastImg - Home</PageTitle>

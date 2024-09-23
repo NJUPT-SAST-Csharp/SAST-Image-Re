@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Refit;
 using WebApp.APIs.Auth;
-using WebApp.Requests;
 
 namespace WebApp.APIs;
 
@@ -18,13 +17,6 @@ public static class APIConfigurations
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         };
 
-    public static IServiceCollection AddApiClients(this IServiceCollection services)
-    {
-        services.AddApiClient<IAlbumAPI>("albums");
-        services.AddApiClient<IAccountAPI>("account");
-
-        return services;
-    }
 
     public static IServiceCollection AddAuth(this IServiceCollection services)
     {
@@ -38,7 +30,9 @@ public static class APIConfigurations
         return services;
     }
 
-    private static IServiceCollection AddApiClient<T>(
+
+    public static IServiceCollection AddApiClient<T>(
+
         this IServiceCollection services,
         string? name = null
     )

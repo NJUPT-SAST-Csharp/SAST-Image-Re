@@ -1,3 +1,4 @@
 {
-  "HelloWorld": "你好，世界！"
+  "HelloWorld": "Hello world!",
+  "loading": "Loading..."
 }

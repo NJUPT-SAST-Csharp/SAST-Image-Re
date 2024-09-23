@@ -1,0 +1,49 @@
+﻿@inject I18n I18n
+
+@code {
+	[CascadingParameter(Name = "loading")]
+	public IStatusStorage<bool> Loading { get; set; } = null!;
+
+	private bool visible = false;
+
+	protected override void OnInitialized()
+    {
+        Loading.OnChange += SetAsync;
+        base.OnInitialized();
+    }
+
+	private async void SetAsync()
+	{
+		visible = true;
+		StateHasChanged();
+		await Task.Delay(600);
+		visible = false;
+		StateHasChanged();
+	}
+}
+
+@if (Loading.Value)
+{
+	<MBanner SingleLine Value="visible || Loading.Value">
+		<div class="spinner-border text-warning center" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</MBanner>
+}
+else
+{
+	<MBanner SingleLine Value="visible">
+		<MAvatar Size="40" Class="center">
+			<ChildContent>
+				<MIcon Color="success">mdi-check-outline</MIcon>
+			</ChildContent>
+		</MAvatar>
+	</MBanner>
+}
+
+<style>
+.center
+{
+	margin-left: 50%
+}
+</style>

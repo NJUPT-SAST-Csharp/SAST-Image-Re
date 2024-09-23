@@ -1,78 +1,66 @@
 ﻿namespace WebApp.Storages;
 
-public interface IDataStorage<TItem>
+public interface IDataStorage<TItem, TKey>
+    where TKey : IEquatable<TKey>
 {
-    public void Add(TItem item);
+    public bool TryGet(TKey key, out TItem? item);
+    public void Add(TItem item, TKey key);
     public void Clear();
-    public bool TryGetValue(Func<TItem, bool> condition, out TItem? item);
 
-    public IEnumerable<TItem> Items { get; }
+    public IReadOnlyDictionary<TKey, TItem> Items { get; }
     public int Count { get; }
     public bool IsEmpty => Count == 0;
     public bool HasValue => !IsEmpty;
 }
 
-public sealed class DataStorage<TItem> : IDataStorage<TItem>
+file sealed class DataStorage<TItem, TKey> : IDataStorage<TItem, TKey>
+    where TKey : IEquatable<TKey>
 {
-    private readonly Queue<TItem> items = [];
-    public IEnumerable<TItem> Items => items;
-    public int Count => items.Count;
-    public int MaxCount { get; init; } = int.MaxValue;
+    private readonly Dictionary<TKey, TItem> items = [];
 
-    public void Add(TItem item)
+    public IReadOnlyDictionary<TKey, TItem> Items => items;
+    public int Count => items.Count;
+
+    public void Add(TItem item, TKey key)
     {
-        items.Enqueue(item);
-        if (items.Count > MaxCount)
+        if (items.TryAdd(key, item) == false)
         {
-            var removedItem = items.Dequeue();
-            if (removedItem is IDisposable disposableItem)
-                disposableItem.Dispose();
+            TryGet(key, out var existingValue);
+            if (key is IEquatable<TItem> comparableItem && comparableItem.Equals(existingValue))
+            {
+                return;
+            }
+
+            items.Remove(key);
+            items.Add(key, item);
         }
     }
 
     public void Clear() => items.Clear();
 
-    public bool TryGetValue(Func<TItem, bool> condition, out TItem? item)
+    public bool TryGet(TKey key, out TItem? item)
     {
-        if (Count == 0)
-        {
-            item = default;
-            return false;
-        }
-
-        if (Items.Any(condition))
-        {
-            item = Items.First(condition);
-            return true;
-        }
-
-        item = default;
-        return false;
+        return items.TryGetValue(key, out item);
     }
 }
 
 public static class DataStorageConfiguration
 {
-    public static IServiceCollection AddDataStorage<TItem>(
-        this IServiceCollection services,
-        int maxCount = int.MaxValue
-    )
+    public static IServiceCollection AddDataStorage<TItem, TKey>(this IServiceCollection services)
+        where TKey : IEquatable<TKey>
     {
-        services
-            .AddSingleton(new DataStorage<TItem>() { MaxCount = maxCount })
-            .AddSingleton<IDataStorage<TItem>>(p => p.GetRequiredService<DataStorage<TItem>>());
+        services.AddSingleton<IDataStorage<TItem, TKey>>(new DataStorage<TItem, TKey>());
 
         return services;
     }
 
-    public static IServiceCollection AddDataStorage<TItem, TStorage>(
+    public static IServiceCollection AddDataStorage<TItem, TKey, TStorage>(
         this IServiceCollection services
     )
-        where TStorage : class, IDataStorage<TItem>, new()
+        where TKey : IEquatable<TKey>
+        where TStorage : class, IDataStorage<TItem, TKey>, new()
     {
-        services
-            .AddSingleton<TStorage>()
-            .AddSingleton<IDataStorage<TItem>>(p => p.GetRequiredService<TStorage>());
+        services.AddSingleton<IDataStorage<TItem, TKey>>(new TStorage());
 
         return services;
     }

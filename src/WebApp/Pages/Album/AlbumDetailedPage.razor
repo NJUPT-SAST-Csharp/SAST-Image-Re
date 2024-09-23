@@ -1,6 +1,8 @@
 ﻿@page "/albums/{id:long}"
 
-@inject IKeyDataStorage<DetailedAlbum, long> Storage
+
+@inject IDataStorage<DetailedAlbum, long> Storage
+@inject IDataStorage<Stream, long> Images
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 
@@ -8,32 +10,83 @@
     [Parameter]
     public long Id { get; set; }
 
-    DetailedAlbum Album { get; set; }
+    [CascadingParameter(Name = "loading")]
+    public IStatusStorage<bool> Loading { get; set; } = null!;
+
+    private DetailedAlbum album;
+
+    private IEnumerable<ImageItemDto> images = [];
 
     protected async override Task OnInitializedAsync() 
-    { 
-        var cover = await Api.GetCover(Id);
-        _ = JS.SetSrcAsync(cover, "cover-img", "cover");
+    {
+        _ = SetImagesAsync();
 
-        if(Storage.TryGet(Id, out var album))
-            Album = album;
+        if(Storage.TryGet(Id, out album))
+        {
+            album =  await Api.GetDetail(Id);
+            Storage.Add(album, Id);
+        }
+        else
+        {
+            Loading.Value = true;
+            album =  await Api.GetDetail(Id);
+            Loading.Value = false;
 
-        Album =  await Api.GetDetail(Id);
-        Storage.Add(Album, Id);
+            Storage.Add(album, Id);
+        }
+
+        var result = await Api.GetImages(Id);
+        if(result.IsSuccessStatusCode)
+        {
+            images = result.Content!;
+        }
+
+    }
+
+    private async Task SetImagesAsync()
+    {
+        if(Images.TryGet(Id, out var cover) == false)
+        {
+            cover = await Api.GetCover(album.Id);
+            var memory = new MemoryStream();
+            await cover.CopyToAsync(memory);
+            await cover.DisposeAsync();
+            cover = memory;
+            Images.Add(cover, album.Id);
+        }
+        _ = JS.SetSrcAsync(cover!, "cover-img", "cover");
     }
 }
 
-<PageTitle>SastImg - @Album.Title</PageTitle>
+<PageTitle>SastImg - @album.Title</PageTitle>
 
-<div>@Album</div>
+<MRow Class="ma-md-1" AlignContent="AlignContentTypes.Center">
 
-<div class="cover-frame ms-5" style="view-transition-name: cover-@Id">
-    <img id="cover-img" class="img-fluid img-thumbnail" />
-</div>
+    <MCol Md="6" Class="d-flex">
+        <img id="cover-img" style="max-height: 300px;" class="img-thumbnail m-auto" />
+    </MCol>
 
-<style>
-    .cover-frame{
-        max-width: 300px
-    }
-</style>
+    <MCol Md="6" Class="align-self-center vstack gap-1">
+        <h3 class="text-center mx-5 my-3 my-md-3 ma-md-auto pt-md-3">
+            @album.Title
+        </h3>
+
+        <div class="d-flex justify-content-center">
+            <a href=""
+               class="btn badge rounded-pill bg-info"
+               type="button">
+                @album.Category
+            </a>
+        </div>
+
+        <h6 class="mt-3 text-center text-muted">@album.UpdatedAt</h6>
+    </MCol>
+</MRow>
+
+<MDivider />
+
+@foreach(var image in images)
+{
+    <ImageItem @key="image.Id" Image="image" />
+}
 
