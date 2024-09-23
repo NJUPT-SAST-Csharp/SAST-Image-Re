@@ -1,38 +1,62 @@
 ﻿@page "/albums/{id:long}"
 
-@inject IKeyDataStorage<DetailedAlbum, long> Storage
-@inject IKeyDataStorage<Stream, long> Images
+@inject IDataStorage<DetailedAlbum, long> Storage
+@inject IDataStorage<Stream, long> Images
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 
 @code {
     [Parameter]
     public long Id { get; set; }
+    [CascadingParameter(Name = "loading")]
+    public IStatusStorage<bool> Loading { get; set; } = null!;
 
-    DetailedAlbum Album { get; set; }
+    private DetailedAlbum album;
+
+    private IEnumerable<ImageItemDto> images = [];
 
     protected async override Task OnInitializedAsync() 
-    { 
+    {
+        _ = SetImagesAsync();
+
+        if(Storage.TryGet(Id, out album))
+        {
+            album =  await Api.GetDetail(Id);
+            Storage.Add(album, Id);
+        }
+        else
+        {
+            Loading.Value = true;
+            album =  await Api.GetDetail(Id);
+            Loading.Value = false;
+
+            Storage.Add(album, Id);
+        }
+
+        var result = await Api.GetImages(Id);
+        if(result.IsSuccessStatusCode)
+        {
+            images = result.Content!;
+        }
+
+    }
+
+    private async Task SetImagesAsync()
+    {
         if(Images.TryGet(Id, out var cover) == false)
         {
-            cover = await Api.GetCover(Album.Id);
+            cover = await Api.GetCover(album.Id);
             var memory = new MemoryStream();
             await cover.CopyToAsync(memory);
             await cover.DisposeAsync();
             cover = memory;
-            Images.Add(cover, Album.Id);
+            Images.Add(cover, album.Id);
         }
         _ = JS.SetSrcAsync(cover!, "cover-img", "cover");
-
-        if(Storage.TryGet(Id, out var album))
-            Album = album;
-
-        Album =  await Api.GetDetail(Id);
-        Storage.Add(Album, Id);
     }
 }
 
-<PageTitle>SastImg - @Album.Title</PageTitle>
+<PageTitle>SastImg - @album.Title</PageTitle>
 
 <MRow Class="ma-md-1" AlignContent="AlignContentTypes.Center">
 
@@ -42,21 +66,24 @@
 
     <MCol Md="6" Class="align-self-center vstack gap-1">
         <h3 class="text-center mx-5 my-3 my-md-3 ma-md-auto pt-md-3">
-            @Album.Title
+            @album.Title
         </h3>
 
         <div class="d-flex justify-content-center">
             <a href=""
                class="btn badge rounded-pill bg-info"
                type="button">
-                @Album.Category
+                @album.Category
             </a>
         </div>
 
-        <h6 class="mt-3 text-center text-muted">@Album.UpdatedAt</h6>
+        <h6 class="mt-3 text-center text-muted">@album.UpdatedAt</h6>
     </MCol>
 </MRow>
 
 <MDivider />
 
-
+@foreach(var image in images)
+{
+    <ImageItem @key="image.Id" Image="image" />
+}

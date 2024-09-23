@@ -1,6 +1,6 @@
 ﻿namespace WebApp.Storages;
 
-public interface IKeyDataStorage<TItem, TKey>
+public interface IDataStorage<TItem, TKey>
     where TKey : IEquatable<TKey>
 {
     public bool TryGet(TKey key, out TItem? item);
@@ -13,7 +13,7 @@ public interface IKeyDataStorage<TItem, TKey>
     public bool HasValue => !IsEmpty;
 }
 
-file sealed class DataStorage<TItem, TKey> : IKeyDataStorage<TItem, TKey>
+file sealed class DataStorage<TItem, TKey> : IDataStorage<TItem, TKey>
     where TKey : IEquatable<TKey>
 {
     private readonly Dictionary<TKey, TItem> items = [];
@@ -49,7 +49,7 @@ public static class DataStorageConfiguration
     public static IServiceCollection AddDataStorage<TItem, TKey>(this IServiceCollection services)
         where TKey : IEquatable<TKey>
     {
-        services.AddSingleton<IKeyDataStorage<TItem, TKey>>(new DataStorage<TItem, TKey>());
+        services.AddSingleton<IDataStorage<TItem, TKey>>(new DataStorage<TItem, TKey>());
 
         return services;
     }
@@ -58,9 +58,9 @@ public static class DataStorageConfiguration
         this IServiceCollection services
     )
         where TKey : IEquatable<TKey>
-        where TStorage : class, IKeyDataStorage<TItem, TKey>, new()
+        where TStorage : class, IDataStorage<TItem, TKey>, new()
     {
-        services.AddSingleton<IKeyDataStorage<TItem, TKey>>(new TStorage());
+        services.AddSingleton<IDataStorage<TItem, TKey>>(new TStorage());
 
         return services;
     }

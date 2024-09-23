@@ -16,7 +16,12 @@ await builder
     .Services.AddMasaBlazor()
     .AddI18nForWasmAsync($"{builder.HostEnvironment.BaseAddress}/i18n");
 
-builder.Services.AddApiClients().AddAuth();
+builder
+    .Services.AddAuth()
+    .AddApiClient<IAlbumAPI>("albums")
+    .AddApiClient<IAccountAPI>("account")
+    .AddApiClient<IImageAPI>("images");
+
 builder.Services.AddBlazoredLocalStorageAsSingleton();
 builder
     .Services.AddDataStorage<AlbumItemDto, long>()

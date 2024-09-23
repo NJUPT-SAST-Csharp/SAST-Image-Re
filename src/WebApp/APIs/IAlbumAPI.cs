@@ -16,6 +16,9 @@ public interface IAlbumAPI
 
     [Get("/cover")]
     public Task<Stream> GetCover([Query] long a);
+
+    [Get("/{id}/images")]
+    public Task<IApiResponse<IEnumerable<ImageItemDto>>> GetImages(long id);
 }
 
 public readonly record struct AlbumItemDto(
@@ -36,3 +39,5 @@ public readonly record struct DetailedAlbum(
     DateTime CreatedAt,
     int SubscribeCount
 );
+
+public readonly record struct ImageItemDto(long Id, string Title, long[] Tags);

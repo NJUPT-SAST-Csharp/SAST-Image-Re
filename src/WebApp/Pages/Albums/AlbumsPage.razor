@@ -3,7 +3,7 @@
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 @inject I18n I18n
-@inject DataStorage<AlbumItemDto, long> Storage
+@inject IDataStorage<AlbumItemDto, long> Storage
 
 @code {
     [CascadingParameter(Name = "loading")]
