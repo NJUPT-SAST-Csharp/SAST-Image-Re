@@ -31,6 +31,8 @@ public static class ControllerExtensions
 
     public static IActionResult ImageOrNotFound(this ControllerBase controller, Stream? image)
     {
-        return image is null ? controller.NotFound() : controller.File(image, "image/*");
+        return image is null
+            ? controller.PhysicalFile("./src/not_found.png", "image/png")
+            : controller.File(image, "image/*");
     }
 }

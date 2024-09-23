@@ -3,6 +3,7 @@
 @inject NavigationManager Nav
 @inject IDataStorage<Stream, long> Images
 
+
 @code {
 
     [Parameter, EditorRequired]
@@ -20,6 +21,7 @@
             Images.Add(cover, Album.Id);
         }
         _ = JS.SetSrcAsync(cover!, $"cover-img-{Album.Id}", Album.Title);
+
     }
 
 

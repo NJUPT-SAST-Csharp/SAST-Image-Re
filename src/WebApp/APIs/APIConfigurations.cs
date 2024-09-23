@@ -17,6 +17,7 @@ public static class APIConfigurations
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         };
 
+
     public static IServiceCollection AddAuth(this IServiceCollection services)
     {
         services.AddAuthorizationCore().AddCascadingAuthenticationState();
@@ -29,7 +30,9 @@ public static class APIConfigurations
         return services;
     }
 
+
     public static IServiceCollection AddApiClient<T>(
+
         this IServiceCollection services,
         string? name = null
     )

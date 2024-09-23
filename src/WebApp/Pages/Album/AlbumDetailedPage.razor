@@ -1,5 +1,6 @@
 ﻿@page "/albums/{id:long}"
 
+
 @inject IDataStorage<DetailedAlbum, long> Storage
 @inject IDataStorage<Stream, long> Images
 @inject IAlbumAPI Api
@@ -8,6 +9,7 @@
 @code {
     [Parameter]
     public long Id { get; set; }
+
     [CascadingParameter(Name = "loading")]
     public IStatusStorage<bool> Loading { get; set; } = null!;
 
@@ -87,3 +89,4 @@
 {
     <ImageItem @key="image.Id" Image="image" />
 }
+
