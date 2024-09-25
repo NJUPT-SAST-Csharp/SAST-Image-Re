@@ -1,35 +1,23 @@
 ﻿@inject IAlbumAPI Api
 @inject IJSRuntime JS
 @inject NavigationManager Nav
-@inject IDataStorage<Stream, long> Images
+
 
 
 @code {
-
     [Parameter, EditorRequired]
     public AlbumItemDto Album { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (Images.TryGet(Album.Id, out var cover) == false)
-        {
-            cover = await Api.GetCover(Album.Id);
-            var memory = new MemoryStream();
-            await cover.CopyToAsync(memory);
-            await cover.DisposeAsync();
-            cover = memory;
-            Images.Add(cover, Album.Id);
-        }
-        _ = JS.SetSrcAsync(cover!, $"cover-img-{Album.Id}", Album.Title);
-
-    }
-
 
     void Enter() => Nav.NavigateTo("albums/" + Album.Id);
+
+
+
 }
 
+
 <div class="item" @onclick="Enter">
-    <img id="cover-img-@Album.Id" class="img-fluid img-thumbnail"/>
+    <MImage Src="@IAlbumAPI.GetCover(Album.Id)" />
 </div>
 
 <style>

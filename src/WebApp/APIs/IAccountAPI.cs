@@ -5,6 +5,8 @@ namespace WebApp.APIs;
 
 public interface IAccountAPI
 {
+    public const string Base = "accounts";
+
     [Post("/login")]
     public Task<IApiResponse<LoginResponse>> Login(LoginRequest loginRequest);
 }

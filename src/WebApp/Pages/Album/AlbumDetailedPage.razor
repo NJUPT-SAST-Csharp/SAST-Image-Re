@@ -2,7 +2,6 @@
 
 
 @inject IDataStorage<DetailedAlbum, long> Storage
-@inject IDataStorage<Stream, long> Images
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 
@@ -19,8 +18,6 @@
 
     protected async override Task OnInitializedAsync() 
     {
-        _ = SetImagesAsync();
-
         if(Storage.TryGet(Id, out album))
         {
             album =  await Api.GetDetail(Id);
@@ -40,21 +37,6 @@
         {
             images = result.Content!;
         }
-
-    }
-
-    private async Task SetImagesAsync()
-    {
-        if(Images.TryGet(Id, out var cover) == false)
-        {
-            cover = await Api.GetCover(album.Id);
-            var memory = new MemoryStream();
-            await cover.CopyToAsync(memory);
-            await cover.DisposeAsync();
-            cover = memory;
-            Images.Add(cover, album.Id);
-        }
-        _ = JS.SetSrcAsync(cover!, "cover-img", "cover");
     }
 }
 
@@ -63,7 +45,7 @@
 <MRow Class="ma-md-1" AlignContent="AlignContentTypes.Center">
 
     <MCol Md="6" Class="d-flex">
-        <img id="cover-img" style="max-height: 300px;" class="img-thumbnail m-auto" />
+        <MImage Contain Src="@IAlbumAPI.GetCover(Id)" />
     </MCol>
 
     <MCol Md="6" Class="align-self-center vstack gap-1">
@@ -85,8 +67,25 @@
 
 <MDivider />
 
-@foreach(var image in images)
-{
-    <ImageItem @key="image.Id" Image="image" />
-}
+<div class="img-wrapper">
+    @foreach(var image in images)
+    {
+        <ImageItem @key="image.Id" Image="image" />
+    }
+</div>
 
+<style>
+    .img-wrapper {
+        column-count: 3;
+        column-gap: 10px;
+        counter-reset: count;
+        width: 960px;
+        margin: 0 auto;
+    }
+
+        .img-wrapper > li {
+            list-style-type: none;
+            position: relative;
+            margin-bottom: 10px;
+        }
+</style>
