@@ -4,6 +4,8 @@ namespace WebApp.Requests;
 
 public interface IAlbumAPI
 {
+    public const string Base = "albums";
+
     [Get("/")]
     public Task<List<AlbumItemDto>> GetAlbums(
         [AliasAs("c")] long? categoryId = null,
@@ -19,7 +21,6 @@ public interface IAlbumAPI
 
     [Get("/{id}/images")]
     public Task<IApiResponse<IEnumerable<ImageItemDto>>> GetImages(long id);
-
 }
 
 public readonly record struct AlbumItemDto(
@@ -42,4 +43,3 @@ public readonly record struct DetailedAlbum(
 );
 
 public readonly record struct ImageItemDto(long Id, string Title, long[] Tags);
-

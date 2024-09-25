@@ -18,9 +18,9 @@ await builder
 
 builder
     .Services.AddAuth()
-    .AddApiClient<IAlbumAPI>("albums")
-    .AddApiClient<IAccountAPI>("account")
-    .AddApiClient<IImageAPI>("images");
+    .AddApiClient<IAlbumAPI>(IAlbumAPI.Base)
+    .AddApiClient<IAccountAPI>(IAccountAPI.Base)
+    .AddApiClient<IImageAPI>(IImageAPI.Base);
 
 builder.Services.AddBlazoredLocalStorageAsSingleton();
 builder
