@@ -14,5 +14,6 @@ public sealed record class ImageAddedEvent(
     AccessLevel AccessLevel,
     Collaborators Collaborators,
     Stream ImageFile,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    UserId Uploader
 ) : IDomainEvent { }

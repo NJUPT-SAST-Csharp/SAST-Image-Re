@@ -149,13 +149,14 @@ public sealed class Album : EntityBase<AlbumId>
             new ImageAddedEvent(
                 Id,
                 image.Id,
-                command.Actor.Id,
+                _author,
                 command.Title,
                 command.Tags,
                 _accessLevel,
                 Collaborators,
                 command.ImageFile,
-                DateTime.UtcNow
+                DateTime.UtcNow,
+                command.Actor.Id
             )
         );
 

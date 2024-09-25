@@ -33,6 +33,7 @@ public sealed class ImageModel
         Collaborators = e.Collaborators.Select(c => c.Value).ToArray();
         AccessLevel = e.AccessLevel.Value;
         UploadedAt = e.CreatedAt;
+        UploaderId = e.Uploader.Value;
     }
 
     internal void Remove(ImageRemovedEvent e)
