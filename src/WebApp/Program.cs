@@ -23,10 +23,7 @@ builder
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder
-    .Services.AddDataStorage<AlbumItemDto, long>()
-    .AddDataStorage<DetailedAlbum, long>()
-    .AddDataStorage<Stream, long>();
+builder.Services.AddDataStorage<AlbumItemDto, long>().AddDataStorage<DetailedAlbum, long>();
 
 builder.Services.AddKeyedStatusStorage("loading", false);
 

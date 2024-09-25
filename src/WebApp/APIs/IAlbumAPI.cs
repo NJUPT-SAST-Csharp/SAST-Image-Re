@@ -1,10 +1,13 @@
 ﻿using Refit;
+using WebApp.APIs;
 
 namespace WebApp.Requests;
 
 public interface IAlbumAPI
 {
     public const string Base = "albums";
+
+    public static string GetCover(long a) => $"{APIConfigurations.BaseUrl}{Base}/cover?a={a}";
 
     [Get("/")]
     public Task<List<AlbumItemDto>> GetAlbums(
@@ -15,9 +18,6 @@ public interface IAlbumAPI
 
     [Get("/{id}")]
     public Task<DetailedAlbum> GetDetail(long id);
-
-    [Get("/cover")]
-    public Task<Stream> GetCover([Query] long a);
 
     [Get("/{id}/images")]
     public Task<IApiResponse<IEnumerable<ImageItemDto>>> GetImages(long id);
