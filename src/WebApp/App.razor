@@ -4,7 +4,7 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(MainLayout)" >
             <NotAuthorized>
-                未授权。
+                <RedirectToLogin />
             </NotAuthorized>
             <Authorizing>
                 正在授权验证。

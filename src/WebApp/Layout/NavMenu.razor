@@ -1,6 +1,33 @@
-﻿<MNavigationDrawer App ExpandOnHover Permanent Class="d-none d-sm-block">
+﻿@inject AuthStateProvider Auth
+@inject IStatusStorage<AuthState> State
 
-    <MListItem Href="/account" Class="px-2 mt-4">
+@code {
+    private string user => "/user/" + State.Value.Id; 
+
+    sealed class Item
+    {
+        public required string Title { get; set; }
+        public required string Icon { get; set; }
+        public required string Href { get; set; }
+    }
+
+
+    private Item[] items =
+    [
+    new() { Title= "Home", Icon= "mdi-view-dashboard", Href = "/" },
+    new() { Title= "Albums", Icon= "mdi-image-album", Href="/albums" },
+    new() { Title= "Login", Icon= "mdi-help-box", Href="/login" }
+    ];
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += this.StateHasChanged;
+    }
+}
+
+<MNavigationDrawer App ExpandOnHover Permanent Class="d-none d-sm-block">
+
+    <MListItem Href="@user" Class="px-2 mt-4">
         <MListItemAvatar Size="40">
             <MImage Src="@("https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png")"></MImage>
         </MListItemAvatar>
@@ -28,19 +55,3 @@
 
 
 
-@code {
-    sealed class Item
-    {
-        public required string Title { get; set; }
-        public required string Icon { get; set; }
-        public required string Href { get; set; }
-    }
-
-
-    private Item[] items = 
-    [
-         new() { Title= "Home", Icon= "mdi-view-dashboard", Href = "/" },
-         new() { Title= "Albums", Icon= "mdi-image-album", Href="/albums" },
-         new() { Title= "Login", Icon= "mdi-help-box", Href="/login" }
-    ];
-}

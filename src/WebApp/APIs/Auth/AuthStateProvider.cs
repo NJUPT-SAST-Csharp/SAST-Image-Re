@@ -2,18 +2,31 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.JsonWebTokens;
+using WebApp.Storages;
 
 namespace WebApp.APIs.Auth;
 
-public sealed class AuthStateProvider(ILocalStorageService localStorage)
-    : AuthenticationStateProvider
+public sealed class AuthStateProvider(
+    ILocalStorageService localStorage,
+    IStatusStorage<AuthState> auth
+) : AuthenticationStateProvider
 {
     public async Task SetTokenAsync(string? token)
     {
         if (token == null)
+        {
             await localStorage.RemoveItemAsync("auth_token");
+            auth.Value = new();
+        }
         else
+        {
             await localStorage.SetItemAsync("auth_token", token);
+            var jwt = new JsonWebToken(token);
+            long id = jwt.GetPayloadValue<long>("id");
+            string username = jwt.GetPayloadValue<string>("username");
+
+            auth.Value = new(id, username);
+        }
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
@@ -47,3 +60,5 @@ public sealed class AuthStateProvider(ILocalStorageService localStorage)
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }
 }
+
+public readonly record struct AuthState(long Id, string Username);

@@ -5,6 +5,7 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText;
 using WebApp;
 using WebApp.APIs;
+using WebApp.APIs.Auth;
 using WebApp.Requests;
 using WebApp.Storages;
 
@@ -23,7 +24,10 @@ builder
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder.Services.AddDataStorage<AlbumItemDto, long>().AddDataStorage<DetailedAlbum, long>();
+builder
+    .Services.AddDataStorage<AlbumItemDto, long>()
+    .AddDataStorage<DetailedAlbum, long>()
+    .AddStatusStorage<AuthState>();
 
 builder.Services.AddKeyedStatusStorage("loading", false);
 

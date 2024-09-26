@@ -1,4 +1,5 @@
 {
   "HelloWorld": "Hello world!",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "logout": "Logout"
 }

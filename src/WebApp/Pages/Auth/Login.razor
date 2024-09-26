@@ -2,6 +2,7 @@
 @inject IAccountAPI Api
 @inject AuthStateProvider Auth
 @inject NavigationManager Nav
+@inject IStatusStorage<AuthState> State
 
 <h1>Login</h1>
 
@@ -31,7 +32,7 @@
         if (response.IsSuccessStatusCode)
         {
             await Auth.SetTokenAsync(response.Content!.Token);
-            Nav.NavigateTo("/");
+            Nav.NavigateTo("/user/" + State.Value.Id);
         }
         else
         {

@@ -1,0 +1,21 @@
+﻿@attribute [Authorize]
+@page "/user/{id:long}"
+@inject I18n I18n
+@inject AuthStateProvider Auth
+@inject NavigationManager Nav
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    private Task LogoutAsync()
+    {
+        var task = Auth.SetTokenAsync(null);
+        Nav.NavigateTo("/login", replace: true);
+        return task;
+    }
+}
+
+<MButton OnClick="() => LogoutAsync()">
+    @I18n.T("logout")
+</MButton>
