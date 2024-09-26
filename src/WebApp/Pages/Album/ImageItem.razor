@@ -11,5 +11,15 @@
     }
 }
 
-<MImage Src="@IImageAPI.GetImage(Image.Id)" Contain title="Image.Title" onclick="@(() => NavigateTo())" />
+<MImage Src="@IImageAPI.GetImage(Image.Id)" Contain title="@Image.Title" onclick="@(() => NavigateTo())" Class="image-item" />
 
+<style>
+    .image-item{
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .image-item:hover{
+            transform: scale(1.05)
+        }
+</style>

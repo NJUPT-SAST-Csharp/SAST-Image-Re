@@ -1,0 +1,10 @@
+﻿@page "/images/{id:long}"
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+}
+
+<div>
+    <MImage Contain Src="@IImageAPI.GetImage(Id)" />
+</div>
