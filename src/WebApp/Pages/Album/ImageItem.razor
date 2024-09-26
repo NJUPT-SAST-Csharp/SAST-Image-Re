@@ -1,11 +1,15 @@
 ﻿@inject IJSRuntime JS
+@inject NavigationManager Nav
 
 @code {
     [Parameter, EditorRequired]
     public ImageItemDto Image { get; set; }
 
+    private void NavigateTo()
+    {
+        Nav.NavigateTo($"/images/{Image.Id}");
+    }
 }
 
-<li>
-    <MImage Src="@IImageAPI.GetImage(Image.Id)" Contain MaxWidth="300" />
-</li>
+<MImage Src="@IImageAPI.GetImage(Image.Id)" Contain title="Image.Title" onclick="@(() => NavigateTo())" />
+

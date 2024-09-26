@@ -67,25 +67,15 @@
 
 <MDivider />
 
-<div class="img-wrapper">
+<ul class="img-wrapper">
     @foreach(var image in images)
     {
-        <ImageItem @key="image.Id" Image="image" />
+        <li>
+            <ImageItem @key="image.Id" Image="image" />
+        </li>
     }
-</div>
+</ul>
 
 <style>
-    .img-wrapper {
-        column-count: 3;
-        column-gap: 10px;
-        counter-reset: count;
-        width: 960px;
-        margin: 0 auto;
-    }
 
-        .img-wrapper > li {
-            list-style-type: none;
-            position: relative;
-            margin-bottom: 10px;
-        }
 </style>
