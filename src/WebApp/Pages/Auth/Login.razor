@@ -3,21 +3,37 @@
 @inject AuthStateProvider Auth
 @inject NavigationManager Nav
 @inject IStatusStorage<AuthState> State
+@inject I18n I18n
 
-<h1>Login</h1>
+<div class="frame">
+    <MCard Shaped MaxWidth="500" MinWidth="320">
+        <MForm Model="request" OnSubmit="Submit" ValidateOn="ValidateOn.Blur">
+            <MCardTitle>@I18n.T("login")</MCardTitle>
+            <MCardText>
+                    <MTextField Required Counter="LoginRequest.UsernameMaxLength" Label="Username" @bind-Value="request.Username" />
+                    <MTextField Type="password" Required Counter="LoginRequest.PasswordMaxLength" Label="Password" @bind-Value="request.Password" />
+            </MCardText>
+            <MCardActions>
+                <MButton Type="submit" Text Color="teal accent-4">
+                    <MIcon>mdi-check-outline</MIcon>
+                </MButton>
+                <MButton Type="reset" Text Color="red accent-4">
+                    <MIcon>mdi-close-outline</MIcon>
+                </MButton>
+            </MCardActions>
+        </MForm>
+    </MCard>
+</div>
 
-<EditForm Model="request" OnSubmit="Submit">
-    <AntiforgeryToken />
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <InputText @bind-Value="request.Username" />
-    <InputText @bind-Value="request.Password" />
-
-    <ValidationMessage For="() => request.Username" />
-
-    <button type="submit">Login</button>
-</EditForm>
+<style>
+    <!-- 自身居中 -->
+    .frame{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
 
 
 
