@@ -99,6 +99,10 @@ code {
     color: #c02d76;
 }
 
+.banner{
+    z-index: 999;
+}
+
 .linear-progress {
     background: silver;
     width: 25vw;

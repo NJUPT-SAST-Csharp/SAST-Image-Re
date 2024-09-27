@@ -2,5 +2,6 @@
   "HelloWorld": "Hello world!",
   "loading": "Loading...",
   "logout": "Logout",
-  "login": "Login"
+  "login": "Login",
+  "login_failed": "Login failed. Incorrect username or password."
 }

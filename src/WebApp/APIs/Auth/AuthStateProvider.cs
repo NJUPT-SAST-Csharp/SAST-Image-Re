@@ -42,7 +42,11 @@ public sealed class AuthStateProvider(
         var expTime = DateTimeOffset.FromUnixTimeSeconds(expiry).UtcDateTime;
 
         if (expTime > DateTime.UtcNow)
+        {
+            if (auth.Value == default)
+                await SetTokenAsync(token);
             return token;
+        }
         else
             await SetTokenAsync(null);
 

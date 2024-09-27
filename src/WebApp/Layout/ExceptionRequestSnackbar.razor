@@ -1,0 +1,41 @@
+﻿@inject I18n I18n
+
+@code {
+	[CascadingParameter]
+	public IStatusStorage<ExceptionRequest> Request { get; set; } = null!;
+
+	private bool visible = false;
+
+	protected override void OnInitialized()
+	{
+		Request.OnChange += SetAsync;
+		base.OnInitialized();
+	}
+
+	private async void SetAsync()
+	{
+		visible = true;
+		StateHasChanged();
+		await Task.Delay(1500);
+		visible = false;
+		StateHasChanged();
+	}
+}
+
+
+<MBanner Sticky Class="banner" Style="background-color: rgb(255, 180, 170)" SingleLine Value="visible">
+	<IconContent>
+		<MIcon Color="rgb(105, 0, 5)" Size="40">
+			mdi-close-circle-outline
+		</MIcon>
+	</IconContent>
+	<ChildContent>
+		@Request.Value.Message
+	</ChildContent>
+</MBanner>
+
+<style>
+	.center {
+		margin-left: 50%
+	}
+</style>

@@ -24,12 +24,12 @@ builder
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder
-    .Services.AddDataStorage<AlbumItemDto, long>()
-    .AddDataStorage<DetailedAlbum, long>()
-    .AddStatusStorage<AuthState>();
+builder.Services.AddDataStorage<AlbumItemDto, long>().AddDataStorage<DetailedAlbum, long>();
 
-builder.Services.AddKeyedStatusStorage("loading", false);
+builder
+    .Services.AddStatusStorage<AuthState>()
+    .AddStatusStorage<ExceptionRequest>()
+    .AddKeyedStatusStorage("loading", false);
 
 builder.Services.AddI18nText(options =>
     options.PersistenceLevel = PersistanceLevel.SessionAndLocal

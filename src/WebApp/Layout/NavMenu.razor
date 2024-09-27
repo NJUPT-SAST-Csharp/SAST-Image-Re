@@ -1,7 +1,9 @@
 ﻿@inject AuthStateProvider Auth
-@inject IStatusStorage<AuthState> State
 
 @code {
+    [CascadingParameter]
+    public IStatusStorage<AuthState> State { get; set; } = null!;
+
     private string user => "/user/" + State.Value.Id; 
 
     sealed class Item
