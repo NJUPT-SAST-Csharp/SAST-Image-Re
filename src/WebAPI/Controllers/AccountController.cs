@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Query;
+using Application.UserServices.Queries;
 using Domain.Command;
 using Domain.UserDomain.Commands;
 using Domain.UserDomain.UserEntity;
@@ -107,5 +108,19 @@ public sealed class AccountController(
         await _commanderSender.SendAsync(command, cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpGet("username/check")]
+    public async Task<IActionResult> CheckUsernameExistence(
+        [FromQuery] [Length(Username.MinLength, Username.MaxLength)] string username,
+        CancellationToken cancellationToken
+    )
+    {
+        if (Username.TryCreateNew(username, out var name) == false)
+            return this.ValidationFail(username, nameof(username));
+
+        var query = new UsernameExistenceQuery(name);
+        var result = await _querySender.SendAsync(query, cancellationToken);
+        return Ok(result);
     }
 }

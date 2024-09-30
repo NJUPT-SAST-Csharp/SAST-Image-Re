@@ -4,9 +4,9 @@ namespace WebAPI.Utilities;
 
 public static class ControllerExtensions
 {
-    public static BadRequestObjectResult ValidationFail(
+    public static BadRequestObjectResult ValidationFail<T>(
         this ControllerBase controller,
-        object? value,
+        T? value,
         string? name = null
     )
     {

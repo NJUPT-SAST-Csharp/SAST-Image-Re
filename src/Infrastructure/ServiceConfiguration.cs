@@ -10,6 +10,7 @@ using Application.SharedServices;
 using Application.TagServices;
 using Application.TagServices.Queries;
 using Application.UserServices;
+using Application.UserServices.Queries;
 using Domain;
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
@@ -179,7 +180,12 @@ public static class ServiceConfiguration
             .AddScoped<IUsernameUniquenessChecker, UsernameUniquenessChecker>()
             .AddScoped<IRegistryCodeChecker, RegistryCodeChecker>();
 
-        services.AddScoped<IRepository<UserModel, UserId>, UserModelRepository>();
+        services
+            .AddScoped<IRepository<UserModel, UserId>, UserModelRepository>()
+            .AddScoped<
+                IQueryRepository<UsernameExistenceQuery, UsernameExistence>,
+                UserQueryRepository
+            >();
 
         services
             .Configure<JwtAuthOptions>(configuration.GetRequiredSection("Auth"))
