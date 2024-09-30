@@ -3,5 +3,17 @@
   "loading": "Loading...",
   "logout": "Logout",
   "login": "Login",
-  "login_failed": "Login failed. Incorrect username or password."
+  "login_failed": "Login failed. Incorrect username or password.",
+  "username": "Username",
+  "username_length_invalid": "Username must be between 2 and 16 characters long.",
+  "username_taken": "Username is already taken.",
+  "username_characters_invalid": "Username can only contain letters, numbers, and underscores.",
+  "password": "Password",
+  "password_length_invalid": "Password must be between 6 and 20 characters long.",
+  "password_characters_invalid": "Password can only contain letters, numbers, and underscores.",
+  "registration_code": "Registration Code",
+  "registration_code_invalid": "Registration code must be 6-length number.",
+  "registration_code_tooltip": "Received from the administrator",
+  "register": "Register",
+  "register_failed": "Registration failed. Please try again."
 }

@@ -1,4 +1,5 @@
 ﻿@page "/login"
+
 @inject IAccountAPI Api
 @inject AuthStateProvider Auth
 @inject NavigationManager Nav
@@ -6,53 +7,24 @@
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 @inject I18n I18n
 
-@code {
-    [SupplyParameterFromForm]
-    LoginRequest request { get; set; } = new();
-
-    private bool loading = false;
-
-    async Task Submit()
-    {
-        if (loading) return;
-
-        loading = true;
-
-        var response = await Api.Login(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            await Auth.SetTokenAsync(response.Content!.Token);
-            Nav.NavigateTo("/user/" + State.Value.Id);
-        }
-        else
-        {
-            ExceptionRequest.Value = new ExceptionRequest
-                {
-                    StatusCode = response.StatusCode,
-                    Message = I18n.T("login_failed")
-                };
-        }
-
-        loading = false;
-    }
-}
-
 <div class="frame">
     <MCard MaxWidth="500" MinWidth="320" Loading="@loading">
         <ProgressContent>
             <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
         </ProgressContent>
         <ChildContent>
-            <MForm Disabled="@loading" Model="request" OnSubmit="Submit" ValidateOn="ValidateOn.Blur">
+            <MForm Disabled="@loading" OnValidSubmit="Submit">
                 <MCardTitle>@I18n.T("login")</MCardTitle>
                 <MCardText>
-                    <MTextField Clearable Required Counter="LoginRequest.UsernameMaxLength" Label="Username" @bind-Value="request.Username" />
-                    <MTextField Clearable Required Counter="LoginRequest.PasswordMaxLength" Label="Password" @bind-Value="request.Password" Type="password" />
+                    <MTextField Clearable Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="Username" @bind-Value="Request.Username" />
+                    <MTextField Clearable Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="Password" @bind-Value="Request.Password" Type="password" />
                 </MCardText>
                 <MCardActions>
-                    <MButton Loading="@loading" Type="submit" Text Color="teal accent-4">
+                    <MButton Type="submit" Text Color="teal accent-4">
                         <MIcon>mdi-check-outline</MIcon>
+                    </MButton>
+                    <MButton Text OnClick="@(() => Nav.Replace("/register"))">
+                        <MIcon>mdi-account-plus-outline</MIcon>
                     </MButton>
                 </MCardActions>
             </MForm>

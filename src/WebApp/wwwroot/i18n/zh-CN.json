@@ -1,7 +1,19 @@
 {
   "HelloWorld": "你好，世界！",
-  "loading": "加载中...",
+  "loading": "加载中... =w=",
   "logout": "登出",
   "login": "登录",
-  "login_failed": "用户名或密码不正确。"
+  "login_failed": "用户名或密码不正确 qwq",
+  "username": "用户名",
+  "username_length_invalid": "用户名长度为2 - 16",
+  "username_taken": "该用户名已经被使用",
+  "username_characters_invalid": "用户名只能包含数字、字母、下划线",
+  "password": "密码",
+  "password_length_invalid": "密码长度为6 - 20",
+  "password_characters_invalid": "密码只能包含数字、字母、下划线。",
+  "registration_code": "注册码",
+  "registration_code_invalid": "注册码长度为6位",
+  "registration_code_tooltip": "请联系管理员获取注册码 owo",
+  "register": "注册",
+  "register_failed": "注册失败 qaq"
 }

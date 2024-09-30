@@ -1,0 +1,56 @@
+﻿@page "/register"
+
+@inject I18n I18n
+@inject AuthStateProvider Auth
+@inject NavigationManager Nav
+@inject IAccountAPI Api
+@inject IStatusStorage<AuthState> State
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest   
+
+<div class="frame">
+    <MCard MaxWidth="500" MinWidth="320" Loading="@loading">
+        <ProgressContent>
+            <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
+        </ProgressContent>
+        <ChildContent>
+            <MForm EnableI18n Disabled="@loading" OnValidSubmit="Submit">
+                <MCardTitle>@I18n.T("register")</MCardTitle>
+                <MCardText>
+                    <MTextField Clearable Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="@I18n.T("username")" Value="Request.Username" />
+                    <MTextField Clearable Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="@I18n.T("password")" Value="Request.Password" Type="password" />
+                    <MTextField Filled Required Counter="6" maxlength="6" Rules="Request.CodeValidators" ValidateOnBlur Label="@I18n.T("registration_code")" @bind-Value="code" OnInput="@((string s) => OnInput(s))">
+                        <AppendContent>
+                            <MTooltip Bottom>
+                                <ActivatorContent Context="activatorContext">
+                                    <MIcon @attributes="activatorContext.Attrs">
+                                        mdi-help-circle-outline
+                                    </MIcon>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    @I18n.T("registration_code_tooltip")
+                                </ChildContent>
+                            </MTooltip>
+                        </AppendContent>
+                    </MTextField>
+                </MCardText>
+                <MCardActions>
+                    <MButton Type="submit" Text Color="teal accent-4">
+                        <MIcon>mdi-check-outline</MIcon>
+                    </MButton>
+                    <MButton Text OnClick="@(() => Nav.Replace("/login"))">
+                        <MIcon>mdi-backspace-outline</MIcon>
+                    </MButton>
+                </MCardActions>
+            </MForm>
+        </ChildContent>
+    </MCard>
+</div>
+
+<style>
+    .frame{
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
