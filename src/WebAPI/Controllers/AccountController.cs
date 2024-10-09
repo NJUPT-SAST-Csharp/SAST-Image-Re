@@ -121,6 +121,6 @@ public sealed class AccountController(
 
         var query = new UsernameExistenceQuery(name);
         var result = await _querySender.SendAsync(query, cancellationToken);
-        return Ok(result);
+        return result.IsExist ? Conflict() : Ok();
     }
 }
