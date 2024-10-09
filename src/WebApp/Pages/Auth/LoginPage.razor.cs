@@ -62,4 +62,4 @@ public sealed class LoginRequest(I18n I18n)
     public string Password { get; set; } = string.Empty;
 }
 
-public sealed record LoginResponse(string Token);
+public readonly record struct LoginResponse(string Token);

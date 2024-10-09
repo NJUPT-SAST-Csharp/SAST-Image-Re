@@ -12,4 +12,9 @@ public interface IAccountAPI
 
     [Post("/register")]
     public Task<IApiResponse<RegisterResponse>> Register(RegisterRequest registerRequest);
+
+    [Get("/username/check")]
+    public Task<IApiResponse<CheckUsernameExistenceResponse>> CheckUsernameExistence(
+        [Query] string username
+    );
 }

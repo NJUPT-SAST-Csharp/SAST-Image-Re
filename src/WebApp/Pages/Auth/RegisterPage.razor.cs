@@ -14,6 +14,10 @@ public sealed partial class RegisterPage
 
     private string code = string.Empty;
 
+    private bool isValid = false;
+    private readonly List<string> usernameValidationMessage = [];
+    private MForm _form = null!;
+
     protected override void OnInitialized()
     {
         Request = new RegisterRequest(I18n);
@@ -22,6 +26,9 @@ public sealed partial class RegisterPage
 
     private async Task Submit()
     {
+        if (isValid == false)
+            return;
+
         Request.Code = int.Parse(code);
         var response = await Api.Register(Request);
         if (response.IsSuccessStatusCode)
@@ -39,6 +46,23 @@ public sealed partial class RegisterPage
 
             code = string.Empty;
         }
+    }
+
+    private async void CheckUsername(string value)
+    {
+        var response = await Api.CheckUsernameExistence(value);
+        if (response.IsSuccessStatusCode && !response.Content.IsExist)
+        {
+            usernameValidationMessage.Remove(I18n.T("username_exists"));
+            isValid = _form.Validate();
+            return;
+        }
+        else
+        {
+            isValid = false;
+            usernameValidationMessage.Add(I18n.T("username_exists"));
+        }
+        StateHasChanged();
     }
 
     private void OnInput(string value)
@@ -72,4 +96,6 @@ public sealed class RegisterRequest(I18n I18n)
     public int Code { get; set; }
 }
 
-public sealed record RegisterResponse(string Token);
+public readonly record struct RegisterResponse(string Token);
+
+public readonly record struct CheckUsernameExistenceResponse(bool IsExist);

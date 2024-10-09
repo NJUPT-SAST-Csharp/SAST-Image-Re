@@ -6,7 +6,7 @@
   "login_failed": "Login failed. Incorrect username or password.",
   "username": "Username",
   "username_length_invalid": "Username must be between 2 and 16 characters long.",
-  "username_taken": "Username is already taken.",
+  "username_exists": "Username is already in use.",
   "username_characters_invalid": "Username can only contain letters, numbers, and underscores.",
   "password": "Password",
   "password_length_invalid": "Password must be between 6 and 20 characters long.",

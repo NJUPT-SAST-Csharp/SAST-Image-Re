@@ -6,7 +6,7 @@
   "login_failed": "用户名或密码不正确 qwq",
   "username": "用户名",
   "username_length_invalid": "用户名长度为2 - 16",
-  "username_taken": "该用户名已经被使用",
+  "username_exists": "该用户名已经被使用",
   "username_characters_invalid": "用户名只能包含数字、字母、下划线",
   "password": "密码",
   "password_length_invalid": "密码长度为6 - 20",

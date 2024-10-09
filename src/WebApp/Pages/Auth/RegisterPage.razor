@@ -13,12 +13,12 @@
             <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
         </ProgressContent>
         <ChildContent>
-            <MForm EnableI18n Disabled="@loading" OnValidSubmit="Submit">
+            <MForm EnableI18n OnValidSubmit="Submit" Disabled="@loading" Model="Request" Value="isValid" @ref="_form">
                 <MCardTitle>@I18n.T("register")</MCardTitle>
                 <MCardText>
-                    <MTextField Clearable Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="@I18n.T("username")" Value="Request.Username" />
-                    <MTextField Clearable Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="@I18n.T("password")" Value="Request.Password" Type="password" />
-                    <MTextField Filled Required Counter="6" maxlength="6" Rules="Request.CodeValidators" ValidateOnBlur Label="@I18n.T("registration_code")" @bind-Value="code" OnInput="@((string s) => OnInput(s))">
+                    <MTextField Clearable Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="@I18n.T("username")" @bind-Value="Request.Username" OnChange="@((string s) => CheckUsername(s))" ErrorMessages="usernameValidationMessage" />
+                    <MTextField Clearable Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="@I18n.T("password")" @bind-Value="Request.Password" Type="password" />
+                    <MTextField Filled Required Counter="6" maxlength="6" Rules="Request.CodeValidators" ValidateOnBlur Label="@I18n.T("registration_code")" @bind-Value="code" OnInput="@((string s) => OnInput(s))" >
                         <AppendContent>
                             <MTooltip Bottom>
                                 <ActivatorContent Context="activatorContext">
