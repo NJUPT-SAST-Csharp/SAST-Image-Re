@@ -8,17 +8,26 @@
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest   
 
 <div class="frame">
-    <MCard MaxWidth="500" MinWidth="320" Loading="@loading">
+    <MCard MaxWidth="500" MinWidth="320" Loading="loading">
         <ProgressContent>
             <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
         </ProgressContent>
         <ChildContent>
-            <MForm EnableI18n OnValidSubmit="Submit" Disabled="@loading" Model="Request" Value="isValid" @ref="_form">
+            <MForm EnableI18n OnValidSubmit="Submit" Disabled="loading" Model="Request">
                 <MCardTitle>@I18n.T("register")</MCardTitle>
                 <MCardText>
-                    <MTextField Clearable Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="@I18n.T("username")" @bind-Value="Request.Username" OnChange="@((string s) => CheckUsername(s))" ErrorMessages="usernameValidationMessage" />
-                    <MTextField Clearable Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="@I18n.T("password")" @bind-Value="Request.Password" Type="password" />
-                    <MTextField Filled Required Counter="6" maxlength="6" Rules="Request.CodeValidators" ValidateOnBlur Label="@I18n.T("registration_code")" @bind-Value="code" OnInput="@((string s) => OnInput(s))" >
+                    <MTextField Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="@I18n.T("username")" @bind-Value="Request.Username" 
+                        OnChange="(string _) => ClearUsernameDuplicatedError()"
+                        OnKeyUp="(KeyboardEventArgs _) => ClearUsernameDuplicatedError()" 
+                        Disabled="isUsernameDisabled" 
+                        ErrorMessages="usernameValidationMessage" 
+                        @ref="_usernameTextField">
+                        <AppendOuterContent>
+                            <MIcon Color="@iconColor" Disabled="isUsernameDisabled || isIconDisabled" OnClick="CheckUsername">mdi-timeline-check</MIcon>
+                        </AppendOuterContent>
+                    </MTextField>
+                    <MTextField Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="@I18n.T("password")" @bind-Value="Request.Password" Type="password" />
+                    <MTextField Filled Required Counter="6" maxlength="6" Rules="Request.CodeValidators" ValidateOnBlur Label="@I18n.T("registration_code")" @bind-Value="code" OnInput="@((string s) => OnCodeInput(s))" >
                         <AppendContent>
                             <MTooltip Bottom>
                                 <ActivatorContent Context="activatorContext">

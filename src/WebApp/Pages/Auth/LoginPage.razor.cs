@@ -30,7 +30,7 @@ public sealed partial class LoginPage
         if (response.IsSuccessStatusCode)
         {
             await Auth.SetTokenAsync(response.Content!.Token);
-            Nav.NavigateTo("/user/" + State.Value.Id);
+            Nav.Replace("/user/" + State.Value.Id);
         }
         else
         {

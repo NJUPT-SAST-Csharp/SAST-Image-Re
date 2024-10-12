@@ -10,13 +10,18 @@ public sealed partial class RegisterPage
     [SupplyParameterFromForm]
     private RegisterRequest Request { get; set; } = null!;
 
-    private readonly bool loading = false;
+    private bool loading = false;
 
     private string code = string.Empty;
 
-    private bool isValid = false;
+    private bool isUsernameDisabled = false;
+
+    private bool isUsernameValid = false;
+    private bool isIconDisabled = false;
+    private string iconColor = "info";
     private readonly List<string> usernameValidationMessage = [];
-    private MForm _form = null!;
+
+    private MTextField<string> _usernameTextField = null!;
 
     protected override void OnInitialized()
     {
@@ -26,15 +31,28 @@ public sealed partial class RegisterPage
 
     private async Task Submit()
     {
-        if (isValid == false)
+        if (isUsernameValid == false)
             return;
+
+        loading = true;
 
         Request.Code = int.Parse(code);
         var response = await Api.Register(Request);
+
         if (response.IsSuccessStatusCode)
         {
             await Auth.SetTokenAsync(response.Content!.Token);
             Nav.NavigateTo("/user/" + State.Value.Id);
+        }
+        else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+        {
+            ExceptionRequest.Value = new ExceptionRequest
+            {
+                StatusCode = response.StatusCode,
+                Message = I18n.T("username_exists"),
+            };
+
+            SetUsernameDuplicated_(true);
         }
         else
         {
@@ -46,31 +64,70 @@ public sealed partial class RegisterPage
 
             code = string.Empty;
         }
+
+        loading = false;
     }
 
-    private async void CheckUsername(string value)
+    private async void CheckUsername()
     {
-        var response = await Api.CheckUsernameExistence(value);
-        if (response.IsSuccessStatusCode && !response.Content.IsExist)
+        iconColor = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(Request.Username) || _usernameTextField.Validate() == false)
         {
-            usernameValidationMessage.Remove(I18n.T("username_exists"));
-            isValid = _form.Validate();
+            SetUsernameDuplicated_(null);
             return;
         }
+
+        isUsernameDisabled = true;
+        string value = Request.Username;
+
+        var response = await Api.CheckUsernameExistence(value);
+        if (response.StatusCode != System.Net.HttpStatusCode.Conflict)
+            SetUsernameDuplicated_(false);
         else
-        {
-            isValid = false;
-            usernameValidationMessage.Add(I18n.T("username_exists"));
-        }
+            SetUsernameDuplicated_(true);
+
+        isUsernameDisabled = false;
         StateHasChanged();
     }
 
-    private void OnInput(string value)
+    private void ClearUsernameDuplicatedError()
+    {
+        SetUsernameDuplicated_(null);
+    }
+
+    private void OnCodeInput(string value)
     {
         if (int.TryParse(code, out int i) == false)
             code = string.Empty;
         else
             Request.Code = i;
+    }
+
+    private void SetUsernameDuplicated_(bool? duplicated)
+    {
+        if (duplicated is null)
+        {
+            isUsernameValid = true;
+            iconColor = "info";
+            isIconDisabled = false;
+            usernameValidationMessage.RemoveAll(s => s == I18n.T("username_exists"));
+        }
+        else if (duplicated.Value)
+        {
+            isUsernameValid = false;
+            iconColor = "error";
+            isIconDisabled = true;
+            usernameValidationMessage.Add(I18n.T("username_exists"));
+        }
+        else
+        {
+            isUsernameValid = true;
+            iconColor = "success";
+            isIconDisabled = false;
+            usernameValidationMessage.RemoveAll(s => s == I18n.T("username_exists"));
+        }
+        StateHasChanged();
     }
 }
 
@@ -97,5 +154,3 @@ public sealed class RegisterRequest(I18n I18n)
 }
 
 public readonly record struct RegisterResponse(string Token);
-
-public readonly record struct CheckUsernameExistenceResponse(bool IsExist);

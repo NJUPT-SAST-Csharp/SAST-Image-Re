@@ -16,8 +16,8 @@
             <MForm Disabled="@loading" OnValidSubmit="Submit">
                 <MCardTitle>@I18n.T("login")</MCardTitle>
                 <MCardText>
-                    <MTextField Clearable Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="Username" @bind-Value="Request.Username" />
-                    <MTextField Clearable Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="Password" @bind-Value="Request.Password" Type="password" />
+                    <MTextField Required Counter="16" maxlength="16" Rules="Request.UsernameValidators" ValidateOnBlur Label="Username" @bind-Value="Request.Username" />
+                    <MTextField Required Counter="20" maxlength="20" Rules="Request.PasswordValidators" ValidateOnBlur Label="Password" @bind-Value="Request.Password" Type="password" />
                 </MCardText>
                 <MCardActions>
                     <MButton Type="submit" Text Color="teal accent-4">

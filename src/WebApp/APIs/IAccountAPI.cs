@@ -14,7 +14,5 @@ public interface IAccountAPI
     public Task<IApiResponse<RegisterResponse>> Register(RegisterRequest registerRequest);
 
     [Get("/username/check")]
-    public Task<IApiResponse<CheckUsernameExistenceResponse>> CheckUsernameExistence(
-        [Query] string username
-    );
+    public Task<IApiResponse> CheckUsernameExistence([Query] string username);
 }
