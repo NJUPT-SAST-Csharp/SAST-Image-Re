@@ -14,7 +14,19 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 await builder
-    .Services.AddMasaBlazor()
+    .Services.AddMasaBlazor(options =>
+    {
+        options.ConfigureBreakpoint(breakpoints =>
+        {
+            breakpoints.Thresholds = new()
+            {
+                Xs = 576,
+                Sm = 768,
+                Md = 992,
+                Lg = 1200,
+            };
+        });
+    })
     .AddI18nForWasmAsync($"{builder.HostEnvironment.BaseAddress}/i18n");
 
 builder

@@ -24,7 +24,31 @@
 
     </MMain>
 
-    <MFooter App>
-        <!-- -->
-    </MFooter>
+    <MBottomNavigation 
+        Class="d-sm-none"
+        Absolute
+        HideOnScroll
+        Horizontal
+        ScrollTarget="#hide-on-scroll-example">
+        <MButton Color="deep-purple accent-4"
+                 Text>
+            <span>Recents</span>
+
+            <MIcon>mdi-history</MIcon>
+        </MButton>
+
+        <MButton Color="deep-purple accent-4"
+                 Text>
+            <span>Favorites</span>
+
+            <MIcon>mdi-heart</MIcon>
+        </MButton>
+
+        <MButton Color="deep-purple accent-4"
+                 Text>
+            <span>Nearby</span>
+
+            <MIcon>mdi-map-marker</MIcon>
+        </MButton>
+    </MBottomNavigation>
 </MApp>

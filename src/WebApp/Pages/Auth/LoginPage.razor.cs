@@ -25,20 +25,27 @@ public sealed partial class LoginPage
 
         loading = true;
 
-        var response = await Api.Login(Request);
+        try
+        {
+            var response = await Api.Login(Request);
 
-        if (response.IsSuccessStatusCode)
-        {
-            await Auth.SetTokenAsync(response.Content!.Token);
-            Nav.Replace("/user/" + State.Value.Id);
-        }
-        else
-        {
-            ExceptionRequest.Value = new ExceptionRequest
+            if (response.IsSuccessStatusCode)
             {
-                StatusCode = response.StatusCode,
-                Message = I18n.T("login_failed"),
-            };
+                await Auth.SetTokenAsync(response.Content!.Token);
+                Nav.Replace("/user/" + State.Value.Id);
+            }
+            else
+            {
+                ExceptionRequest.Value = new ExceptionRequest
+                {
+                    StatusCode = response.StatusCode,
+                    Message = I18n.T("login_failed"),
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            ExceptionRequest.Value = new(e.Message);
         }
 
         loading = false;

@@ -2,6 +2,8 @@
 
 
 @inject IDataStorage<DetailedAlbum, long> Storage
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest   
+
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
 
@@ -20,13 +22,20 @@
     {
         if(Storage.TryGet(Id, out album))
         {
-            album =  await Api.GetDetail(Id);
+            var response =  await Api.GetDetail(Id);
             Storage.Add(album, Id);
         }
         else
         {
             Loading.Value = true;
-            album =  await Api.GetDetail(Id);
+            try
+            {
+                album = await Api.GetDetail(Id);
+            }
+            catch(Exception e)
+            {
+                ExceptionRequest.Value = new(e.Message);
+            }
             Loading.Value = false;
 
             Storage.Add(album, Id);

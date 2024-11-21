@@ -6,5 +6,16 @@
 }
 
 <div>
-    <MImage Contain Src="@IImageAPI.GetImage(Id)" Width="300" />
+    <MRow>
+        <MCol Cols="12" Sm="8" Md="8" Lg="8">
+            <MImage Contain Src="@IImageAPI.GetImage(Id)" />
+        </MCol>
+        <MCol Cols="0" Sm="4" Md="4" Lg="4">
+            Rua
+            <MButton />
+            <MButton />
+            <MButton />
+        </MCol>
+    </MRow>
+
 </div>

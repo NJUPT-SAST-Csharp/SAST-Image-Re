@@ -4,6 +4,7 @@
 @inject IJSRuntime JS
 @inject I18n I18n
 @inject IDataStorage<AlbumItemDto, long> Storage
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest   
 
 @code {
     [CascadingParameter(Name = "loading")]
@@ -13,15 +14,23 @@
     {
         IEnumerable<AlbumItemDto> albums = [];
 
-        if(Storage.Count == 0)
+        try
         {
-            Loading.Value = true;
-            albums = await Api.GetAlbums();
-            Loading.Value = false;
+            if (Storage.Count == 0)
+            {
+                Loading.Value = true;
+                albums = await Api.GetAlbums();
+                Loading.Value = false;
+            }
+            else
+            {
+                albums = await Api.GetAlbums();
+            }
         }
-        else
+        catch(Exception e)
         {
-            albums = await Api.GetAlbums();
+            Loading.Value = false;
+            ExceptionRequest.Value = new(e.Message);
         }
 
 
@@ -34,12 +43,20 @@
 
 <PageTitle>SastImg - Albums</PageTitle>
 
-
-
 <div class="list">
-    @foreach (var album in Storage.Items)
+    @if (Storage.Items.Count > 0)
     {
-        <AlbumItem @key="album.Key" Album="album.Value" />
+        @foreach (var album in Storage.Items)
+        {
+            <AlbumItem @key="album.Key" Album="album.Value" />
+        }
+    }
+    else
+    {
+        @for(int i = 0; i < 3; i ++)
+        {
+            <MSkeletonLoader Type="image"/>
+        }
     }
 </div>
 

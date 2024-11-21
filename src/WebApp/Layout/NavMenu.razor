@@ -27,7 +27,7 @@
     }
 }
 
-<MNavigationDrawer App ExpandOnHover Permanent Class="d-none d-sm-block">
+<MNavigationDrawer App ExpandOnHover Permanent Class="nav-drawer">
 
     <MListItem Href="@user" Class="px-2 mt-4">
         <MListItemAvatar Size="40">
@@ -55,5 +55,14 @@
     </MList>
 </MNavigationDrawer>
 
+<style>
+    .nav-drawer{
+        display: block
+    }
 
-
+    @@media(max-width: 576px){
+        .nav-drawer{
+            display: none;
+        }
+    }
+</style>

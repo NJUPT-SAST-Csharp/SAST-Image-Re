@@ -60,14 +60,12 @@ public static class ServiceConfiguration
                 (services, options) =>
                 {
                     options.UseNpgsql(services.GetRequiredService<DbConnection>());
-                    options.UseSnakeCaseNamingConvention();
                 }
             )
             .AddDbContext<QueryDbContext>(
                 (services, options) =>
                 {
                     options.UseNpgsql(services.GetRequiredService<DbConnection>());
-                    options.UseSnakeCaseNamingConvention();
                 }
             );
 
