@@ -85,4 +85,15 @@ public sealed class UserController(
         var result = await _querySender.SendAsync(query, cancellationToken);
         return this.HeaderOrNotFound(result);
     }
+
+    [HttpGet("profile/{id:long}")]
+    public async Task<IActionResult> GetProfileInfo(
+        [FromRoute] long id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new UserProfileQuery(new(id));
+        var result = await _querySender.SendAsync(query, cancellationToken);
+        return this.DataOrNotFound(result);
+    }
 }

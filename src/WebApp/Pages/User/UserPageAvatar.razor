@@ -54,33 +54,38 @@
 
 @if (AuthState.Value.Id == Id)
 {
-    <div>
-        <InputFile id="file" style="display: none;" OnChange="UploadAsync" accept="image/*" />
-        <label for="file" class="editable-avatar">
-            <MAvatar Size="160">
-                <MImage Src="@Avatar.Value">
-                </MImage>
-            </MAvatar>
-        </label>
-    </div>
+    <InputFile id="file" style="display: none;" OnChange="UploadAsync" accept="image/*" />
+    <label for="file" class="editable-avatar">
+        <MAvatar Size="160" Class="avatar-circle">
+            <MImage Src="@Avatar.Value">
+            </MImage>
+        </MAvatar>
+    </label>
 }
 else
 {
-    <div>
-        <MAvatar Size="160">
-            <MImage Src="@IUserAPI.GetAvatar(Id)">
-            </MImage>
-        </MAvatar>
-    </div>
+    <MAvatar Size="160">
+        <MImage Src="@IUserAPI.GetAvatar(Id)">
+        </MImage>
+    </MAvatar>
 }
 
 <style>
     .editable-avatar {
-        cursor: pointer;
         transition: all 0.3s;
     }
 
     .editable-avatar:hover {
         scale: 1.05;
+    }
+
+    .avatar-circle {
+        cursor: pointer;
+        transition: all 0.3s;
+        border-radius: 50%;
+    }
+
+    .avatar-circle:hover {
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     }
 </style>

@@ -1,8 +1,10 @@
 {
   "HelloWorld": "你好，世界！",
   "edit": "编辑",
+  "confirm": "确认",
   "loading": "加载中... =w=",
   "logout": "登出",
+  "logout_confirm": "确定要登出吗？",
   "login": "登录",
   "login_failed": "用户名或密码不正确 qwq",
   "username": "用户名",

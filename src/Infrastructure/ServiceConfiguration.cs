@@ -184,6 +184,7 @@ public static class ServiceConfiguration
 
         services
             .AddScoped<IRepository<UserModel, UserId>, UserModelRepository>()
+            .AddScoped<IQueryRepository<UserProfileQuery, UserProfileDto?>, UserQueryRepository>()
             .AddScoped<
                 IQueryRepository<UsernameExistenceQuery, UsernameExistence>,
                 UserQueryRepository

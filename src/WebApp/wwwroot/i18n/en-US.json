@@ -1,8 +1,10 @@
 {
   "HelloWorld": "Hello world!",
   "edit": "Edit",
+  "confirm": "Confirm",
   "loading": "Loading...",
   "logout": "Logout",
+  "logout_confirm": "Are you sure you want to logout?",
   "login": "Login",
   "login_failed": "Login failed. Incorrect username or password.",
   "username": "Username",

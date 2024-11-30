@@ -1,8 +1,6 @@
 ﻿@attribute [Authorize]
 @page "/user/{id:long}"
 @inject I18n I18n
-@inject AuthStateProvider Auth
-@inject NavigationManager Nav
 @inject IStatusStorage<AuthState> AuthState
 
 @code {
@@ -11,12 +9,7 @@
 
     private IBrowserFile File { get; set; } = null!;
 
-    private Task LogoutAsync()
-    {
-        var task = Auth.SetTokenAsync(null);
-        Nav.NavigateTo("/login", replace: true);
-        return task;
-    }
+
 }
 
 <div class="header">
@@ -27,15 +20,18 @@
     <UserPageAvatar Id="Id" />
 </div>
 
+<div class="text-center">
+    <UserPageProfile Id="Id" />
+</div>
 
 
-<MButton OnClick="() => LogoutAsync()">
-    @I18n.T("logout")
-</MButton>
+
+
 
 <style>
     .header {
         position: relative;
+        margin-bottom: 80px;
     }
 
     .avatar {

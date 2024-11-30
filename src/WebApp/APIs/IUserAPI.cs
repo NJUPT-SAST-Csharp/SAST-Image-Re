@@ -17,4 +17,9 @@ public interface IUserAPI
     [Multipart]
     [Post("/header")]
     public Task<IApiResponse> UploadHeader(StreamPart header);
+
+    [Get("/profile/{id}")]
+    public Task<ApiResponse<UserProfileDto>> GetProfile(long id);
 }
+
+public readonly record struct UserProfileDto(long Id, string Username, string Biography);

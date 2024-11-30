@@ -1,0 +1,67 @@
+﻿@inject I18n I18n
+@inject IUserAPI API
+@inject NavigationManager Nav
+@inject AuthStateProvider Auth
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest
+@inject IPopupService Popup
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    [CascadingParameter(Name = "loading")]
+    public IStatusStorage<bool> Loading { get; set; } = null!;
+
+    private UserProfileDto profile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await API.GetProfile(Id);
+        if (result.IsSuccessStatusCode)
+        {
+            profile = result.Content;
+        }
+        else
+        {
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to get profile.",
+                    StatusCode = result.StatusCode
+                };
+        }
+    }
+
+    private async Task LogoutAsync()
+    {
+        var result = await Popup.ConfirmAsync("Logout", "Are u sure?", "YES!", AlertTypes.Warning);
+
+        if (result)
+        {
+            await Auth.SetTokenAsync(null);
+            Nav.NavigateTo("/login", replace: true);
+        }
+    }
+}
+
+
+
+<MTooltip Bottom>
+    <ActivatorContent>
+        <h2 class="text-center" @attributes="@context.Attrs">@profile.Username</h2>
+    </ActivatorContent>
+    <ChildContent>
+        <span>@profile.Id</span>
+    </ChildContent>
+</MTooltip>
+
+<p class="text-center text--secondary">@profile.Biography</p>
+
+<div class="text-right">
+    <MButton Plain Color="error" OnClick="LogoutAsync">
+        @I18n.T("logout")
+    </MButton>
+
+    <MButton Plain Color="info">
+        @I18n.T("edit")
+    </MButton>
+</div>
