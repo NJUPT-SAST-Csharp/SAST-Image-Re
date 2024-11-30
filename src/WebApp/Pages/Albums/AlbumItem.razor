@@ -15,9 +15,7 @@
 <div class="item" @onclick="Enter">
     <MImage Src="@IAlbumAPI.GetCover(Album.Id)">
         <PlaceholderContent>
-            <MRow Class="fill-height ma-0"
-                  Align="@AlignTypes.Center"
-                  Justify="@JustifyTypes.Center">
+            <MRow Class="fill-height ma-0" Align="@AlignTypes.Center" Justify="@JustifyTypes.Center">
                 <MProgressCircular Indeterminate></MProgressCircular>
             </MRow>
         </PlaceholderContent>
@@ -31,7 +29,7 @@
         cursor: pointer;
     }
 
-        .item:hover {
-            transform: scale(1.1);
-        }
+    .item:hover {
+        transform: scale(1.1);
+    }
 </style>

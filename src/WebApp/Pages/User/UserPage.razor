@@ -3,10 +3,13 @@
 @inject I18n I18n
 @inject AuthStateProvider Auth
 @inject NavigationManager Nav
+@inject IStatusStorage<AuthState> AuthState
 
 @code {
     [Parameter]
     public long Id { get; set; }
+
+    private IBrowserFile File { get; set; } = null!;
 
     private Task LogoutAsync()
     {
@@ -15,6 +18,8 @@
         return task;
     }
 }
+
+<UserPageAvatar Id="Id" />
 
 <MButton OnClick="() => LogoutAsync()">
     @I18n.T("logout")

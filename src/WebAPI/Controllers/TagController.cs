@@ -4,6 +4,8 @@ using Application.TagServices.Queries;
 using Domain.Command;
 using Domain.TagDomain.Commands;
 using Domain.TagDomain.TagEntity;
+using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
 
@@ -23,6 +25,7 @@ public sealed class TagController(
         [Length(TagName.MinLength, TagName.MaxLength)] string Name
     );
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateTag(
         [FromBody] CreateTagRequest request,
@@ -56,6 +59,7 @@ public sealed class TagController(
         [Length(TagName.MinLength, TagName.MaxLength)] string Name
     );
 
+    [Authorize(AuthPolicies.Admin)]
     [HttpPost("{id:long}")]
     public async Task<IActionResult> UpdateTag(
         [FromRoute] long id,
@@ -73,6 +77,7 @@ public sealed class TagController(
         return NoContent();
     }
 
+    [Authorize(AuthPolicies.Admin)]
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> DeleteTag(
         [FromRoute] long id,

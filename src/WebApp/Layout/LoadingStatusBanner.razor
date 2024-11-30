@@ -4,13 +4,14 @@
 	[CascadingParameter(Name = "loading")]
 	public IStatusStorage<bool> Loading { get; set; } = null!;
 
+
 	private bool visible = false;
 
 	protected override void OnInitialized()
-    {
-        Loading.OnChange += SetAsync;
-        base.OnInitialized();
-    }
+	{
+		Loading.OnChange += SetAsync;
+		base.OnInitialized();
+	}
 
 	private async void SetAsync()
 	{
@@ -42,8 +43,7 @@ else
 }
 
 <style>
-.center
-{
-	margin-left: 50%;
-}
+	.center {
+		margin-left: 50%;
+	}
 </style>

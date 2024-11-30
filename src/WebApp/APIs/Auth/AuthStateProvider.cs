@@ -8,7 +8,8 @@ namespace WebApp.APIs.Auth;
 
 public sealed class AuthStateProvider(
     ILocalStorageService localStorage,
-    IStatusStorage<AuthState> auth
+    IStatusStorage<AuthState> auth,
+    [FromKeyedServices("avatar")] IStatusStorage<string> avatar
 ) : AuthenticationStateProvider
 {
     public async Task SetTokenAsync(string? token)
@@ -27,6 +28,8 @@ public sealed class AuthStateProvider(
 
             auth.Value = new(id, username);
         }
+
+        avatar.Value = IUserAPI.GetAvatar(auth.Value.Id);
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }

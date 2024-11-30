@@ -21,7 +21,7 @@ public sealed class AlbumController(
     private readonly IDomainCommandSender _commanderSender = commandSender;
     private readonly IQueryRequestSender _querySender = querySender;
 
-    #region Command / Post
+    #region [Command/Post]
 
     public sealed record class CreateAlbumRequest(
         [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title,
@@ -209,7 +209,7 @@ public sealed class AlbumController(
 
     #endregion
 
-    #region Query / Get
+    #region [Query/Get]
 
     [HttpGet]
     [ResponseCache(

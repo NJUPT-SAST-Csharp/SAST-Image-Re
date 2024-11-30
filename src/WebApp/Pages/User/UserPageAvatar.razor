@@ -1,0 +1,71 @@
+﻿@using Refit
+@inject IStatusStorage<AuthState> AuthState
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest
+@inject IUserAPI API
+
+
+@code {
+    [CascadingParameter(Name = "loading")]
+    public IStatusStorage<bool> Loading { get; set; } = null!;
+
+    [CascadingParameter(Name = "avatar")]
+    public IStatusStorage<string> Avatar { get; set; } = null!;
+
+
+    [Parameter]
+    public long Id { get; set; }
+
+
+    private async Task UploadAsync(InputFileChangeEventArgs e)
+    {
+
+        if (e.File.Size > 1024 * 1024 * 3)
+        {
+            ExceptionRequest.Value = new()
+                {
+                    Message = "File size must be less than 3MB",
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+
+            return;
+        }
+
+        Loading.Value = true;
+
+        StreamPart file = new(e.File.OpenReadStream(), e.File.Name, e.File.ContentType);
+        var result = await API.UploadAvatar(file);
+
+
+        if (result.IsSuccessStatusCode == false)
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to upload avatar",
+                    StatusCode = result.StatusCode
+                };
+
+        Loading.Value = false;
+
+        Avatar.Value = IUserAPI.GetAvatar(Id) + $"?t={DateTime.UtcNow.Ticks}";
+    }
+}
+
+
+
+@if (AuthState.Value.Id == Id)
+{
+    <InputFile id="file" style="display: none;" hidden OnChange="UploadAsync" accept="image/*" />
+    <label for="file">
+        <MAvatar Size="160">
+            <MImage Src="@Avatar.Value">
+            </MImage>
+        </MAvatar>
+    </label>
+}
+else
+{
+    <MAvatar Size="160">
+        <MImage Src="@IUserAPI.GetAvatar(Id)">
+        </MImage>
+    </MAvatar>
+}

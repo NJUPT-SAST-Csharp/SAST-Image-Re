@@ -4,4 +4,6 @@ public enum StorageKind
 {
     Cover,
     Image,
+    Avatar,
+    Header,
 }

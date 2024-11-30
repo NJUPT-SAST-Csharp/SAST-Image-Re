@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Query;
+using Application.UserServices.Queries;
 using Domain.Command;
 using Domain.UserDomain.Commands;
 using Domain.UserDomain.UserEntity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
+using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers;
 
@@ -20,6 +23,7 @@ public sealed class UserController(
 
     public sealed record UpdateBiographyRequest([MaxLength(Biography.MaxLength)] string Biography);
 
+    [Authorize]
     [HttpPost("biography")]
     public async Task<IActionResult> UpdateBiography(
         [FromBody] UpdateBiographyRequest request,
@@ -34,5 +38,28 @@ public sealed class UserController(
         await _commandSender.SendAsync(command, cancellationToken);
 
         return NoContent();
+    }
+
+    [Authorize]
+    [HttpPost("avatar")]
+    public async Task<IActionResult> UpdateAvatar(
+        [FileValidator(0, 3)] [Required] IFormFile avatar,
+        CancellationToken cancellationToken
+    )
+    {
+        UpdateAvatarCommand command = new(avatar.OpenReadStream(), new(User));
+        await _commandSender.SendAsync(command, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpGet("avatar/{id:long}")]
+    public async Task<IActionResult> GetAvatar(
+        [FromRoute] long id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new UserAvatarQuery(new(id));
+        var result = await _querySender.SendAsync(query, cancellationToken);
+        return this.AvatarOrNotFound(result);
     }
 }

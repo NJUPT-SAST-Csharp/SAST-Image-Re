@@ -18,6 +18,8 @@ public readonly record struct Actor
             IsAdmin = user.HasRole(Role.Admin);
         }
     }
+
+    public static implicit operator Actor(ClaimsPrincipal user) => new(user);
 }
 
 public static class ClaimsPrincipalExtensions
@@ -31,7 +33,7 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryFetchId(this ClaimsPrincipal user, out long id)
     {
-        if (user.TryFetchClaim(ClaimTypes.NameIdentifier, out string? claim))
+        if (user.TryFetchClaim("id", out string? claim))
         {
             bool result = long.TryParse(claim, out id);
             return result;
@@ -42,7 +44,7 @@ public static class ClaimsPrincipalExtensions
 
     public static bool HasRole(this ClaimsPrincipal user, Role role)
     {
-        foreach (var r in user.FindAll("Roles"))
+        foreach (var r in user.FindAll("roles"))
         {
             if (
                 r is { } roleClaim

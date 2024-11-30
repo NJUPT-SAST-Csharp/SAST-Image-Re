@@ -33,6 +33,7 @@ builder
     .Services.AddAuth()
     .AddApiClient<IAlbumAPI>(IAlbumAPI.Base)
     .AddApiClient<IAccountAPI>(IAccountAPI.Base)
+    .AddApiClient<IUserAPI>(IUserAPI.Base)
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
 builder.Services.AddBlazoredLocalStorageAsSingleton();
@@ -41,7 +42,8 @@ builder.Services.AddDataStorage<AlbumItemDto, long>().AddDataStorage<DetailedAlb
 builder
     .Services.AddStatusStorage<AuthState>()
     .AddStatusStorage<ExceptionRequest>()
-    .AddKeyedStatusStorage("loading", false);
+    .AddKeyedStatusStorage("loading", false)
+    .AddKeyedStatusStorage("avatar", string.Empty);
 
 builder.Services.AddI18nText(options =>
     options.PersistenceLevel = PersistanceLevel.SessionAndLocal

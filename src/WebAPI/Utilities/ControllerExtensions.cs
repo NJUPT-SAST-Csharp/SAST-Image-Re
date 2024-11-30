@@ -32,7 +32,20 @@ public static class ControllerExtensions
     public static IActionResult ImageOrNotFound(this ControllerBase controller, Stream? image)
     {
         return image is null
-            ? controller.PhysicalFile("./src/not_found.png", "image/png")
+            ? controller.PhysicalFile(
+                $"{Environment.CurrentDirectory}/src/not_found.png",
+                "image/png"
+            )
             : controller.File(image, "image/*");
+    }
+
+    public static IActionResult AvatarOrNotFound(this ControllerBase controller, Stream? avatar)
+    {
+        return avatar is null
+            ? controller.PhysicalFile(
+                $"{Environment.CurrentDirectory}/src/account.png",
+                "image/png"
+            )
+            : controller.File(avatar, "image/*");
     }
 }

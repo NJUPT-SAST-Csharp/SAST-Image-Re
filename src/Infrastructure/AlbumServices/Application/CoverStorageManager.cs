@@ -46,7 +46,7 @@ internal sealed class CoverStorageManager(IStorageManager manager, ICompressProc
     {
         string id = album.Value.ToString();
         await using var _ = stream;
-        await using var compressed = await _compressor.CompressAsync(stream, 90, cancellationToken);
+        await using var compressed = await _compressor.CompressAsync(stream, 60, cancellationToken);
 
         await _manager.StoreAsync(id, compressed, StorageKind.Cover, cancellationToken);
     }

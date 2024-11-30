@@ -53,6 +53,8 @@ internal sealed class StorageManager(IOptions<StorageOptions> options) : IStorag
         {
             StorageKind.Cover => _options.CoverPath,
             StorageKind.Image => _options.ImagePath,
+            StorageKind.Avatar => _options.AvatarPath,
+            StorageKind.Header => _options.HeaderPath,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
 
@@ -77,6 +79,9 @@ internal sealed class StorageManager(IOptions<StorageOptions> options) : IStorag
     {
         string path = GetPath(filename, kind);
 
+        if (Directory.Exists(path) == false)
+            Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
+
         await using var stream = File.Create(path);
 
         await file.CopyToAsync(stream, cancellationToken);
@@ -88,6 +93,8 @@ internal sealed class StorageManager(IOptions<StorageOptions> options) : IStorag
         {
             StorageKind.Cover => _options.CoverPath,
             StorageKind.Image => _options.ImagePath,
+            StorageKind.Avatar => _options.AvatarPath,
+            StorageKind.Header => _options.HeaderPath,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
 

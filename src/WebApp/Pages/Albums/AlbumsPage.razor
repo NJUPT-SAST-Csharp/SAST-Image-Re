@@ -4,7 +4,7 @@
 @inject IJSRuntime JS
 @inject I18n I18n
 @inject IDataStorage<AlbumItemDto, long> Storage
-@inject IStatusStorage<ExceptionRequest> ExceptionRequest   
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
 @code {
     [CascadingParameter(Name = "loading")]
@@ -27,7 +27,7 @@
                 albums = await Api.GetAlbums();
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Loading.Value = false;
             ExceptionRequest.Value = new(e.Message);
@@ -53,18 +53,18 @@
     }
     else
     {
-        @for(int i = 0; i < 3; i ++)
+        @for (int i = 0; i < 3; i++)
         {
-            <MSkeletonLoader Type="image"/>
+            <MSkeletonLoader Type="image" />
         }
     }
 </div>
 
 <style>
-.list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    column-gap: 10px;
-    row-gap: 1em;
-}
+    .list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        column-gap: 10px;
+        row-gap: 1em;
+    }
 </style>

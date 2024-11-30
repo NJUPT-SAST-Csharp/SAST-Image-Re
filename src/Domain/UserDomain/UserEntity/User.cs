@@ -77,4 +77,9 @@ public sealed class User : EntityBase<UserId>
     {
         AddDomainEvent(new BiographyUpdatedEvent(Id, command.Biography));
     }
+
+    public void UpdateAvatar(UpdateAvatarCommand command)
+    {
+        AddDomainEvent(new AvatarUpdatedEvent(Id, command.Avatar));
+    }
 }

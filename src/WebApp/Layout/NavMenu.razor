@@ -1,10 +1,14 @@
 ﻿@inject AuthStateProvider Auth
+@inject IStatusStorage<AuthState> AuthState
 
 @code {
-    [CascadingParameter]
-    public IStatusStorage<AuthState> State { get; set; } = null!;
 
-    private string user => "/user/" + State.Value.Id; 
+    [CascadingParameter(Name = "avatar")]
+    public IStatusStorage<string> Avatar { get; set; } = null!;
+
+
+    private string user => "/user/" + AuthState.Value.Id;
+    private string avatarSrc = string.Empty;
 
     sealed class Item
     {
@@ -17,13 +21,15 @@
     private Item[] items =
     [
     new() { Title= "Home", Icon= "mdi-view-dashboard", Href = "/" },
-    new() { Title= "Albums", Icon= "mdi-image-album", Href="/albums" },
-    new() { Title= "Login", Icon= "mdi-help-box", Href="/login" }
+new() { Title= "Albums", Icon= "mdi-image-album", Href="/albums" },
+new() { Title= "Login", Icon= "mdi-help-box", Href="/login" }
     ];
 
     protected override void OnInitialized()
     {
-        State.OnChange += this.StateHasChanged;
+        Avatar.Value = IUserAPI.GetAvatar(AuthState.Value.Id) + $"?t={DateTime.UtcNow.Ticks}";
+        AuthState.OnChange += this.StateHasChanged;
+        Avatar.OnChange += this.StateHasChanged;
     }
 }
 
@@ -31,14 +37,14 @@
 
     <MListItem Href="@user" Class="px-2 mt-4">
         <MListItemAvatar Size="40">
-            <MImage Src="@("https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png")"></MImage>
+            <MImage Src="@Avatar.Value"></MImage>
         </MListItemAvatar>
 
         <MListItemTitle>MASA</MListItemTitle>
     </MListItem>
 
     <MDivider />
-    
+
     <MList Dense Nav>
         @foreach (var item in items)
         {
@@ -56,12 +62,12 @@
 </MNavigationDrawer>
 
 <style>
-    .nav-drawer{
+    .nav-drawer {
         display: block
     }
 
-    @@media(max-width: 576px){
-        .nav-drawer{
+    @@media(max-width: 576px) {
+        .nav-drawer {
             display: none;
         }
     }

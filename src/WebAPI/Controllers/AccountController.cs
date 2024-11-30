@@ -4,6 +4,7 @@ using Application.UserServices.Queries;
 using Domain.Command;
 using Domain.UserDomain.Commands;
 using Domain.UserDomain.UserEntity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
 
@@ -72,6 +73,7 @@ public sealed class AccountController(
         [Length(PasswordInput.MinLength, PasswordInput.MaxLength)] string NewPassword
     );
 
+    [Authorize]
     [HttpPost("reset/password")]
     public async Task<IActionResult> ResetPassword(
         [FromBody] ResetPasswordRequest request,
@@ -94,6 +96,7 @@ public sealed class AccountController(
         [Length(Username.MinLength, Username.MaxLength)] string Username
     );
 
+    [Authorize]
     [HttpPost("reset/username")]
     public async Task<IActionResult> ResetUsername(
         [FromBody] ResetUsernameRequest request,

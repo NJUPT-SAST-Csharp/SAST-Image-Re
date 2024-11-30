@@ -5,6 +5,7 @@ using Application.Query;
 using Domain.AlbumDomain.Commands;
 using Domain.AlbumDomain.ImageEntity;
 using Domain.Command;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
 using WebAPI.Utilities.Attributes;
@@ -19,6 +20,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
     private readonly IDomainCommandSender _commandSender = commandSender;
     private readonly IQueryRequestSender _querySender = querySender;
 
+    #region [Command/Post]
     public sealed record AddImageRequest(
         [MaxLength(ImageTitle.MaxLength)] string Title,
         [FileValidator(0, 50)] IFormFile Image,
@@ -74,59 +76,6 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
         return NoContent();
     }
 
-    [HttpGet("images/{id:long}/file")]
-    public async Task<IActionResult> GetImage(
-        [FromRoute] long id,
-        [FromQuery] ImageKind kind = ImageKind.Thumbnail,
-        CancellationToken cancellationToken = default
-    )
-    {
-        ImageFileQuery query = new(new(id), kind, new(User));
-
-        var image = await _querySender.SendAsync(query, cancellationToken);
-
-        return this.ImageOrNotFound(image);
-    }
-
-    [HttpGet("images/{id:long}/info")]
-    public async Task<IActionResult> GetDetailedImage(
-        [FromRoute] long id,
-        CancellationToken cancellationToken
-    )
-    {
-        DetailedImageQuery query = new(new(id), new(User));
-
-        var image = await _querySender.SendAsync(query, cancellationToken);
-
-        return this.DataOrNotFound(image);
-    }
-
-    [HttpGet("albums/{albumId:long}/images")]
-    public async Task<IActionResult> GetAlbumImages(
-        [FromRoute] long albumId,
-        CancellationToken cancellationToken
-    )
-    {
-        AlbumImagesQuery query = new(new(albumId), new(User));
-
-        var images = await _querySender.SendAsync(query, cancellationToken);
-
-        return this.DataOrNotFound(images);
-    }
-
-    [HttpGet("albums/{albumId:long}/images/removed")]
-    public async Task<IActionResult> GetRemovedImages(
-        [FromRoute] long albumId,
-        CancellationToken cancellationToken
-    )
-    {
-        RemovedImagesQuery query = new(new(albumId), new(User));
-
-        var images = await _querySender.SendAsync(query, cancellationToken);
-
-        return this.DataOrNotFound(images);
-    }
-
     [HttpPost("albums/{albumId:long}/images/{imageId:long}/like")]
     public async Task<IActionResult> Like(
         [FromRoute] long albumId,
@@ -154,4 +103,66 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
 
         return NoContent();
     }
+
+    #endregion
+
+
+    #region [Query/Get]
+
+    [HttpGet("images/{id:long}/file")]
+    public async Task<IActionResult> GetImage(
+        [FromRoute] long id,
+        [FromQuery] ImageKind kind = ImageKind.Thumbnail,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ImageFileQuery query = new(new(id), kind, new(User));
+
+        var image = await _querySender.SendAsync(query, cancellationToken);
+
+        return this.ImageOrNotFound(image);
+    }
+
+    [Authorize]
+    [HttpGet("images/{id:long}/info")]
+    public async Task<IActionResult> GetDetailedImage(
+        [FromRoute] long id,
+        CancellationToken cancellationToken
+    )
+    {
+        DetailedImageQuery query = new(new(id), new(User));
+
+        var image = await _querySender.SendAsync(query, cancellationToken);
+
+        return this.DataOrNotFound(image);
+    }
+
+    [HttpGet("albums/{albumId:long}/images")]
+    public async Task<IActionResult> GetAlbumImages(
+        [FromRoute] long albumId,
+        CancellationToken cancellationToken
+    )
+    {
+        AlbumImagesQuery query = new(new(albumId), new(User));
+
+        var images = await _querySender.SendAsync(query, cancellationToken);
+
+        return this.DataOrNotFound(images);
+    }
+
+    [Authorize]
+    [HttpGet("albums/{albumId:long}/images/removed")]
+    public async Task<IActionResult> GetRemovedImages(
+        [FromRoute] long albumId,
+        CancellationToken cancellationToken
+    )
+    {
+        RemovedImagesQuery query = new(new(albumId), new(User));
+
+        var images = await _querySender.SendAsync(query, cancellationToken);
+
+        return this.DataOrNotFound(images);
+    }
+
+    #endregion
 }
