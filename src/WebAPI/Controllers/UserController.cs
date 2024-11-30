@@ -52,6 +52,18 @@ public sealed class UserController(
         return NoContent();
     }
 
+    [Authorize]
+    [HttpPost("header")]
+    public async Task<IActionResult> UpdateHeader(
+        [FileValidator(0, 10)] IFormFile header,
+        CancellationToken cancellationToken
+    )
+    {
+        UpdateHeaderCommand command = new(header.OpenReadStream(), new(User));
+        await _commandSender.SendAsync(command, cancellationToken);
+        return NoContent();
+    }
+
     [HttpGet("avatar/{id:long}")]
     public async Task<IActionResult> GetAvatar(
         [FromRoute] long id,
@@ -61,5 +73,16 @@ public sealed class UserController(
         var query = new UserAvatarQuery(new(id));
         var result = await _querySender.SendAsync(query, cancellationToken);
         return this.AvatarOrNotFound(result);
+    }
+
+    [HttpGet("header/{id:long}")]
+    public async Task<IActionResult> GetHeader(
+        [FromRoute] long id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new UserHeaderQuery(new(id));
+        var result = await _querySender.SendAsync(query, cancellationToken);
+        return this.HeaderOrNotFound(result);
     }
 }

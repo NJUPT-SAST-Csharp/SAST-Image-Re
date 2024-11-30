@@ -19,8 +19,29 @@
     }
 }
 
-<UserPageAvatar Id="Id" />
+<div class="header">
+    <UserPageHeader Id="Id" />
+</div>
+
+<div class="avatar">
+    <UserPageAvatar Id="Id" />
+</div>
+
+
 
 <MButton OnClick="() => LogoutAsync()">
     @I18n.T("logout")
 </MButton>
+
+<style>
+    .header {
+        position: relative;
+    }
+
+    .avatar {
+        top: 15vh;
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+    }
+</style>

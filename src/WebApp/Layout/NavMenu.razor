@@ -1,4 +1,5 @@
-﻿@inject AuthStateProvider Auth
+﻿@inject I18n I18n
+@inject AuthStateProvider Auth
 @inject IStatusStorage<AuthState> AuthState
 
 @code {
@@ -39,8 +40,14 @@ new() { Title= "Login", Icon= "mdi-help-box", Href="/login" }
         <MListItemAvatar Size="40">
             <MImage Src="@Avatar.Value"></MImage>
         </MListItemAvatar>
-
-        <MListItemTitle>MASA</MListItemTitle>
+        @if (string.IsNullOrWhiteSpace(AuthState.Value.Username))
+        {
+            <MListItemTitle>@I18n.T("login") / @I18n.T("register")</MListItemTitle>
+        }
+        else
+        {
+            <MListItemTitle>@AuthState.Value.Username</MListItemTitle>
+        }
     </MListItem>
 
     <MDivider />

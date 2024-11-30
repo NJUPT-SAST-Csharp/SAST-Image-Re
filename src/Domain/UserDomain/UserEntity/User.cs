@@ -82,4 +82,9 @@ public sealed class User : EntityBase<UserId>
     {
         AddDomainEvent(new AvatarUpdatedEvent(Id, command.Avatar));
     }
+
+    public void UpdateHeader(UpdateHeaderCommand command)
+    {
+        AddDomainEvent(new HeaderUpdatedEvent(Id, command.Header));
+    }
 }

@@ -195,7 +195,9 @@ public static class ServiceConfiguration
             .AddSingleton<IPasswordValidator, PasswordValidator>()
             .AddSingleton<IJwtGenerator, JwtGenerator>();
 
-        services.AddSingleton<IAvatarStorageManager, AvatarStorageManager>();
+        services
+            .AddSingleton<IAvatarStorageManager, AvatarStorageManager>()
+            .AddSingleton<IHeaderStorageManager, HeaderStorageManager>();
 
         return services;
     }

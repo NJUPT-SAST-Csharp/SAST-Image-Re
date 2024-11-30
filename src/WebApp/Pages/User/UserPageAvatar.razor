@@ -33,7 +33,8 @@
 
         Loading.Value = true;
 
-        StreamPart file = new(e.File.OpenReadStream(), e.File.Name, e.File.ContentType);
+        await using var stream = e.File.OpenReadStream();
+        StreamPart file = new(stream, e.File.Name, e.File.ContentType);
         var result = await API.UploadAvatar(file);
 
 
@@ -51,21 +52,35 @@
 }
 
 
-
 @if (AuthState.Value.Id == Id)
 {
-    <InputFile id="file" style="display: none;" hidden OnChange="UploadAsync" accept="image/*" />
-    <label for="file">
-        <MAvatar Size="160">
-            <MImage Src="@Avatar.Value">
-            </MImage>
-        </MAvatar>
-    </label>
+    <div>
+        <InputFile id="file" style="display: none;" OnChange="UploadAsync" accept="image/*" />
+        <label for="file" class="editable-avatar">
+            <MAvatar Size="160">
+                <MImage Src="@Avatar.Value">
+                </MImage>
+            </MAvatar>
+        </label>
+    </div>
 }
 else
 {
-    <MAvatar Size="160">
-        <MImage Src="@IUserAPI.GetAvatar(Id)">
-        </MImage>
-    </MAvatar>
+    <div>
+        <MAvatar Size="160">
+            <MImage Src="@IUserAPI.GetAvatar(Id)">
+            </MImage>
+        </MAvatar>
+    </div>
 }
+
+<style>
+    .editable-avatar {
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .editable-avatar:hover {
+        scale: 1.05;
+    }
+</style>

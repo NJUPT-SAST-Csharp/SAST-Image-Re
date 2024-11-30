@@ -48,4 +48,9 @@ public static class ControllerExtensions
             )
             : controller.File(avatar, "image/*");
     }
+
+    public static IActionResult HeaderOrNotFound(this ControllerBase controller, Stream? header)
+    {
+        return header is null ? controller.NoContent() : controller.File(header, "image/*");
+    }
 }
