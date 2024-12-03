@@ -138,9 +138,8 @@ public static class ServiceConfiguration
                 IQueryRepository<RemovedAlbumsQuery, List<RemovedAlbumDto>>,
                 AlbumQueryRepository
             >()
-            .AddScoped<IQueryRepository<UserImagesQuery, List<ImageDto>>, ImageQueryRepository>()
-            .AddScoped<IQueryRepository<AlbumImagesQuery, List<ImageDto>>, ImageQueryRepository>()
-            .AddScoped<IQueryRepository<RemovedImagesQuery, List<ImageDto>>, ImageQueryRepository>()
+            .AddScoped<IQueryRepository<ImagesQuery, ImageDto[]>, ImageQueryRepository>()
+            .AddScoped<IQueryRepository<RemovedImagesQuery, ImageDto[]>, ImageQueryRepository>()
             .AddScoped<
                 IQueryRepository<DetailedImageQuery, DetailedImage?>,
                 ImageQueryRepository

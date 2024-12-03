@@ -1,10 +1,10 @@
 ﻿@page "/albums/{id:long}"
 
-
 @inject IDataStorage<DetailedAlbum, long> Storage
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
-@inject IAlbumAPI Api
+@inject IImageAPI ImageApi
+@inject IAlbumAPI AlbumApi
 @inject IJSRuntime JS
 
 @code {
@@ -22,7 +22,7 @@
     {
         if (Storage.TryGet(Id, out album))
         {
-            var response = await Api.GetDetail(Id);
+            var response = await AlbumApi.GetDetail(Id);
             Storage.Add(album, Id);
         }
         else
@@ -30,7 +30,7 @@
             Loading.Value = true;
             try
             {
-                album = await Api.GetDetail(Id);
+                album = await AlbumApi.GetDetail(Id);
             }
             catch (Exception e)
             {
@@ -41,7 +41,7 @@
             Storage.Add(album, Id);
         }
 
-        var result = await Api.GetImages(Id);
+        var result = await ImageApi.GetImages(album: Id);
         if (result.IsSuccessStatusCode)
         {
             images = result.Content ?? [];

@@ -7,36 +7,15 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.ImageServices.Application;
 
 internal sealed class ImageQueryRepository(QueryDbContext context)
-    : IQueryRepository<AlbumImagesQuery, List<ImageDto>>,
-        IQueryRepository<RemovedImagesQuery, List<ImageDto>>,
-        IQueryRepository<UserImagesQuery, List<ImageDto>>,
-        IQueryRepository<DetailedImageQuery, DetailedImage?>
+    : IQueryRepository<RemovedImagesQuery, ImageDto[]>,
+        IQueryRepository<DetailedImageQuery, DetailedImage?>,
+        IQueryRepository<ImagesQuery, ImageDto[]>
 {
     private readonly QueryDbContext _context = context;
 
-    public Task<List<ImageDto>> GetOrDefaultAsync(
-        AlbumImagesQuery query,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return _context
-            .Images.AsNoTracking()
-            .Where(i => i.Status == ImageStatusValue.Available)
-            .Where(i => i.AlbumId == query.Album.Value)
-            .WhereIsAccessible(query.Actor)
-            .Select(i => new ImageDto(
-                i.Id,
-                i.UploaderId,
-                i.AlbumId,
-                i.Title,
-                i.Tags,
-                i.UploadedAt,
-                i.RemovedAt
-            ))
-            .ToListAsync(cancellationToken);
-    }
+    const int PageSize = 50;
 
-    public Task<List<ImageDto>> GetOrDefaultAsync(
+    public Task<ImageDto[]> GetOrDefaultAsync(
         RemovedImagesQuery query,
         CancellationToken cancellationToken = default
     )
@@ -59,7 +38,7 @@ internal sealed class ImageQueryRepository(QueryDbContext context)
                 i.UploadedAt,
                 i.RemovedAt
             ))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
     }
 
     public Task<DetailedImage?> GetOrDefaultAsync(
@@ -80,16 +59,20 @@ internal sealed class ImageQueryRepository(QueryDbContext context)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<List<ImageDto>> GetOrDefaultAsync(
-        UserImagesQuery query,
+    public Task<ImageDto[]> GetOrDefaultAsync(
+        ImagesQuery query,
         CancellationToken cancellationToken = default
     )
     {
         return _context
             .Images.AsNoTracking()
             .Where(i => i.Status == ImageStatusValue.Available)
-            .Where(i => i.UploaderId == query.User.Value)
+            .Where(i => query.AuthorId == null || i.UploaderId == query.AuthorId)
+            .Where(i => query.AlbumId == null || i.AlbumId == query.AlbumId)
             .WhereIsAccessible(query.Actor)
+            .OrderByDescending(i => i.UploadedAt)
+            .Skip(query.Page * PageSize)
+            .Take(PageSize)
             .Select(i => new ImageDto(
                 i.Id,
                 i.UploaderId,
@@ -99,6 +82,6 @@ internal sealed class ImageQueryRepository(QueryDbContext context)
                 i.UploadedAt,
                 i.RemovedAt
             ))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
     }
 }

@@ -3,6 +3,7 @@
 
 @inject I18n I18n
 @inject IUserAPI UserApi
+@inject IImageAPI ImageApi
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
 
@@ -37,7 +38,7 @@
                 };
         }
 
-        var imagesResult = await UserApi.GetUserImages(Id);
+        var imagesResult = await ImageApi.GetImages(uploader: Id);
 
         if (result.IsSuccessStatusCode)
         {
@@ -75,11 +76,11 @@
 <MTabs>
     <MTab>
         <MIcon>mdi-image-outline</MIcon>
-        @I18n.T("images")
+        @I18n.T("images", false, "Images")
     </MTab>
     <MTab>
         <MIcon>mdi-image-album</MIcon>
-        @I18n.T("albums")
+        @I18n.T("albums", false, defaultValue: "Albums")
     </MTab>
 
     <MTabItem>

@@ -19,9 +19,6 @@ public interface IAlbumAPI
 
     [Get("/{id}")]
     public Task<DetailedAlbum> GetDetail(long id);
-
-    [Get("/{id}/images")]
-    public Task<IApiResponse<ImageDto[]>> GetImages(long id);
 }
 
 public readonly record struct AlbumItemDto(

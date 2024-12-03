@@ -29,7 +29,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
 
     [Authorize]
     [RequestSizeLimit(1024 * 1024 * 50)]
-    [HttpPost("albums/{albumId:long}/add")]
+    [HttpPost("albums/{album:long}/add")]
     public async Task<IActionResult> AddImage(
         [FromRoute] long albumId,
         [Required] [FromForm] AddImageRequest request,
@@ -50,7 +50,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
     }
 
     [Authorize]
-    [HttpPost("albums/{albumId:long}/images/{imageId:long}/remove")]
+    [HttpPost("albums/{album:long}/images/{imageId:long}/remove")]
     public async Task<IActionResult> Remove(
         [FromRoute] long albumId,
         [FromRoute] long imageId,
@@ -65,7 +65,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
     }
 
     [Authorize]
-    [HttpPost("albums/{albumId:long}/images/{imageId:long}/restore")]
+    [HttpPost("albums/{album:long}/images/{imageId:long}/restore")]
     public async Task<IActionResult> Restore(
         [FromRoute] long albumId,
         [FromRoute] long imageId,
@@ -80,7 +80,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
     }
 
     [Authorize]
-    [HttpPost("albums/{albumId:long}/images/{imageId:long}/like")]
+    [HttpPost("albums/{album:long}/images/{imageId:long}/like")]
     public async Task<IActionResult> Like(
         [FromRoute] long albumId,
         [FromRoute] long imageId,
@@ -95,7 +95,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
     }
 
     [Authorize]
-    [HttpPost("albums/{albumId:long}/images/{imageId:long}/unlike")]
+    [HttpPost("albums/{album:long}/images/{imageId:long}/unlike")]
     public async Task<IActionResult> Unlike(
         [FromRoute] long albumId,
         [FromRoute] long imageId,
@@ -114,6 +114,25 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
 
     #region [Query/Get]
 
+
+    [HttpGet("images")]
+    [ResponseCache(
+        Duration = 10,
+        Location = ResponseCacheLocation.Any,
+        VaryByQueryKeys = ["uploader", "album", "page"]
+    )]
+    public async Task<IActionResult> GetImages(
+        [FromQuery] long? uploader = null,
+        [FromQuery] long? album = null,
+        [FromQuery] int page = 0,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ImagesQuery query = new(uploader, album, page, new(User));
+        var images = await _querySender.SendAsync(query, cancellationToken);
+        return this.DataOrNotFound(images);
+    }
+
     [HttpGet("images/{id:long}")]
     public async Task<IActionResult> GetImage(
         [FromRoute] long id,
@@ -128,19 +147,6 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
         return this.ImageOrNotFound(image);
     }
 
-    [HttpGet("albums/{albumId:long}/images")]
-    public async Task<IActionResult> GetAlbumImages(
-        [FromRoute] long albumId,
-        CancellationToken cancellationToken
-    )
-    {
-        AlbumImagesQuery query = new(new(albumId), new(User));
-
-        var images = await _querySender.SendAsync(query, cancellationToken);
-
-        return this.DataOrNotFound(images);
-    }
-
     [Authorize]
     [HttpGet("images/{id:long}/info")]
     public async Task<IActionResult> GetDetailedImage(
@@ -153,20 +159,6 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
         var image = await _querySender.SendAsync(query, cancellationToken);
 
         return this.DataOrNotFound(image);
-    }
-
-    [Authorize]
-    [HttpGet("users/{userId:long}/images")]
-    public async Task<IActionResult> GetUserImages(
-        [FromRoute] long userId,
-        CancellationToken cancellationToken
-    )
-    {
-        UserImagesQuery query = new(new(userId), new(User));
-
-        var images = await _querySender.SendAsync(query, cancellationToken);
-
-        return this.DataOrNotFound(images);
     }
 
     [Authorize]

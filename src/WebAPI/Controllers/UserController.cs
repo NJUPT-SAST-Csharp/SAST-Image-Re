@@ -21,6 +21,8 @@ public sealed class UserController(
     private readonly IDomainCommandSender _commandSender = commandSender;
     private readonly IQueryRequestSender _querySender = querySender;
 
+    #region [Command/Post]
+
     public sealed record UpdateBiographyRequest([MaxLength(Biography.MaxLength)] string Biography);
 
     [Authorize]
@@ -64,7 +66,11 @@ public sealed class UserController(
         return NoContent();
     }
 
-    [HttpGet("avatar/{id:long}")]
+    #endregion
+
+    #region [Query/Get]
+
+    [HttpGet("{id:long}/avatar")]
     public async Task<IActionResult> GetAvatar(
         [FromRoute] long id,
         CancellationToken cancellationToken
@@ -75,7 +81,7 @@ public sealed class UserController(
         return this.AvatarOrNotFound(result);
     }
 
-    [HttpGet("header/{id:long}")]
+    [HttpGet("{id:long}/header")]
     public async Task<IActionResult> GetHeader(
         [FromRoute] long id,
         CancellationToken cancellationToken
@@ -86,7 +92,7 @@ public sealed class UserController(
         return this.HeaderOrNotFound(result);
     }
 
-    [HttpGet("profile/{id:long}")]
+    [HttpGet("{id:long}/profile")]
     public async Task<IActionResult> GetProfileInfo(
         [FromRoute] long id,
         CancellationToken cancellationToken
@@ -96,4 +102,6 @@ public sealed class UserController(
         var result = await _querySender.SendAsync(query, cancellationToken);
         return this.DataOrNotFound(result);
     }
+
+    #endregion
 }
