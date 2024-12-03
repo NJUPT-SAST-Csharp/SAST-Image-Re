@@ -4,19 +4,15 @@ using Domain.Shared;
 
 namespace Application.ImageServices.Queries;
 
-public sealed record RemovedImageDto(long Id, string Title, DateTime RemovedAt);
-
-public sealed record RemovedImagesQuery(AlbumId Album, Actor Actor)
-    : IQueryRequest<List<RemovedImageDto>>;
+public sealed record RemovedImagesQuery(AlbumId Album, Actor Actor) : IQueryRequest<List<ImageDto>>;
 
 internal sealed class RemovedImagesQueryHandler(
-    IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>> repository
-) : IQueryRequestHandler<RemovedImagesQuery, List<RemovedImageDto>>
+    IQueryRepository<RemovedImagesQuery, List<ImageDto>> repository
+) : IQueryRequestHandler<RemovedImagesQuery, List<ImageDto>>
 {
-    private readonly IQueryRepository<RemovedImagesQuery, List<RemovedImageDto>> _repository =
-        repository;
+    private readonly IQueryRepository<RemovedImagesQuery, List<ImageDto>> _repository = repository;
 
-    public Task<List<RemovedImageDto>> Handle(
+    public Task<List<ImageDto>> Handle(
         RemovedImagesQuery request,
         CancellationToken cancellationToken
     )

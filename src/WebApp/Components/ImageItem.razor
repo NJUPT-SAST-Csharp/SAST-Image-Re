@@ -3,7 +3,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public ImageItemDto Image { get; set; }
+    public ImageDto Image { get; set; }
 
     private void NavigateTo()
     {
@@ -11,19 +11,16 @@
     }
 }
 
-<MImage Src="@IImageAPI.GetImage(Image.Id)" 
-        Class="image-item"
-        Contain 
-        title="@Image.Title" 
-        onclick="@(() => NavigateTo())" />
+<MImage Src="@IImageAPI.GetImage(Image.Id)" Class="image-item" Contain title="@Image.Title"
+    onclick="@(() => NavigateTo())" />
 
 <style>
-    .image-item{
+    .image-item {
         cursor: pointer;
         transition: all 0.3s ease;
     }
 
-        .image-item:hover{
-            transform: scale(1.035)
-        }
+    .image-item:hover {
+        transform: scale(1.035)
+    }
 </style>

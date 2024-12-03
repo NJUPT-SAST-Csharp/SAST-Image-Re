@@ -35,7 +35,7 @@
 
         await using var stream = e.File.OpenReadStream();
         StreamPart file = new(stream, e.File.Name, e.File.ContentType);
-        var result = await API.UploadHeader(file);
+        var result = await API.UpdateHeader(file);
 
         if (result.IsSuccessStatusCode == false)
             ExceptionRequest.Value = new()

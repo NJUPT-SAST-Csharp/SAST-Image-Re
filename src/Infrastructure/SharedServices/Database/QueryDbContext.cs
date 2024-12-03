@@ -10,13 +10,13 @@ namespace Infrastructure.Database;
 
 internal sealed class QueryDbContext(DbContextOptions<QueryDbContext> options) : DbContext(options)
 {
-    public DbSet<AlbumModel> Albums { get; init; }
-    public DbSet<ImageModel> Images { get; init; }
-    public DbSet<UserModel> Users { get; init; }
-    public DbSet<CategoryModel> Categories { get; init; }
-    public DbSet<TagModel> Tags { get; init; }
-    public DbSet<LikeModel> Likes { get; init; }
-    public DbSet<SubscribeModel> Subscribes { get; init; }
+    public required DbSet<AlbumModel> Albums { get; init; }
+    public required DbSet<ImageModel> Images { get; init; }
+    public required DbSet<UserModel> Users { get; init; }
+    public required DbSet<CategoryModel> Categories { get; init; }
+    public required DbSet<TagModel> Tags { get; init; }
+    public required DbSet<LikeModel> Likes { get; init; }
+    public required DbSet<SubscribeModel> Subscribes { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

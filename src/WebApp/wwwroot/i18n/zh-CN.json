@@ -18,5 +18,7 @@
   "registration_code_invalid": "注册码长度为6位",
   "registration_code_tooltip": "请联系管理员获取注册码 owo",
   "register": "注册",
-  "register_failed": "注册失败 qaq"
+  "register_failed": "注册失败 qaq",
+  "images": "图片",
+  "albums": "相册"
 }

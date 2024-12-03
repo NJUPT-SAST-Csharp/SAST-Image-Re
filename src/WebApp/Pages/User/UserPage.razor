@@ -1,6 +1,8 @@
 ﻿@page "/user/{id:long}"
 @attribute [Authorize]
-@inject IUserAPI API
+
+@inject I18n I18n
+@inject IUserAPI UserApi
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
 
@@ -13,14 +15,14 @@
 
     private UserProfileDto profile;
 
+    private ImageDto[] images = [];
+
 
     protected override async Task OnInitializedAsync()
     {
         Loading.Value = true;
 
-        var result = await API.GetProfile(Id);
-
-        Loading.Value = false;
+        var result = await UserApi.GetProfile(Id);
 
         if (result.IsSuccessStatusCode)
         {
@@ -34,6 +36,24 @@
                     StatusCode = result.StatusCode
                 };
         }
+
+        var imagesResult = await UserApi.GetUserImages(Id);
+
+        if (result.IsSuccessStatusCode)
+        {
+            images = imagesResult.Content ?? [];
+        }
+        else
+        {
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to get user images.",
+                    StatusCode = result.StatusCode
+                };
+        }
+
+        Loading.Value = false;
+
     }
 }
 
@@ -51,6 +71,28 @@
 <div class="text-center">
     <UserPageProfile Profile="profile" />
 </div>
+
+<MTabs>
+    <MTab>
+        <MIcon>mdi-image-outline</MIcon>
+        @I18n.T("images")
+    </MTab>
+    <MTab>
+        <MIcon>mdi-image-album</MIcon>
+        @I18n.T("albums")
+    </MTab>
+
+    <MTabItem>
+        <div style="height: 20px;"></div>
+        <ImageList Images="images" />
+    </MTabItem>
+
+    <MTabItem>
+        Albums
+    </MTabItem>
+
+</MTabs>
+
 
 
 

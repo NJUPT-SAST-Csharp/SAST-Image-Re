@@ -13,7 +13,9 @@ public sealed class DetailedImage(ImageModel i, int likeCount, bool isLiked)
     public DateTime UploadedAt { get; } = i.UploadedAt;
     public long[] Tags { get; } = i.Tags;
     public int LikeCount { get; } = likeCount;
-    public bool IsLiked { get; } = isLiked;
+    public RequesterInfo Requester { get; } = new(isLiked);
+
+    public readonly record struct RequesterInfo(bool Liked);
 }
 
 public sealed record DetailedImageQuery(ImageId Image, Actor Actor) : IQueryRequest<DetailedImage?>;

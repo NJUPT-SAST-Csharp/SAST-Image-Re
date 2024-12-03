@@ -1,6 +1,6 @@
 ﻿@code {
-    [Parameter]
-    public IEnumerable<ImageItemDto> Images { get; set; } = [];
+    [Parameter, EditorRequired]
+    public IEnumerable<ImageDto> Images { get; set; } = [];
 }
 
 

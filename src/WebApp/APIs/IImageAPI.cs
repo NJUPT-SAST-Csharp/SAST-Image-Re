@@ -1,4 +1,7 @@
-﻿namespace WebApp.APIs;
+﻿using Refit;
+using WebApp.APIs.Dtos;
+
+namespace WebApp.APIs;
 
 public interface IImageAPI
 {

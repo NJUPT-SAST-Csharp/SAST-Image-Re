@@ -16,7 +16,7 @@
 
     private DetailedAlbum album;
 
-    private IEnumerable<ImageItemDto> images = [];
+    private ImageDto[] images = [];
 
     protected async override Task OnInitializedAsync()
     {
@@ -44,7 +44,7 @@
         var result = await Api.GetImages(Id);
         if (result.IsSuccessStatusCode)
         {
-            images = result.Content!;
+            images = result.Content ?? [];
         }
     }
 }
