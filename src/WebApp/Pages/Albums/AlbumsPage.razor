@@ -1,70 +1,39 @@
 ﻿@page "/albums"
 
 @inject IAlbumAPI Api
-@inject IJSRuntime JS
-@inject I18n I18n
-@inject IDataStorage<AlbumItemDto, long> Storage
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
+
 @code {
+
     [CascadingParameter(Name = "loading")]
-    private IStatusStorage<bool> Loading { get; set; } = null!;
+    public IStatusStorage<bool> Loading { get; set; } = null!;
+
+    private AlbumDto[] Albums = [];
 
     protected override async Task OnInitializedAsync()
     {
-        IEnumerable<AlbumItemDto> albums = [];
+        Loading.Value = true;
 
-        try
+        var result = await Api.GetAlbums();
+
+        Loading.Value = false;
+
+        if (result.IsSuccessStatusCode)
         {
-            if (Storage.Count == 0)
-            {
-                Loading.Value = true;
-                albums = await Api.GetAlbums();
-                Loading.Value = false;
-            }
-            else
-            {
-                albums = await Api.GetAlbums();
-            }
+            Albums = result.Content ?? [];
         }
-        catch (Exception e)
+        else
         {
-            Loading.Value = false;
-            ExceptionRequest.Value = new(e.Message);
-        }
-
-
-        foreach (var album in albums)
-        {
-            Storage.Add(album, album.Id);
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to load albums",
+                    StatusCode = result.StatusCode
+                };
         }
     }
 }
 
 <PageTitle>SastImg - Albums</PageTitle>
 
-<div class="list">
-    @if (Storage.Items.Count > 0)
-    {
-        @foreach (var album in Storage.Items)
-        {
-            <AlbumItem @key="album.Key" Album="album.Value" />
-        }
-    }
-    else
-    {
-        @for (int i = 0; i < 3; i++)
-        {
-            <MSkeletonLoader Type="image" />
-        }
-    }
-</div>
-
-<style>
-    .list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        column-gap: 10px;
-        row-gap: 1em;
-    }
-</style>
+<AlbumList Albums="@Albums" />

@@ -4,6 +4,7 @@
 @inject I18n I18n
 @inject IUserAPI UserApi
 @inject IImageAPI ImageApi
+@inject IAlbumAPI AlbumApi
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
 
@@ -15,41 +16,56 @@
     public IStatusStorage<bool> Loading { get; set; } = null!;
 
     private UserProfileDto profile;
-
     private ImageDto[] images = [];
+    private AlbumDto[] albums = [];
 
 
     protected override async Task OnInitializedAsync()
     {
         Loading.Value = true;
 
-        var result = await UserApi.GetProfile(Id);
+        var profileResponse = await UserApi.GetProfile(Id);
 
-        if (result.IsSuccessStatusCode)
+        if (profileResponse.IsSuccessStatusCode)
         {
-            profile = result.Content;
+            profile = profileResponse.Content;
         }
         else
         {
             ExceptionRequest.Value = new()
                 {
                     Message = "Failed to get profile.",
-                    StatusCode = result.StatusCode
+                    StatusCode = profileResponse.StatusCode
                 };
         }
 
-        var imagesResult = await ImageApi.GetImages(uploader: Id);
+        var imagesResponse = await ImageApi.GetImages(uploader: Id);
 
-        if (result.IsSuccessStatusCode)
+        if (profileResponse.IsSuccessStatusCode)
         {
-            images = imagesResult.Content ?? [];
+            images = imagesResponse.Content ?? [];
         }
         else
         {
             ExceptionRequest.Value = new()
                 {
                     Message = "Failed to get user images.",
-                    StatusCode = result.StatusCode
+                    StatusCode = profileResponse.StatusCode
+                };
+        }
+
+        var albumsResponse = await AlbumApi.GetAlbums(author: Id);
+
+        if (albumsResponse.IsSuccessStatusCode)
+        {
+            albums = albumsResponse.Content ?? [];
+        }
+        else
+        {
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to get user albums.",
+                    StatusCode = albumsResponse.StatusCode
                 };
         }
 
@@ -89,7 +105,8 @@
     </MTabItem>
 
     <MTabItem>
-        Albums
+        <div style="height: 20px;"></div>
+        <AlbumList Albums="albums" />
     </MTabItem>
 
 </MTabs>

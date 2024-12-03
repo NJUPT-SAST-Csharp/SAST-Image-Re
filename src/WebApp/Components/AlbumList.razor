@@ -1,0 +1,39 @@
+﻿@inject IAlbumAPI Api
+@inject IJSRuntime JS
+@inject I18n I18n
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest
+
+@code {
+    [Parameter, EditorRequired]
+    public AlbumDto[] Albums { get; set; } = [];
+
+    [CascadingParameter(Name = "loading")]
+    private IStatusStorage<bool> Loading { get; set; } = null!;
+
+}
+
+<div class="list">
+    @if (Albums.Length > 0)
+    {
+        @foreach (var album in Albums)
+        {
+            <AlbumItem @key="album.Id" Album="album" />
+        }
+    }
+    else
+    {
+        @for (int i = 0; i < 5; i++)
+        {
+            <MSkeletonLoader Type="image" />
+        }
+    }
+</div>
+
+<style>
+    .list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        column-gap: 10px;
+        row-gap: 1em;
+    }
+</style>

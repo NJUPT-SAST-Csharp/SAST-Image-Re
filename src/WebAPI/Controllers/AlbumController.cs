@@ -214,15 +214,13 @@ public sealed class AlbumController(
     [HttpGet]
     [ResponseCache(
         Duration = 10,
-        Location = ResponseCacheLocation.Client,
-        VaryByQueryKeys = ["c", "a", "t"]
+        Location = ResponseCacheLocation.Any,
+        VaryByQueryKeys = ["category", "author", "title"]
     )]
     public async Task<IActionResult> GetAlbums(
-        [FromQuery(Name = "c")] long? category = null,
-        [FromQuery(Name = "a")] long? author = null,
-        [FromQuery(Name = "t")]
-        [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)]
-            string? title = null,
+        [FromQuery] long? category = null,
+        [FromQuery] long? author = null,
+        [FromQuery] [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string? title = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -242,10 +240,10 @@ public sealed class AlbumController(
         return this.DataOrNotFound(result);
     }
 
-    [HttpGet("cover")]
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["a"])]
+    [HttpGet("{id:long}/cover")]
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> GetCover(
-        [FromQuery(Name = "a")] long id,
+        [FromRoute] long id,
         CancellationToken cancellationToken
     )
     {

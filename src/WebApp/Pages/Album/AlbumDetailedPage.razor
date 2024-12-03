@@ -1,6 +1,5 @@
 ﻿@page "/albums/{id:long}"
 
-@inject IDataStorage<DetailedAlbum, long> Storage
 @inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
 @inject IImageAPI ImageApi
@@ -20,31 +19,26 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (Storage.TryGet(Id, out album))
+
+        Loading.Value = true;
+
+        var result1 = await AlbumApi.GetDetail(Id);
+        var result2 = await ImageApi.GetImages(album: Id);
+
+        Loading.Value = false;
+
+        if (result1.IsSuccessStatusCode && result2.IsSuccessStatusCode)
         {
-            var response = await AlbumApi.GetDetail(Id);
-            Storage.Add(album, Id);
+            album = result1.Content;
+            images = result2.Content ?? [];
         }
         else
         {
-            Loading.Value = true;
-            try
-            {
-                album = await AlbumApi.GetDetail(Id);
-            }
-            catch (Exception e)
-            {
-                ExceptionRequest.Value = new(e.Message);
-            }
-            Loading.Value = false;
-
-            Storage.Add(album, Id);
-        }
-
-        var result = await ImageApi.GetImages(album: Id);
-        if (result.IsSuccessStatusCode)
-        {
-            images = result.Content ?? [];
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to load album",
+                    StatusCode = result1.StatusCode
+                };
         }
     }
 }

@@ -7,7 +7,7 @@ using Toolbelt.Blazor.I18nText;
 using WebApp;
 using WebApp.APIs;
 using WebApp.APIs.Auth;
-using WebApp.Requests;
+using WebApp.APIs.Dtos;
 using WebApp.Storages;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -38,7 +38,7 @@ builder
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder.Services.AddDataStorage<AlbumItemDto, long>().AddDataStorage<DetailedAlbum, long>();
+builder.Services.AddDataStorage<AlbumDto, long>().AddDataStorage<DetailedAlbum, long>();
 
 builder
     .Services.AddStatusStorage<AuthState>()

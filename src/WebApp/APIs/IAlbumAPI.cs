@@ -1,33 +1,24 @@
 ﻿using Refit;
-using WebApp.APIs;
 using WebApp.APIs.Dtos;
 
-namespace WebApp.Requests;
+namespace WebApp.APIs;
 
 public interface IAlbumAPI
 {
     public const string Base = "albums";
 
-    public static string GetCover(long a) => $"{APIConfigurations.BaseUrl}{Base}/cover?a={a}";
+    public static string GetCover(long id) => $"{APIConfigurations.BaseUrl}{Base}/{id}/cover";
 
     [Get("/")]
-    public Task<List<AlbumItemDto>> GetAlbums(
-        [AliasAs("c")] long? categoryId = null,
-        [AliasAs("a")] long? authorId = null,
-        [AliasAs("t")] string title = null!
+    public Task<IApiResponse<AlbumDto[]>> GetAlbums(
+        [Query] long? category = null,
+        [Query] long? author = null,
+        [Query] string title = null!
     );
 
     [Get("/{id}")]
-    public Task<DetailedAlbum> GetDetail(long id);
+    public Task<IApiResponse<DetailedAlbum>> GetDetail(long id);
 }
-
-public readonly record struct AlbumItemDto(
-    long Id,
-    string Title,
-    long Author,
-    long Category,
-    DateTime UpdatedAt
-);
 
 public readonly record struct DetailedAlbum(
     long Id,
