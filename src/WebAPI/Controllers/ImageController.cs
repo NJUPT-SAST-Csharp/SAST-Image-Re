@@ -109,7 +109,7 @@ public class ImageController(IDomainCommandSender commandSender, IQueryRequestSe
 
     #region [Query/Get]
 
-    [HttpGet("images/{id:long}/file")]
+    [HttpGet("images/{id:long}")]
     public async Task<IActionResult> GetImage(
         [FromRoute] long id,
         [FromQuery] ImageKind kind = ImageKind.Thumbnail,

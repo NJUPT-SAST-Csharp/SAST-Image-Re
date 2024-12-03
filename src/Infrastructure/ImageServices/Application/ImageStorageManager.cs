@@ -1,32 +1,49 @@
-﻿using Application.ImageServices;
+﻿using System.Globalization;
+using Application.ImageServices;
 using Domain.AlbumDomain.ImageEntity;
+using IdGen;
 using Infrastructure.SharedServices.Storage;
+using Microsoft.Extensions.Options;
 using SkiaSharp;
 
 namespace Infrastructure.ImageServices.Application;
 
-internal sealed class ImageStorageManager(IStorageManager manager, ICompressProcessor compressor)
-    : IImageStorageManager
+internal sealed class ImageStorageManager(
+    ICompressProcessor compressor,
+    IOptions<StorageOptions> options
+) : IImageStorageManager
 {
-    private readonly IStorageManager _manager = manager;
-    private readonly ICompressProcessor _compressor = compressor;
+    private readonly StorageOptions options = options.Value;
+
+    const int CompressRate = 60;
 
     public Task DeleteImageAsync(ImageId image, CancellationToken cancellationToken = default)
     {
-        string filename = image.Value.ToString();
-        return _manager.DeleteAsync(filename, StorageKind.Image, cancellationToken);
+        string path = Path.Combine(options.ImagePath, image.GetRelativePath());
+
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
+
+        return Task.CompletedTask;
     }
 
     public Stream? OpenReadStream(ImageId image, ImageKind kind)
     {
-        string id = kind switch
-        {
-            ImageKind.Original => image.Value.ToString(),
-            ImageKind.Thumbnail => image.Value.ToString() + "_compressed",
-            _ => throw new ArgumentException("Invalid ImageKind", kind.ToString()),
-        };
+        string path = Path.Combine(options.ImagePath, image.GetRelativePath());
 
-        return _manager.FindFile(id, StorageKind.Image);
+        if (Directory.Exists(path) == false)
+            return null;
+
+        if (ImageKind.Thumbnail == kind)
+            return File.OpenRead(Path.Combine(path, "compressed.webp"));
+
+        string? file = Directory
+            .GetFiles(path, "original.*", SearchOption.TopDirectoryOnly)
+            .FirstOrDefault();
+
+        return file == null ? null : File.OpenRead(file);
     }
 
     public async Task StoreImageAsync(
@@ -35,22 +52,59 @@ internal sealed class ImageStorageManager(IStorageManager manager, ICompressProc
         CancellationToken cancellationToken = default
     )
     {
-        string id = imageId.Value.ToString();
+        string path = Path.Combine(options.ImagePath, imageId.GetRelativePath());
+
         using var code = SKCodec.Create(imageFile);
         string format = code.EncodedFormat.ToString().ToLowerInvariant();
-        string filename = Path.ChangeExtension(id, format);
         imageFile.Seek(0, SeekOrigin.Begin);
-        await _manager.StoreAsync(filename, imageFile, StorageKind.Image, cancellationToken);
 
-        string targetFilename = Path.ChangeExtension(filename, ".webp")
-            .Insert(id.Length, "_compressed");
+        string original = Path.Combine(path, Path.ChangeExtension("original.xxx", format));
+        string compressed = Path.Combine(path, "compressed.webp");
 
-        await using var compressed = await _compressor.CompressAsync(
+        await using var compressedImageFile = await compressor.CompressAsync(
             imageFile,
-            60,
+            CompressRate,
             cancellationToken
         );
 
-        await _manager.StoreAsync(targetFilename, compressed, StorageKind.Image, cancellationToken);
+        EnsureDirectoryExists(path);
+
+        await Task.WhenAll(
+            StoreFileAsync(imageFile, original, cancellationToken),
+            StoreFileAsync(compressedImageFile, compressed, cancellationToken)
+        );
+    }
+
+    private static async Task StoreFileAsync(
+        Stream file,
+        string filename,
+        CancellationToken cancellationToken
+    )
+    {
+        file.Seek(0, SeekOrigin.Begin);
+
+        await using var fileStream = File.Create(filename);
+
+        await fileStream.CopyToAsync(file, cancellationToken);
+    }
+
+    private static void EnsureDirectoryExists(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+    }
+}
+
+file static class SnowflakeIdExtensions
+{
+    public static string GetRelativePath(this ImageId id)
+    {
+        var epoch = IdGeneratorOptions.DefaultEpoch;
+        long timestamp = (id.Value >> 22);
+        var dateTime = epoch.AddMilliseconds(timestamp);
+
+        return dateTime.ToString($"yyyy/MM/dd/{id.Value}", CultureInfo.InvariantCulture);
     }
 }

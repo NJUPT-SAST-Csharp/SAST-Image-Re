@@ -7,29 +7,7 @@
 
 @code {
     [Parameter]
-    public long Id { get; set; }
-
-    [CascadingParameter(Name = "loading")]
-    public IStatusStorage<bool> Loading { get; set; } = null!;
-
-    private UserProfileDto profile;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await API.GetProfile(Id);
-        if (result.IsSuccessStatusCode)
-        {
-            profile = result.Content;
-        }
-        else
-        {
-            ExceptionRequest.Value = new()
-                {
-                    Message = "Failed to get profile.",
-                    StatusCode = result.StatusCode
-                };
-        }
-    }
+    public UserProfileDto Profile { get; set; }
 
     private async Task LogoutAsync()
     {
@@ -47,14 +25,14 @@
 
 <MTooltip Bottom>
     <ActivatorContent>
-        <h2 class="text-center" @attributes="@context.Attrs">@profile.Username</h2>
+        <h2 class="text-center" @attributes="@context.Attrs">@Profile.Username</h2>
     </ActivatorContent>
     <ChildContent>
-        <span>@profile.Id</span>
+        <span>@Profile.Id</span>
     </ChildContent>
 </MTooltip>
 
-<p class="text-center text--secondary">@profile.Biography</p>
+<p class="text-center text--secondary">@Profile.Biography</p>
 
 <div class="text-right">
     <MButton Plain Color="error" OnClick="LogoutAsync">

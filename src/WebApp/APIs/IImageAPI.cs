@@ -4,5 +4,5 @@ public interface IImageAPI
 {
     public const string Base = "images";
 
-    public static string GetImage(long i) => $"{APIConfigurations.BaseUrl}{Base}/{i}/file";
+    public static string GetImage(long i) => $"{APIConfigurations.BaseUrl}{Base}/{i}";
 }

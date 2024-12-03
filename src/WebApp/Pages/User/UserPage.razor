@@ -1,16 +1,44 @@
-﻿@attribute [Authorize]
-@page "/user/{id:long}"
-@inject I18n I18n
-@inject IStatusStorage<AuthState> AuthState
+﻿@page "/user/{id:long}"
+@attribute [Authorize]
+@inject IUserAPI API
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest
+
 
 @code {
     [Parameter]
     public long Id { get; set; }
 
-    private IBrowserFile File { get; set; } = null!;
+    [CascadingParameter(Name = "loading")]
+    public IStatusStorage<bool> Loading { get; set; } = null!;
+
+    private UserProfileDto profile;
 
 
+    protected override async Task OnInitializedAsync()
+    {
+        Loading.Value = true;
+
+        var result = await API.GetProfile(Id);
+
+        Loading.Value = false;
+
+        if (result.IsSuccessStatusCode)
+        {
+            profile = result.Content;
+        }
+        else
+        {
+            ExceptionRequest.Value = new()
+                {
+                    Message = "Failed to get profile.",
+                    StatusCode = result.StatusCode
+                };
+        }
+    }
 }
+
+<PageTitle>SastImg - @profile.Username</PageTitle>
+
 
 <div class="header">
     <UserPageHeader Id="Id" />
@@ -21,7 +49,7 @@
 </div>
 
 <div class="text-center">
-    <UserPageProfile Id="Id" />
+    <UserPageProfile Profile="profile" />
 </div>
 
 
