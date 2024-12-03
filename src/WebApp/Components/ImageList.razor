@@ -1,0 +1,15 @@
+﻿@code {
+    [Parameter]
+    public IEnumerable<ImageItemDto> Images { get; set; } = [];
+}
+
+
+
+<ul class="img-wrapper">
+    @foreach (var image in Images)
+    {
+        <li>
+            <ImageItem @key="image.Id" Image="image" />
+        </li>
+    }
+</ul>

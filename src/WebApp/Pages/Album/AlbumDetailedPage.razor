@@ -2,7 +2,7 @@
 
 
 @inject IDataStorage<DetailedAlbum, long> Storage
-@inject IStatusStorage<ExceptionRequest> ExceptionRequest   
+@inject IStatusStorage<ExceptionRequest> ExceptionRequest
 
 @inject IAlbumAPI Api
 @inject IJSRuntime JS
@@ -18,11 +18,11 @@
 
     private IEnumerable<ImageItemDto> images = [];
 
-    protected async override Task OnInitializedAsync() 
+    protected async override Task OnInitializedAsync()
     {
-        if(Storage.TryGet(Id, out album))
+        if (Storage.TryGet(Id, out album))
         {
-            var response =  await Api.GetDetail(Id);
+            var response = await Api.GetDetail(Id);
             Storage.Add(album, Id);
         }
         else
@@ -32,7 +32,7 @@
             {
                 album = await Api.GetDetail(Id);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ExceptionRequest.Value = new(e.Message);
             }
@@ -42,7 +42,7 @@
         }
 
         var result = await Api.GetImages(Id);
-        if(result.IsSuccessStatusCode)
+        if (result.IsSuccessStatusCode)
         {
             images = result.Content!;
         }
@@ -63,9 +63,7 @@
         </h3>
 
         <div class="d-flex justify-content-center">
-            <a href=""
-               class="btn badge rounded-pill bg-info"
-               type="button">
+            <a href="" class="btn badge rounded-pill bg-info" type="button">
                 @album.Category
             </a>
         </div>
@@ -76,11 +74,4 @@
 
 <MDivider />
 
-<ul class="img-wrapper">
-    @foreach(var image in images)
-    {
-        <li>
-            <ImageItem @key="image.Id" Image="image" />
-        </li>
-    }
-</ul>
+<ImageList Images="images" />
