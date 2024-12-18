@@ -4,6 +4,7 @@ using Application.Query;
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.Commands;
 using Domain.Command;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
 using WebAPI.Utilities.Attributes;
@@ -30,9 +31,10 @@ public sealed class AlbumController(
         [Range(AccessLevel.MinValue, AccessLevel.MaxValue)] int AccessLevel
     );
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(
-        [Required] [FromBody] CreateAlbumRequest request,
+        [Required][FromBody] CreateAlbumRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -51,6 +53,7 @@ public sealed class AlbumController(
         return Ok(new { id });
     }
 
+    [Authorize]
     [HttpPost("{id:long}/remove")]
     public async Task<IActionResult> Remove(
         [FromRoute] long id,
@@ -63,6 +66,7 @@ public sealed class AlbumController(
         return NoContent();
     }
 
+    [Authorize]
     [HttpPost("{id:long}/restore")]
     public async Task<IActionResult> Restore(
         [FromRoute] long id,
@@ -79,10 +83,11 @@ public sealed class AlbumController(
         [Range(AccessLevel.MinValue, AccessLevel.MaxValue)] int AccessLevel
     );
 
+    [Authorize]
     [HttpPost("{id:long}/accessLevel")]
     public async Task<IActionResult> UpdateAccessLevel(
         [FromRoute] long id,
-        [Required] [FromBody] UpdateAccessLevelRequest request,
+        [Required][FromBody] UpdateAccessLevelRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -99,10 +104,11 @@ public sealed class AlbumController(
         [Length(AlbumDescription.MinLength, AlbumDescription.MaxLength)] string Description
     );
 
+    [Authorize]
     [HttpPost("{id:long}/description")]
     public async Task<IActionResult> UpdateDescription(
         [FromRoute] long id,
-        [Required] [FromBody] UpdateDescriptionRequest request,
+        [Required][FromBody] UpdateDescriptionRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -119,6 +125,7 @@ public sealed class AlbumController(
         [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string Title
     );
 
+    [Authorize]
     [HttpPost("{id:long}/title")]
     public async Task<IActionResult> UpdateTitle(
         [FromRoute] long id,
@@ -137,10 +144,11 @@ public sealed class AlbumController(
 
     public sealed record class UpdateCollaboratorsRequest(long[] Collaborators);
 
+    [Authorize]
     [HttpPost("{id:long}/collaborators")]
     public async Task<IActionResult> UpdateCollaborators(
         [FromRoute] long id,
-        [Required] [FromBody] UpdateCollaboratorsRequest request
+        [Required][FromBody] UpdateCollaboratorsRequest request
     )
     {
         if (Collaborators.TryCreateNew(request.Collaborators, out var collaborators) == false)
@@ -152,11 +160,12 @@ public sealed class AlbumController(
         return NoContent();
     }
 
+    [Authorize]
     [HttpPost("{id:long}/cover")]
     [RequestFormLimits(MultipartBodyLengthLimit = 1024 * 1024 * 20)]
     public async Task<IActionResult> UpdateCover(
         [FromRoute] long id,
-        [FromForm] [FileValidator(0, 5)] IFormFile? file = null,
+        [FromForm][FileValidator(0, 5)] IFormFile? file = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -167,6 +176,7 @@ public sealed class AlbumController(
         return NoContent();
     }
 
+    [Authorize]
     [HttpPost("{id:long}/subscribe")]
     public async Task<IActionResult> Subscribe(
         [FromRoute] long id,
@@ -180,6 +190,7 @@ public sealed class AlbumController(
         return NoContent();
     }
 
+    [Authorize]
     [HttpPost("{id:long}/unsubscribe")]
     public async Task<IActionResult> Unsubscribe(
         [FromRoute] long id,
@@ -191,20 +202,6 @@ public sealed class AlbumController(
         await _commanderSender.SendAsync(command, cancellationToken);
 
         return NoContent();
-    }
-
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetDetailedAlbum(
-        [FromRoute] long id,
-        CancellationToken cancellationToken
-    )
-    {
-        var result = await _querySender.SendAsync(
-            new DetailedAlbumQuery(id, new(User)),
-            cancellationToken
-        );
-
-        return this.DataOrNotFound(result);
     }
 
     #endregion
@@ -220,12 +217,26 @@ public sealed class AlbumController(
     public async Task<IActionResult> GetAlbums(
         [FromQuery] long? category = null,
         [FromQuery] long? author = null,
-        [FromQuery] [Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string? title = null,
+        [FromQuery][Length(AlbumTitle.MinLength, AlbumTitle.MaxLength)] string? title = null,
         CancellationToken cancellationToken = default
     )
     {
         var result = await _querySender.SendAsync(
             new AlbumsQuery(category, author, title, new(User)),
+            cancellationToken
+        );
+
+        return this.DataOrNotFound(result);
+    }
+
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetDetailedAlbum(
+        [FromRoute] long id,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await _querySender.SendAsync(
+            new DetailedAlbumQuery(id, new(User)),
             cancellationToken
         );
 

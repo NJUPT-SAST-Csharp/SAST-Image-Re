@@ -1,4 +1,5 @@
 ﻿using Domain.AlbumDomain.Exceptions;
+using Domain.CategoryDomain.Exceptions;
 using Domain.Extensions;
 using Domain.Shared;
 using Domain.TagDomain.Exceptions;
@@ -75,6 +76,13 @@ public sealed class DomainExceptionHandler : IExceptionHandler
                 Status = StatusCodes.Status404NotFound,
                 Title = $"Couldn't find the category with id [{ex.Category.Value}].",
                 Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
+            },
+
+            CategoryNameDuplicateException ex => new()
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = $"The name [{ex.Name.Value}] has been occupied.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.10",
             },
 
             CollaboratorsNotFoundException => new()

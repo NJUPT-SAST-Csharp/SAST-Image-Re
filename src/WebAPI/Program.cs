@@ -11,10 +11,13 @@ builder.Services.AddUserServices(builder.Configuration).AddJwtAuth(builder.Confi
 builder.Services.AddAlbumServices();
 builder.Services.AddImageServices();
 builder.Services.AddTagServices();
+builder.Services.AddCategoryServices();
 
 builder.Services.AddExceptionHandlers();
 
 builder.Logging.AddLogger();
+
+builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddResponseCaching();
 

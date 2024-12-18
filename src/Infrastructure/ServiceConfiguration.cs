@@ -3,6 +3,7 @@ using System.Text;
 using Application;
 using Application.AlbumServices;
 using Application.AlbumServices.Queries;
+using Application.CategoryServices;
 using Application.ImageServices;
 using Application.ImageServices.Queries;
 using Application.Query;
@@ -15,6 +16,8 @@ using Domain;
 using Domain.AlbumDomain.AlbumEntity;
 using Domain.AlbumDomain.ImageEntity;
 using Domain.AlbumDomain.Services;
+using Domain.CategoryDomain.CategoryEntity;
+using Domain.CategoryDomain.Services;
 using Domain.Command;
 using Domain.Core.Event;
 using Domain.Extensions;
@@ -25,6 +28,8 @@ using Domain.UserDomain.UserEntity;
 using Domain.UserEntity.Services;
 using Infrastructure.AlbumServices.Application;
 using Infrastructure.AlbumServices.Domain;
+using Infrastructure.CategoryServices.Application;
+using Infrastructure.CategoryServices.Domain;
 using Infrastructure.Database;
 using Infrastructure.ImageServices.Application;
 using Infrastructure.SharedServices.EventBus;
@@ -193,6 +198,16 @@ public static class ServiceConfiguration
         services
             .AddSingleton<IAvatarStorageManager, AvatarStorageManager>()
             .AddSingleton<IHeaderStorageManager, HeaderStorageManager>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddCategoryServices(this IServiceCollection services)
+    {
+        services.AddScoped<IRepository<Category, CategoryId>, CategoryDomainRepository>();
+        services.AddScoped<IRepository<CategoryModel, CategoryId>, CategoryModelRepository>();
+
+        services.AddScoped<ICategoryNameUniquenessChecker, CategoryNameUniquenessChecker>();
 
         return services;
     }

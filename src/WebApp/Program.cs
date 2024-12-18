@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using Masa.Blazor;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -37,7 +38,7 @@ builder
     .AddApiClient<IUserAPI>(IUserAPI.Base)
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
-builder.Services.AddBlazoredLocalStorageAsSingleton();
+builder.Services.AddBlazoredLocalStorageAsSingleton().AddBlazoredSessionStorageAsSingleton();
 builder.Services.AddDataStorage<AlbumDto, long>().AddDataStorage<DetailedAlbum, long>();
 
 builder
