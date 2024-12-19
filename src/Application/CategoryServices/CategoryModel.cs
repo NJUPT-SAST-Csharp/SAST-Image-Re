@@ -4,6 +4,8 @@ namespace Application.CategoryServices;
 
 public sealed class CategoryModel
 {
+    private CategoryModel() { }
+
     internal CategoryModel(CategoryCreatedEvent e)
     {
         Id = e.Id.Value;
@@ -12,6 +14,6 @@ public sealed class CategoryModel
     }
 
     public long Id { get; init; }
-    public string Name { get; init; }
-    public string Description { get; init; }
+    public string Name { get; init; } = null!;
+    public string Description { get; init; } = null!;
 }

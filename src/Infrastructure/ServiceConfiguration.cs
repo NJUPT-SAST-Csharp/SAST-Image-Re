@@ -4,6 +4,7 @@ using Application;
 using Application.AlbumServices;
 using Application.AlbumServices.Queries;
 using Application.CategoryServices;
+using Application.CategoryServices.Queries;
 using Application.ImageServices;
 using Application.ImageServices.Queries;
 using Application.Query;
@@ -204,10 +205,13 @@ public static class ServiceConfiguration
 
     public static IServiceCollection AddCategoryServices(this IServiceCollection services)
     {
-        services.AddScoped<IRepository<Category, CategoryId>, CategoryDomainRepository>();
-        services.AddScoped<IRepository<CategoryModel, CategoryId>, CategoryModelRepository>();
+        services
+            .AddScoped<IRepository<Category, CategoryId>, CategoryDomainRepository>()
+            .AddScoped<ICategoryNameUniquenessChecker, CategoryNameUniquenessChecker>();
 
-        services.AddScoped<ICategoryNameUniquenessChecker, CategoryNameUniquenessChecker>();
+        services
+            .AddScoped<IRepository<CategoryModel, CategoryId>, CategoryModelRepository>()
+            .AddScoped<IQueryRepository<CategoriesQuery, CategoryDto[]>, CategoryQueryRepository>();
 
         return services;
     }

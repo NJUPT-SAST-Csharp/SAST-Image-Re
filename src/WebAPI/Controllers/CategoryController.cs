@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Application.CategoryServices.Queries;
 using Application.Query;
 using Domain.CategoryDomain.CategoryEntity;
 using Domain.CategoryDomain.Commands;
 using Domain.Command;
+using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Utilities;
 
@@ -27,6 +30,7 @@ public sealed class CategoryController(
     );
 
     [HttpPost]
+    [Authorize(AuthPolicies.Admin)]
     public async Task<IActionResult> Create(
         [Required] [FromBody] CreateCategoryRequest request,
         CancellationToken cancellationToken
@@ -56,13 +60,13 @@ public sealed class CategoryController(
 
     #region [Query/Get]
 
-    //[HttpGet]
-    //public async Task<IActionResult> Get(CancellationToken cancellationToken)
-    //{
-    //    var query = new GetCategoryListQuery();
-    //    var result = await _querySender.SendAsync(query, cancellationToken);
-    //    return Ok(result);
-    //}
+    [HttpGet]
+    public async Task<IActionResult> Get(CancellationToken cancellationToken)
+    {
+        CategoriesQuery query = new();
+        var result = await _querySender.SendAsync(query, cancellationToken);
+        return Ok(result);
+    }
 
     //[HttpGet("{id:long}")]
     //public async Task<IActionResult> Get([FromRoute] long id, CancellationToken cancellationToken)
