@@ -30,4 +30,11 @@ public sealed class Category : EntityBase<CategoryId>
         _name = command.Name;
         AddDomainEvent(new CategoryNameUpdatedEvent(Id, command.Name));
     }
+
+    public void UpdateDescription(UpdateCategoryDescriptionCommand command)
+    {
+        if (command.Actor.IsAdmin == false)
+            throw new NoPermissionException();
+        AddDomainEvent(new CategoryDescriptionUpdatedEvent(Id, command.Description));
+    }
 }

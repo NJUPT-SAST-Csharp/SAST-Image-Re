@@ -21,4 +21,9 @@ public sealed class CategoryModel
     {
         Name = e.Name.Value;
     }
+
+    internal void UpdateDescription(CategoryDescriptionUpdatedEvent e)
+    {
+        Description = e.Description.Value;
+    }
 }

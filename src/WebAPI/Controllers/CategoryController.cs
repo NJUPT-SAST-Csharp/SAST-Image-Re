@@ -66,6 +66,27 @@ public sealed class CategoryController(
         return NoContent();
     }
 
+    public sealed record class UpdateCategoryDescriptionRequest(
+        [MaxLength(CategoryDescription.MaxLength)] string Description
+    );
+
+    [HttpPost("{id:long}/description")]
+    [Authorize(AuthPolicies.Admin)]
+    public async Task<IActionResult> UpdateDescription(
+        [FromRoute] long id,
+        [Required] [FromBody] UpdateCategoryDescriptionRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        if (CategoryDescription.TryCreateNew(request.Description, out var description) == false)
+            return this.ValidationFail(request.Description, nameof(request.Description));
+
+        UpdateCategoryDescriptionCommand command = new(new(id), description, new(User));
+        await _commanderSender.SendAsync(command, cancellationToken);
+
+        return NoContent();
+    }
+
     //[HttpPost("{id:long}/remove")]
     //public async Task<IActionResult> Remove(
     //    [FromRoute] long id,
