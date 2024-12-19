@@ -10,13 +10,7 @@ internal sealed class CategoryCreatedEventHandler(IRepository<CategoryModel, Cat
 {
     public Task Handle(CategoryCreatedEvent e, CancellationToken cancellationToken)
     {
-        CategoryModel category =
-            new()
-            {
-                Id = e.Id.Value,
-                Description = e.Description.Value,
-                Name = e.Name.Value,
-            };
+        CategoryModel category = new(e);
 
         return repository.AddAsync(category, cancellationToken);
     }

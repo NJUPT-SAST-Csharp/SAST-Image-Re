@@ -1,8 +1,17 @@
-﻿namespace Application.CategoryServices;
+﻿using Domain.CategoryDomain.Events;
+
+namespace Application.CategoryServices;
 
 public sealed class CategoryModel
 {
-    public required long Id { get; init; }
-    public required string Name { get; init; }
-    public required string Description { get; init; }
+    internal CategoryModel(CategoryCreatedEvent e)
+    {
+        Id = e.Id.Value;
+        Name = e.Name.Value;
+        Description = e.Description.Value;
+    }
+
+    public long Id { get; init; }
+    public string Name { get; init; }
+    public string Description { get; init; }
 }
