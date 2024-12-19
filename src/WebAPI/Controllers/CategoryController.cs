@@ -45,6 +45,27 @@ public sealed class CategoryController(
         return Ok(new { id });
     }
 
+    public sealed record class UpdateCategoryNameRequest(
+        [Length(CategoryName.MinLength, CategoryName.MaxLength)] string Name
+    );
+
+    [HttpPost("{id:long}/name")]
+    [Authorize(AuthPolicies.Admin)]
+    public async Task<IActionResult> UpdateName(
+        [FromRoute] long id,
+        [Required] [FromBody] UpdateCategoryNameRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        if (CategoryName.TryCreateNew(request.Name, out var name) == false)
+            return this.ValidationFail(request.Name, nameof(request.Name));
+
+        UpdateCategoryNameCommand command = new(new(id), name, new(User));
+        await _commanderSender.SendAsync(command, cancellationToken);
+
+        return NoContent();
+    }
+
     //[HttpPost("{id:long}/remove")]
     //public async Task<IActionResult> Remove(
     //    [FromRoute] long id,

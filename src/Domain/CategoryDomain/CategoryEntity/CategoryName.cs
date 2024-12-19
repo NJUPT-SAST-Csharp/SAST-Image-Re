@@ -34,6 +34,6 @@ public readonly record struct CategoryName
         }
 
         newObject = new(input);
-        return false;
+        return true;
     }
 }

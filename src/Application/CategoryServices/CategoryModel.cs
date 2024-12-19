@@ -14,6 +14,11 @@ public sealed class CategoryModel
     }
 
     public long Id { get; init; }
-    public string Name { get; init; } = null!;
-    public string Description { get; init; } = null!;
+    public string Name { get; set; } = null!;
+    public string Description { get; set; } = null!;
+
+    internal void UpdateName(CategoryNameUpdatedEvent e)
+    {
+        Name = e.Name.Value;
+    }
 }

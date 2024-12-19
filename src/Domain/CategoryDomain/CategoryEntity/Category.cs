@@ -20,5 +20,14 @@ public sealed class Category : EntityBase<CategoryId>
         AddDomainEvent(new CategoryCreatedEvent(Id, command.Name, command.Description));
     }
 
-    private readonly CategoryName _name;
+    private CategoryName _name;
+
+    public void UpdateName(UpdateCategoryNameCommand command)
+    {
+        if (command.Actor.IsAdmin == false)
+            throw new NoPermissionException();
+
+        _name = command.Name;
+        AddDomainEvent(new CategoryNameUpdatedEvent(Id, command.Name));
+    }
 }
