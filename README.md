@@ -9,9 +9,7 @@ Continuation of SAST-Image, which is a combination of SastImg Frontend and Backe
 - [Technologies Used](#technologies-used)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
-- [Contact](#contact)
 
 ## Introduction
 
@@ -22,6 +20,8 @@ SAST-Image-Re is a project that continues the development of SAST-Image, integra
 - User-friendly interface for image management
 - Backend API for handling image operations
 - Responsive design
+- Domain-driven design
+- CQRS & Micro-eventbus
 
 ## Technologies Used
 
@@ -32,11 +32,15 @@ SAST-Image-Re is a project that continues the development of SAST-Image, integra
 
 To get started with SAST-Image-Re, follow these steps:
 
-**Clone the repository**:
+1. **Clone the repository**:
     ```bash
     git clone https://github.com/NJUPT-SAST-Csharp/SAST-Image-Re.git
     cd SAST-Image-Re
     ```
+
+2. **Install Postgresql**
+
+3. **Install Redis**
 
 ## Usage
 
@@ -56,21 +60,6 @@ To start the application:
 
 Open your browser and navigate to `http://localhost:3000` to access the application.
 
-## Contributing
-
-Contributions are welcome! Please follow these steps to contribute:
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature-branch`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add some feature'`)
-5. Push to the branch (`git push origin feature-branch`)
-6. Open a pull request
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any questions or inquiries, please contact the project maintainers at [email@example.com](mailto:email@example.com).
