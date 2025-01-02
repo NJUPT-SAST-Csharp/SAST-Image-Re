@@ -5,13 +5,15 @@
     [Parameter, EditorRequired]
     public ImageDto Image { get; set; }
 
+    private string Style => $"view-transition-name: image-{Image.Id};";
+
     private void NavigateTo()
     {
         Nav.NavigateTo($"/images/{Image.Id}");
     }
 }
 
-<MImage Src="@IImageAPI.GetImage(Image.Id)" Class="image-item" Contain title="@Image.Title"
+<MImage Src="@IImageAPI.GetImage(Image.Id)" Class="image-item" Contain title="@Image.Title" Style="@Style"
     onclick="@(() => NavigateTo())" />
 
 <style>

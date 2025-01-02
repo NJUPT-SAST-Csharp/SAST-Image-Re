@@ -17,6 +17,8 @@
 
     private ImageDto[] images = [];
 
+    private string Style => $"view-transition-name: album-{Id};";
+
     protected async override Task OnInitializedAsync()
     {
 
@@ -48,7 +50,7 @@
 <MRow Class="ma-md-1" AlignContent="AlignContentTypes.Center">
 
     <MCol Md="6" Class="d-flex">
-        <MImage Contain Src="@IAlbumAPI.GetCover(Id)" />
+        <MImage Contain Src="@IAlbumAPI.GetCover(Id)" Style="@Style" />
     </MCol>
 
     <MCol Md="6" Class="align-self-center vstack gap-1">

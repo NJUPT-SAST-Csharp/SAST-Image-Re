@@ -38,6 +38,7 @@ builder
     .AddApiClient<IUserAPI>(IUserAPI.Base)
     .AddApiClient<IImageAPI>(IImageAPI.Base);
 
+builder.Services.AddViewTransition();
 builder.Services.AddBlazoredLocalStorageAsSingleton().AddBlazoredSessionStorageAsSingleton();
 builder.Services.AddDataStorage<AlbumDto, long>().AddDataStorage<DetailedAlbum, long>();
 

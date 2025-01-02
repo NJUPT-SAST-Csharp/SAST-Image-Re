@@ -7,13 +7,14 @@
 @code {
     [Parameter, EditorRequired]
     public AlbumDto Album { get; set; }
+    private string Style => $"view-transition-name: album-{Album.Id};";
 
     void Enter() => Nav.NavigateTo("albums/" + Album.Id);
 }
 
 
 <div class="item" @onclick="Enter">
-    <MImage Src="@IAlbumAPI.GetCover(Album.Id)">
+    <MImage Src="@IAlbumAPI.GetCover(Album.Id)" Style="@Style">
         <PlaceholderContent>
             <MRow Class="fill-height ma-0" Align="@AlignTypes.Center" Justify="@JustifyTypes.Center">
                 <MProgressCircular Indeterminate></MProgressCircular>
